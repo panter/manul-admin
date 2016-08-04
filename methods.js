@@ -12,7 +12,7 @@ export default (adminConfig) => {
         validate: new SimpleSchema([ collection.simpleSchema(), {_id: {type: String}} ]).validator(),
         run({_id, ...doc}) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed');
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           return collection.update(_id, {$set: doc});
         }
@@ -22,7 +22,7 @@ export default (adminConfig) => {
         validate: collection.simpleSchema().validator(),
         run(doc) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed');
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           return collection.insert(doc);
         }
