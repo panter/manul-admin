@@ -5,13 +5,15 @@ import { mount } from 'react-mounter';
 export default (adminConfig) => {
   const getProps = ({gotoRoute}, name) => {
     const publications = publicationUtils.getPublications(name);
-    const {collection, ...colConfig} = adminConfig.collections[name];
+    const {collection, schema, ...colConfig} = adminConfig.collections[name];
+
     return {
       collectionName: name,
       gotoCreate: () => gotoRoute(routeUtils.getCreateRoute(name).name),
       gotoEdit: (_id) => gotoRoute(routeUtils.getEditRoute(name).name, {_id}),
       gotoList: () => gotoRoute(routeUtils.getListRoute(name).name),
       collection,
+      schema: schema || collection.simpleSchema(),
       colConfig,
       publications
     };
