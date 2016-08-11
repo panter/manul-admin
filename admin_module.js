@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Methods from './methods';
 import Routes from './routes';
 import routeUtils from './route_utils';
+import Papa from 'papaparse';
 export default (adminConfig) => {
   const routes = Routes(adminConfig);
   const methods = Methods(adminConfig);
@@ -29,6 +30,22 @@ export default (adminConfig) => {
             gotoRoute(routeUtils.getEditRoute(collectionName).name, {_id});
           }
 
+        });
+      },
+      downloadCsv({adminContext: {showError = _.noop}}, collectionName) {
+        methods[collectionName].export.call({}, (error, data) => {
+          if (error) {
+            showError(error);
+          } else {
+            const csv = Papa.unparse(data);
+            const blob = new Blob([ csv ]);
+            const a = window.document.createElement('a');
+            a.href = window.URL.createObjectURL(blob, {type: 'text/plain'});
+            a.download = `export_${collectionName}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
         });
       }
     }
