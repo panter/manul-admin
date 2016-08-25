@@ -1,31 +1,37 @@
 
 
 import _ from 'lodash';
-import Methods from './methods';
+import AdminMethods from './methods';
 import Routes from './routes';
 import routeUtils from './route_utils';
 import Papa from 'papaparse';
 export default (adminConfig) => {
   const routes = Routes(adminConfig);
-  const methods = Methods(adminConfig);
+  const methods = AdminMethods(adminConfig);
   const actions = {
     manulAdmin: {
-      update({adminContext: {gotoRoute, showError = _.noop, showSuccess = _.noop}}, collectionName, doc) {
+      update({adminContext: {gotoRoute, Methods, showError = _.noop, showSuccess = _.noop}}, collectionName, doc) {
         methods[collectionName].update.call(doc, (error) => {
           if (error) {
             showError(error);
           } else {
+            if (adminConfig.hooks && adminConfig.hooks[collectionName] && adminConfig.hooks[collectionName].postUpdate) {
+              adminConfig.hooks[collectionName].postUpdate({ Methods }, doc._id);
+            }
             showSuccess('Update successfull');
             gotoRoute(routeUtils.getListRoute(collectionName).name);
           }
 
         });
       },
-      create({adminContext: {gotoRoute, showError = _.noop, showSuccess = _.noop}}, collectionName, doc) {
+      create({adminContext: {gotoRoute, Methods, showError = _.noop, showSuccess = _.noop}}, collectionName, doc) {
         methods[collectionName].create.call(doc, (error, _id) => {
           if (error) {
             showError(error);
           } else {
+            if (adminConfig.hooks && adminConfig.hooks[collectionName] && adminConfig.hooks[collectionName].postCreate) {
+              adminConfig.hooks[collectionName].postCreate({ Methods }, _id);
+            }
             showSuccess('Create successfull');
             gotoRoute(routeUtils.getEditRoute(collectionName).name, {_id});
           }
