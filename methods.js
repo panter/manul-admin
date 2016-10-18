@@ -8,16 +8,19 @@ import _ from 'lodash';
 export default (adminConfig) => {
   const isAllowed = IsAllowed(adminConfig);
   const createFor = (collectionName) => {
-    const { collection } = adminConfig.collections[collectionName];
+    const { collection, allowInsertWithId } = adminConfig.collections[collectionName];
     return {
       update: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.update`,
-        validate: new SimpleSchema([collection.simpleSchema(), { _id: { type: String } }]).validator({ clean: true }),
+        validate: new SimpleSchema(
+          [collection.simpleSchema(), { _id: { type: String } }]
+        ).validator({ clean: true }),
         run({ _id, ...doc }) {
           // console.log('updating', collectionName, _id, doc);
           if (!isAllowed(collectionName, this.userId)) {
             throw new Meteor.Error('not allowed', 'You are not allowed');
           }
+
           const updated = collection.update(_id, { $set: doc });
           if (updated === 0) {
             throw new Meteor.Error('not found', 'Entry not found');
@@ -26,7 +29,9 @@ export default (adminConfig) => {
       }),
       create: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.create`,
-        validate: collection.simpleSchema().validator({ clean: true }),
+        validate: collection.simpleSchema(
+          [collection.simpleSchema(), allowInsertWithId && { _id: { type: String, optinal: true } }]
+        ).validator({ clean: true }),
         run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {

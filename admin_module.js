@@ -13,6 +13,7 @@ export default (adminConfig) => {
   const actions = {
     manulAdmin: {
       update({ adminContext: { gotoRoute, Methods, showError = _.noop, showSuccess = _.noop } }, collectionName, doc) {
+        debugger;
         methods[collectionName].update.call(doc, (error) => {
           if (error) {
             showError(error);
