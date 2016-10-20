@@ -29,7 +29,7 @@ export default (adminConfig) => {
 
         if (_.isFunction(components[type])) {
           Component = components[type];
-        } else if (_.has(components, `${type}.${collectionName}`)) {
+        } else if (_.has(components, [type, collectionName])) {
           Component = components[type][collectionName];
         } else {
           Component = components[type].default;
