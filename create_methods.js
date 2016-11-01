@@ -5,10 +5,10 @@ import { Meteor } from 'meteor/meteor';
 import flatten from 'flat';
 import _ from 'lodash';
 
-export default (adminConfig) => {
-  const isAllowed = IsAllowed(adminConfig);
+export default (config) => {
+  const isAllowed = IsAllowed(config);
   const createFor = (collectionName) => {
-    const { collection, allowInsertWithId } = adminConfig.collections[collectionName];
+    const { collection, allowInsertWithId } = config.collections[collectionName];
     return {
       update: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.update`,
@@ -71,7 +71,7 @@ export default (adminConfig) => {
 
   const methods = {
   };
-  Object.keys(adminConfig.collections).forEach((collectionName) => {
+  Object.keys(config.collections).forEach((collectionName) => {
     methods[collectionName] = createFor(collectionName);
   });
   return methods;

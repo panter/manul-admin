@@ -7,13 +7,13 @@ import React from 'react';
 /**
 this function is used in manul-admin/routes to create components.
 
-it can be used stand-alone when provided with adminContext and adminConfig,
+it can be used stand-alone when provided with adminContext,
 but this is experimental atm.
 */
 
-export const createProps = ({ adminContext: { gotoRoute }, adminConfig }, collectionName) => {
+export const createProps = ({ gotoRoute, config }, collectionName) => {
   const publications = publicationUtils.getPublications(collectionName);
-  const { collection, schema, ...colConfig } = adminConfig.collections[collectionName];
+  const { collection, schema, ...colConfig } = config.collections[collectionName];
   return {
     collectionName,
     gotoCreate: () => gotoRoute(routeUtils.getCreateRoute(collectionName).name),
@@ -26,9 +26,8 @@ export const createProps = ({ adminContext: { gotoRoute }, adminConfig }, collec
   };
 };
 
-export default ({ adminContext, adminConfig, collectionName, type }) => {
-  const { components } = adminContext;
-  const _props = createProps({ adminContext, adminConfig }, collectionName);
+export default ({ gotoRoute, config, components }) => ({ collectionName, type }) => {
+  const _props = createProps({ gotoRoute, config }, collectionName);
   let BaseComponent;
   if (_.isFunction(components[type])) {
     BaseComponent = components[type];
