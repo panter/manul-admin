@@ -21,8 +21,8 @@ export const createProps = ({ gotoRoute, config }, collectionName) => {
     gotoList: () => gotoRoute(routeUtils.getListRoute(collectionName).name),
     collection,
     schema: schema || collection.simpleSchema(),
-    colConfig,
     publications,
+    ...colConfig,
   };
 };
 
