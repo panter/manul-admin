@@ -1,4 +1,4 @@
-import publicationUtils from './publication_utils';
+import publicationUtils from './utils/publication_utils';
 import createMethods from './create_methods';
 import { Meteor } from 'meteor/meteor';
 import { Counts } from 'meteor/tmeasday:publish-counts';

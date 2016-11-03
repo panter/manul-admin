@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import routeUtils from './route_utils';
+import routeUtils from './utils/route_utils';
 import Papa from 'papaparse';
 import flat from 'flat';
 
@@ -24,6 +24,19 @@ export default {
           gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id });
         }
       });
+    },
+    destroy({ adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } }, collectionName, _id) {
+      const confirmed = window.confirm("Really destroy? This can't be undone");
+      if (confirmed) {
+        methods[collectionName].destroy.call({ _id }, (error) => {
+          if (error) {
+            showError(error);
+          } else {
+            showSuccess('Destroy successfull');
+            gotoRoute(routeUtils.getListRoute(collectionName).name);
+          }
+        });
+      }
     },
     downloadCsv({ adminContext: { methods, showError = _.noop } }, collectionName) {
       methods[collectionName].export.call({}, (error, { data, keys }) => {

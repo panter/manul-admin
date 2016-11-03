@@ -40,6 +40,19 @@ export default (config) => {
           return collection.insert(doc);
         },
       }),
+      destroy: new ValidatedMethod({
+        name: `manulAdmin.${collectionName}.destroy`,
+        validate: new SimpleSchema(
+          { _id: { type: String } }
+        ).validator({ clean: true }),
+        run({ _id }) {
+          // console.log('inserting', doc);
+          if (!isAllowed(collectionName, this.userId)) {
+            throw new Meteor.Error('not allowed', 'You are not allowed');
+          }
+          return collection.remove(_id);
+        },
+      }),
       export: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.export`,
         validate() {},

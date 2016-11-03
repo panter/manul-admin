@@ -1,21 +1,13 @@
 
 import { composeWithTracker } from 'mantra-core';
-import _ from 'lodash';
 
-export const composer = () => ({ context, collectionName, type, ...props }, onData) => {
-  const { adminContext: { components, gotoRoute, publicationUtils, routeUtils, config } } = context();
+
+export const composer = type => ({ context, collectionName, ...props }, onData) => {
+  const { adminContext: { getComponent, gotoRoute, publicationUtils, routeUtils, config } } = context();
   const { collections } = config;
   const publications = publicationUtils.getPublications(collectionName);
   const { collection, schema, ...colConfig } = collections[collectionName];
-  let Component;
-  if (_.isFunction(components[type])) {
-    Component = components[type];
-  } else if (_.has(components, [type, collectionName])) {
-    Component = components[type][collectionName];
-  } else {
-    Component = components[type].default;
-  }
-  Component.displayName = `Admin_${collectionName}_${type}`;
+  const Component = getComponent({ collectionName, type });
   onData(null, {
     Component,
     gotoCreate: () => gotoRoute(routeUtils.getCreateRoute(collectionName).name),
@@ -30,4 +22,4 @@ export const composer = () => ({ context, collectionName, type, ...props }, onDa
 };
 
 
-export default () => composeWithTracker(composer());
+export default type => composeWithTracker(composer(type));
