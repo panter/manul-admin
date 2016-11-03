@@ -13,7 +13,7 @@ export default (injectDeps, { adminContext }) => {
         name,
         action(params) {
           mount(injectDeps(components.layout), {
-            content: () => (<Component params={params} />),
+            content: () => (<CollectionComponent params={params} />),
           });
         },
       });
