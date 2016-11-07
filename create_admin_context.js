@@ -1,6 +1,7 @@
 import createMethods from './create_methods';
 import routeUtils from './utils/route_utils';
 import publicationUtils from './utils/publication_utils';
+
 import _ from 'lodash';
 
 export default ({ config, adminRoutes, gotoRoute, showError, showSuccess, components }) => {
