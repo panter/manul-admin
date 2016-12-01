@@ -2,6 +2,7 @@ import _ from 'lodash';
 import routeUtils from './utils/route_utils';
 import Papa from 'papaparse';
 import flat from 'flat';
+import csv from './utils/csv';
 
 export default {
   manulAdmin: {
@@ -43,22 +44,7 @@ export default {
         if (error) {
           showError(error);
         } else {
-          // console.log(data, keys);
-          // we encode missing values with "NULL"
-          // because CSV has no concept of null/missing values
-          // good read: http://www.garretwilson.com/blog/2009/04/23/csvnull.xhtml
-          const defaults = _.zipObject(keys, keys.map(() => 'NULL'));
-          // console.log(defaults);
-          const dataPadded = data.map(entry => ({ ...defaults, ...entry }));
-          // console.log(dataPadded);
-          const csv = Papa.unparse(dataPadded);
-          const blob = new Blob([csv]);
-          const a = window.document.createElement('a');
-          a.href = window.URL.createObjectURL(blob, { type: 'text/plain' });
-          a.download = `export_${collectionName}.csv`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          csv.exportAsCsv({ filename: `export_${collectionName}`, data, keys });
         }
       });
     },
