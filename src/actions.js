@@ -1,12 +1,15 @@
 import _ from 'lodash';
-import routeUtils from './utils/route_utils';
 import Papa from 'papaparse';
 import flat from 'flat';
+import routeUtils from './utils/route_utils';
 import csv from './utils/csv';
 
 export default {
   manulAdmin: {
-    update({ adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } }, collectionName, doc) {
+    update(
+      { adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } },
+      collectionName, doc,
+    ) {
       methods[collectionName].update.call(doc, (error) => {
         if (error) {
           showError(error);
@@ -16,7 +19,10 @@ export default {
         }
       });
     },
-    create({ adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } }, collectionName, doc) {
+    create(
+      { adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } },
+      collectionName, doc,
+    ) {
       methods[collectionName].create.call(doc, (error, _id) => {
         if (error) {
           showError(error);
@@ -26,7 +32,11 @@ export default {
         }
       });
     },
-    destroy({ adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } }, collectionName, _id) {
+    destroy(
+      { adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } },
+      collectionName, _id,
+    ) {
+      /* eslint no-alert: 0*/
       const confirmed = window.confirm("Really destroy? This can't be undone");
       if (confirmed) {
         methods[collectionName].destroy.call({ _id }, (error) => {
@@ -39,7 +49,10 @@ export default {
         });
       }
     },
-    downloadCsv({ adminContext: { methods, showError = _.noop } }, collectionName) {
+    downloadCsv(
+      { adminContext: { methods, showError = _.noop } },
+      collectionName,
+    ) {
       methods[collectionName].export.call({}, (error, { data, keys }) => {
         if (error) {
           showError(error);
@@ -48,7 +61,10 @@ export default {
         }
       });
     },
-    importCsv({ adminContext: { methods } }, { collectionName, file, onInsert = _.noop, onUpdate = _.noop, onComplete = _.noop }) {
+    importCsv(
+      { adminContext: { methods } },
+      { collectionName, file, onInsert = _.noop, onUpdate = _.noop, onComplete = _.noop },
+    ) {
       let counter = -1;
       const imported = new Set();
       Papa.parse(file, {
@@ -66,7 +82,7 @@ export default {
             };
             // console.log('uncleaned', entryUncleaned);
             const entry = flat.unflatten(
-              _.omitBy(entryUncleaned, value => value === 'NULL')
+              _.omitBy(entryUncleaned, value => value === 'NULL'),
             );
             // console.log('cleaned', entry);
             if (entry._id) {

@@ -1,0 +1,48 @@
+{
+  "name": "@panter/manul-admin",
+  "description": "",
+  "version": "0.1.0",
+  "author": {
+    "name": "Marco Wettstein",
+    "email": "maw@panter.ch",
+    "url": "www.panter.ch"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/panter/manul-admin.git"
+  },
+  "bugs": "https://github.com/panter/manul-admin/issues",
+  "peerDependencies": {
+    "babel-runtime": "*.*.*",
+    "lodash": "^4.0.0",
+    "mantra-core": "^1.7.0",
+    "react": "^15.0.0",
+    "react-komposer": "^1.0.0",
+    "react-mounter": "^1.2.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-syntax-trailing-function-commas": "^6.20.0",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-meteor": "^4.0.1",
+    "eslint-plugin-react": "^6.8.0",
+    "glob": "^5.0.15",
+    "tape": "^4.2.2"
+  },
+  "scripts": {
+    "prepublish": "npm run compile",
+    "test": "babel-node --stage 1 test/harness.js test/**/*.js",
+    "compile": "npm run lint && babel src -s -d dist",
+    "lint": "eslint src/**.js"
+  },
+  "main": "./dist/manul-admin.js",
+  "dependencies": {
+    "flat": "^2.0.1",
+    "papaparse": "^4.1.2"
+  }
+}

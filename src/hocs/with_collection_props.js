@@ -3,7 +3,11 @@ import { composeWithTracker } from 'mantra-core';
 
 
 export const composer = type => ({ context, collectionName, ...props }, onData) => {
-  const { adminContext: { getComponent, gotoRoute, publicationUtils, routeUtils, config } } = context();
+  const {
+    adminContext: {
+      getComponent, gotoRoute, publicationUtils, routeUtils, config,
+    },
+  } = context();
   const { collections } = config;
   const publications = publicationUtils.getPublications(collectionName);
   const { collection, schema, ...colConfig } = collections[collectionName];

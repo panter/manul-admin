@@ -16,4 +16,6 @@ const getPublications = name => ({
   counts: getMatchingResultsCountName(name),
 });
 
-export default { getPublications, getEditPublicationName, getListPublicationName, getMatchingResultsCountName };
+export default {
+  getPublications, getEditPublicationName, getListPublicationName, getMatchingResultsCountName,
+};

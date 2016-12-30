@@ -1,4 +1,4 @@
-import { useDeps, composeAll, composeWithTracker, compose } from 'mantra-core';
+import { useDeps } from 'mantra-core';
 
 export const depsMapper = (context, actions) => ({
   context: () => context,

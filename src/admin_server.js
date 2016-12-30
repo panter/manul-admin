@@ -1,8 +1,8 @@
-import publicationUtils from './utils/publication_utils';
-import createMethods from './create_methods';
 import { Meteor } from 'meteor/meteor';
 import { Counts } from 'meteor/tmeasday:publish-counts';
 
+import publicationUtils from './utils/publication_utils';
+import createMethods from './create_methods';
 import IsAllowed from './is_allowed';
 
 export default (config) => {
@@ -13,6 +13,7 @@ export default (config) => {
     const { list, edit, counts } = publicationUtils.getPublications(name);
     const { collection } = collections[name];
 
+    /* eslint meteor/audit-argument-checks: 0*/
     Meteor.publish(list, function (query, options) {
       if (isAllowed(name, this.userId)) {
         // can't reuse "users" cursor
@@ -27,9 +28,7 @@ export default (config) => {
     });
   };
   const createPublications = () => {
-    for (const name of Object.keys(collections)) {
-      createPublication(name);
-    }
+    Object.keys(collections).forEach(createPublication);
   };
   createPublications();
   createMethods(config);
