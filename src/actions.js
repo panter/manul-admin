@@ -6,6 +6,15 @@ import csv from './utils/csv';
 
 export default {
   manulAdmin: {
+    gotoCreate({ gotoRoute }, collectionName) {
+      gotoRoute(routeUtils.getCreateRoute(collectionName).name);
+    },
+    gotoEdit({ gotoRoute }, collectionName, _id) {
+      gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id });
+    },
+    gotoList({ gotoRoute }, collectionName) {
+      gotoRoute(routeUtils.getListRoute(collectionName).name);
+    },
     update(
       { adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } },
       collectionName, doc,
