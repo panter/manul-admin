@@ -6,6 +6,9 @@ export const depsMapper = (context, actions) => ({
   update: actions.manulAdmin.update,
   insert: actions.manulAdmin.insert,
   destroy: actions.manulAdmin.destroy,
+  gotoEdit: actions.manulAdmin.gotoEdit,
+  gotoUpdate: actions.manulAdmin.gotoUpdate,
+  gotoList: actions.manulAdmin.gotoList,
 });
 
 export default () => useDeps(depsMapper);
