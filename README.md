@@ -2,6 +2,8 @@
 
 Admin-Solution for mantra apps.
 
+`npm install --save @panter/manul-admin`
+
 ## Features and Design goals
 
 Provides routes and simple methods to manipulate meteor-collections.
