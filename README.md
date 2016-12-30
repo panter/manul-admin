@@ -329,7 +329,7 @@ you need:
 
 ```
 
-import { Edit, List, Create, Preview } from '@panter/manul-admin/dist/containers/';
+import { Edit, List, Create, Preview } from '@panter/manul-admin/dist/containers';
 
 <Preview
   params={{ _id: userId }}
