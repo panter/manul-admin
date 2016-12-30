@@ -15,7 +15,7 @@ export default ({
   adminRoutes, // FlowRouter, manulRouter compatible routes
   components, // component definition, see readme
   /* eslint no-alert: 0*/
-  gotoRoute = routeName => window.alert(`please provide a gotoRoute-function that can jump to ${routeName}`),
+  gotoRoute = routeName => window.alert(`please provide a gotoRoute-function in adminContext that can jump to ${routeName}`),
   showError = error => window.alert(`an error occured: ${error.reason || error.message}`),
   showSuccess = message => window.alert(message),
 
