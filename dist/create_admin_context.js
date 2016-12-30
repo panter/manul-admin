@@ -36,8 +36,9 @@ exports['default'] = function (_ref) {
   components = _ref.components;
   var _ref$gotoRoute = _ref.gotoRoute;
   var // component definition, see readme
+  /* eslint no-alert: 0*/
   gotoRoute = _ref$gotoRoute === undefined ? function (routeName) {
-    return window.alert('please provide a gotoRoute-function that can jump to ' + routeName);
+    return window.alert('please provide a gotoRoute-function in adminContext that can jump to ' + routeName);
   } : _ref$gotoRoute;
   var _ref$showError = _ref.showError;
   var showError = _ref$showError === undefined ? function (error) {

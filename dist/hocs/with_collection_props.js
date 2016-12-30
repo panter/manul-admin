@@ -4,11 +4,17 @@ var _extends = require('babel-runtime/helpers/extends')['default'];
 
 var _objectWithoutProperties = require('babel-runtime/helpers/object-without-properties')['default'];
 
+var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
+
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
 var _mantraCore = require('mantra-core');
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var composer = function composer(type) {
   return function (_ref, onData) {
@@ -21,9 +27,7 @@ var composer = function composer(type) {
 
     var _context$adminContext = _context.adminContext;
     var getComponent = _context$adminContext.getComponent;
-    var gotoRoute = _context$adminContext.gotoRoute;
     var publicationUtils = _context$adminContext.publicationUtils;
-    var routeUtils = _context$adminContext.routeUtils;
     var config = _context$adminContext.config;
     var collections = config.collections;
 
@@ -37,17 +41,8 @@ var composer = function composer(type) {
     var Component = getComponent({ collectionName: collectionName, type: type });
     onData(null, _extends({
       Component: Component,
-      gotoCreate: function gotoCreate() {
-        return gotoRoute(routeUtils.getCreateRoute(collectionName).name);
-      },
-      gotoEdit: function gotoEdit(_id) {
-        return gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id: _id });
-      },
-      gotoList: function gotoList() {
-        return gotoRoute(routeUtils.getListRoute(collectionName).name);
-      },
       collection: collection,
-      schema: schema || collection.simpleSchema(),
+      schema: schema || _lodash2['default'].result(collection, 'simpleSchema'),
       publications: publications
     }, colConfig, props));
   };

@@ -20,7 +20,7 @@ into your app.
 
 This is where you can use manul-admin.
 
-** under development, issues, feedback and PRs welcome!**
+**under development, issues, feedback and PRs welcome!**
 
 
 ## Setup
