@@ -1,13 +1,11 @@
-import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { Meteor } from 'meteor/meteor';
+
 
 import flatten from 'flat';
 import _ from 'lodash';
 import IsAllowed from './is_allowed';
 
 
-export default (config) => {
+export default ({ Meteor, ValidatedMethod, SimpleSchema }, config) => {
   const isAllowed = IsAllowed(config);
   const createFor = (collectionName) => {
     const { collection, allowInsertWithId } = config.collections[collectionName];

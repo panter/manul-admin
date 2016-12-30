@@ -1,11 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Counts } from 'meteor/tmeasday:publish-counts';
 
 import publicationUtils from './utils/publication_utils';
 import createMethods from './create_methods';
 import IsAllowed from './is_allowed';
 
-export default (config) => {
+export default ({ Meteor, SimpleSchema, ValidatedMethod, Counts }, config) => {
   const isAllowed = IsAllowed(config);
   const { collections } = config;
 
@@ -14,14 +12,14 @@ export default (config) => {
     const { collection } = collections[name];
 
     /* eslint meteor/audit-argument-checks: 0*/
-    Meteor.publish(list, function (query, options) {
+    Meteor.publish(list, function publishList(query, options) {
       if (isAllowed(name, this.userId)) {
         // can't reuse "users" cursor
         Counts.publish(this, counts, collection.find(query, options));
         return collection.find(query, options);
       }
     });
-    Meteor.publish(edit, function (_id) {
+    Meteor.publish(edit, function publishEdit(_id) {
       if (isAllowed(name, this.userId)) {
         return collection.find(_id);
       }
@@ -31,5 +29,5 @@ export default (config) => {
     Object.keys(collections).forEach(createPublication);
   };
   createPublications();
-  createMethods(config);
+  createMethods({ Meteor, SimpleSchema, ValidatedMethod }, config);
 };

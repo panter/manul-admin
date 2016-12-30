@@ -4,8 +4,27 @@ import routeUtils from './utils/route_utils';
 import publicationUtils from './utils/publication_utils';
 
 
-export default ({ config, adminRoutes, gotoRoute, showError, showSuccess, components }) => {
-  const methods = createMethods(config);
+export default ({
+  // needed meteor dependencies
+  Meteor,
+  ValidatedMethod,
+  SimpleSchema,
+  Counts,
+
+  config,  // admin config
+  adminRoutes, // FlowRouter, manulRouter compatible routes
+  components, // component definition, see readme
+  /* eslint no-alert: 0*/
+  gotoRoute = routeName => window.alert(`please provide a gotoRoute-function that can jump to ${routeName}`),
+  showError = error => window.alert(`an error occured: ${error.reason || error.message}`),
+  showSuccess = message => window.alert(message),
+
+}) => {
+  const neededMeteorPackages = [Meteor, ValidatedMethod, SimpleSchema, Counts];
+  if (_.some(neededMeteorPackages, _.isNil)) {
+    throw new Error('please provide all of the following meteor-packages', neededMeteorPackages);
+  }
+  const methods = createMethods({ Meteor, ValidatedMethod, SimpleSchema, Counts }, config);
   const getComponent = ({ collectionName, type }) => {
     let Component = null;
     if (_.isFunction(components[type])) {
