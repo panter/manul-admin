@@ -33,17 +33,17 @@ var _utilsCsv2 = _interopRequireDefault(_utilsCsv);
 exports['default'] = {
   manulAdmin: {
     gotoCreate: function gotoCreate(_ref, collectionName) {
-      var gotoRoute = _ref.gotoRoute;
+      var gotoRoute = _ref.adminContext.gotoRoute;
 
       gotoRoute(_utilsRoute_utils2['default'].getCreateRoute(collectionName).name);
     },
     gotoEdit: function gotoEdit(_ref2, collectionName, _id) {
-      var gotoRoute = _ref2.gotoRoute;
+      var gotoRoute = _ref2.adminContext.gotoRoute;
 
       gotoRoute(_utilsRoute_utils2['default'].getEditRoute(collectionName).name, { _id: _id });
     },
     gotoList: function gotoList(_ref3, collectionName) {
-      var gotoRoute = _ref3.gotoRoute;
+      var gotoRoute = _ref3.adminContext.gotoRoute;
 
       gotoRoute(_utilsRoute_utils2['default'].getListRoute(collectionName).name);
     },

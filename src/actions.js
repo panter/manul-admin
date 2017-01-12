@@ -6,13 +6,13 @@ import csv from './utils/csv';
 
 export default {
   manulAdmin: {
-    gotoCreate({ gotoRoute }, collectionName) {
+    gotoCreate({ adminContext: { gotoRoute } }, collectionName) {
       gotoRoute(routeUtils.getCreateRoute(collectionName).name);
     },
-    gotoEdit({ gotoRoute }, collectionName, _id) {
+    gotoEdit({ adminContext: { gotoRoute } }, collectionName, _id) {
       gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id });
     },
-    gotoList({ gotoRoute }, collectionName) {
+    gotoList({ adminContext: { gotoRoute } }, collectionName) {
       gotoRoute(routeUtils.getListRoute(collectionName).name);
     },
     update(
