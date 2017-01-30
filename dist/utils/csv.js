@@ -16,11 +16,23 @@ var _papaparse = require('papaparse');
 
 var _papaparse2 = _interopRequireDefault(_papaparse);
 
+/**
+create a csv-file in the browser from the given data
+
+data: Array of documents
+keys: all keys of every document that should be included
+filename: the filename of the resulting csv-file
+columnTitles: the column titles on the first row
+useBom: whether to include a UTF-16 byte order mark
+parseOptions: options for papaparse
+**/
 var exportAsCsv = function exportAsCsv(_ref) {
   var filename = _ref.filename;
   var keys = _ref.keys;
   var columnTitles = _ref.columnTitles;
   var data = _ref.data;
+  var _ref$useBom = _ref.useBom;
+  var useBom = _ref$useBom === undefined ? false : _ref$useBom;
   var _ref$parseOptions = _ref.parseOptions;
   var parseOptions = _ref$parseOptions === undefined ? { delimiter: ';' } : _ref$parseOptions;
 
@@ -34,8 +46,10 @@ var exportAsCsv = function exportAsCsv(_ref) {
   var dataPadded = data.map(function (entry) {
     return _lodash2['default'].values(_extends({}, defaults, entry));
   });
+
   var csv = _papaparse2['default'].unparse({ fields: columns, data: dataPadded }, parseOptions);
-  var blob = new window.Blob([csv]);
+
+  var blob = useBom ? new window.Blob([Buffer.concat([new Buffer('﻿'), new Buffer(csv)])]) : new window.Blob([csv]);
   var a = window.document.createElement('a');
   a.href = window.URL.createObjectURL(blob, { type: 'text/plain' });
   a.download = filename + '.csv';
