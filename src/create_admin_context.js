@@ -8,7 +8,6 @@ export default ({
   // needed meteor dependencies
   Meteor,
   ValidatedMethod,
-  SimpleSchema,
   Counts,
 
   config,  // admin config
@@ -20,11 +19,11 @@ export default ({
   showSuccess = message => window.alert(message),
 
 }) => {
-  const neededMeteorPackages = [Meteor, ValidatedMethod, SimpleSchema, Counts];
+  const neededMeteorPackages = [Meteor, ValidatedMethod, Counts];
   if (_.some(neededMeteorPackages, _.isNil)) {
     throw new Error('please provide all of the following meteor-packages', neededMeteorPackages);
   }
-  const methods = createMethods({ Meteor, ValidatedMethod, SimpleSchema, Counts }, config);
+  const methods = createMethods({ Meteor, ValidatedMethod, Counts }, config);
   const getComponent = ({ collectionName, type }) => {
     let Component = null;
     if (_.isFunction(components[type])) {
