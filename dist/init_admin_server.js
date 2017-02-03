@@ -22,7 +22,6 @@ var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
 exports['default'] = function (_ref, config) {
   var Meteor = _ref.Meteor;
-  var SimpleSchema = _ref.SimpleSchema;
   var ValidatedMethod = _ref.ValidatedMethod;
   var Counts = _ref.Counts;
 
@@ -55,7 +54,7 @@ exports['default'] = function (_ref, config) {
     _Object$keys(collections).forEach(createPublication);
   };
   createPublications();
-  (0, _create_methods2['default'])({ Meteor: Meteor, SimpleSchema: SimpleSchema, ValidatedMethod: ValidatedMethod }, config);
+  (0, _create_methods2['default'])({ Meteor: Meteor, ValidatedMethod: ValidatedMethod }, config);
 };
 
 module.exports = exports['default'];
