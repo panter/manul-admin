@@ -27,7 +27,6 @@ exports['default'] = function (_ref) {
   // needed meteor dependencies
   Meteor = _ref.Meteor;
   var ValidatedMethod = _ref.ValidatedMethod;
-  var SimpleSchema = _ref.SimpleSchema;
   var Counts = _ref.Counts;
   var config = _ref.config;
   var // admin config
@@ -49,11 +48,11 @@ exports['default'] = function (_ref) {
     return window.alert(message);
   } : _ref$showSuccess;
 
-  var neededMeteorPackages = [Meteor, ValidatedMethod, SimpleSchema, Counts];
+  var neededMeteorPackages = [Meteor, ValidatedMethod, Counts];
   if (_lodash2['default'].some(neededMeteorPackages, _lodash2['default'].isNil)) {
     throw new Error('please provide all of the following meteor-packages', neededMeteorPackages);
   }
-  var methods = (0, _create_methods2['default'])({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, SimpleSchema: SimpleSchema, Counts: Counts }, config);
+  var methods = (0, _create_methods2['default'])({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, Counts: Counts }, config);
   var getComponent = function getComponent(_ref2) {
     var collectionName = _ref2.collectionName;
     var type = _ref2.type;
