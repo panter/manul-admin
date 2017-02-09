@@ -14,10 +14,6 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _simplSchema = require('simpl-schema');
-
-var _simplSchema2 = _interopRequireDefault(_simplSchema);
-
 var _flat = require('flat');
 
 var _flat2 = _interopRequireDefault(_flat);
@@ -30,10 +26,27 @@ var _is_allowed = require('./is_allowed');
 
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
-exports['default'] = function (_ref, config) {
-  var Meteor = _ref.Meteor;
-  var ValidatedMethod = _ref.ValidatedMethod;
+exports['default'] = function (context, config) {
+  var Meteor = context.Meteor;
+  var ValidatedMethod = context.ValidatedMethod;
 
+  var SimpleSchema = undefined;
+  try {
+    /* eslint global-require: 0 */
+    SimpleSchema = require('simpl-schema')['default'];
+  } catch (error) {
+    // try to get from context
+    SimpleSchema = context.SimpleSchema;
+  }
+  if (!SimpleSchema) {
+    throw new Error('please provide SimpleSchema by npm or in context (version 1)');
+  }
+  var extendSimpleSchema = function extendSimpleSchema(schema, otherSchema) {
+    if (SimpleSchema.version === 2) {
+      return schema.extend(otherSchema);
+    }
+    return new SimpleSchema([schema, otherSchema]);
+  };
   var isAllowed = (0, _is_allowed2['default'])(config);
   var createFor = function createFor(collectionName) {
     var _config$collections$collectionName = config.collections[collectionName];
@@ -43,11 +56,11 @@ exports['default'] = function (_ref, config) {
     return {
       update: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.update',
-        validate: collection.simpleSchema().extend({ _id: { type: String } }).validator({ clean: true }),
-        run: function run(_ref2) {
-          var _id = _ref2._id;
+        validate: extendSimpleSchema(collection.simpleSchema(), { _id: { type: String } }).validator({ clean: true }),
+        run: function run(_ref) {
+          var _id = _ref._id;
 
-          var doc = _objectWithoutProperties(_ref2, ['_id']);
+          var doc = _objectWithoutProperties(_ref, ['_id']);
 
           // console.log('updating', collectionName, _id, doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -62,7 +75,7 @@ exports['default'] = function (_ref, config) {
       }),
       create: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.create',
-        validate: (allowInsertWithId ? collection.simpleSchema().extend({ _id: { type: String, optional: true } }) : collection.simpleSchema()).validator({ clean: true }),
+        validate: (allowInsertWithId ? extendSimpleSchema(collection.simpleSchema(), { _id: { type: String, optional: true } }) : collection.simpleSchema()).validator({ clean: true }),
         run: function run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -73,9 +86,9 @@ exports['default'] = function (_ref, config) {
       }),
       destroy: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.destroy',
-        validate: new _simplSchema2['default']({ _id: { type: String } }).validator({ clean: true }),
-        run: function run(_ref3) {
-          var _id = _ref3._id;
+        validate: new SimpleSchema({ _id: { type: String } }).validator({ clean: true }),
+        run: function run(_ref2) {
+          var _id = _ref2._id;
 
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {

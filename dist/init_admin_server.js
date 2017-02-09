@@ -20,10 +20,14 @@ var _is_allowed = require('./is_allowed');
 
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
+// SimpleSchema needs only to be passed, if its not in npm (version 2)
+
 exports['default'] = function (_ref, config) {
   var Meteor = _ref.Meteor;
   var ValidatedMethod = _ref.ValidatedMethod;
   var Counts = _ref.Counts;
+  var _ref$SimpleSchema = _ref.SimpleSchema;
+  var SimpleSchema = _ref$SimpleSchema === undefined ? null : _ref$SimpleSchema;
 
   var isAllowed = (0, _is_allowed2['default'])(config);
   var collections = config.collections;
@@ -54,7 +58,7 @@ exports['default'] = function (_ref, config) {
     _Object$keys(collections).forEach(createPublication);
   };
   createPublications();
-  (0, _create_methods2['default'])({ Meteor: Meteor, ValidatedMethod: ValidatedMethod }, config);
+  (0, _create_methods2['default'])({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, SimpleSchema: SimpleSchema }, config);
 };
 
 module.exports = exports['default'];

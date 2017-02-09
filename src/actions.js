@@ -1,8 +1,10 @@
-import _ from 'lodash';
 import Papa from 'papaparse';
+import _ from 'lodash';
 import flat from 'flat';
-import routeUtils from './utils/route_utils';
+
+import FallbackAlerts from './fallback_alerts';
 import csv from './utils/csv';
+import routeUtils from './utils/route_utils';
 
 export default {
   manulAdmin: {
@@ -16,59 +18,56 @@ export default {
       gotoRoute(routeUtils.getListRoute(collectionName).name);
     },
     update(
-      { adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } },
+      { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
       collectionName, doc,
     ) {
-      methods[collectionName].update.call(doc, (error) => {
-        if (error) {
-          showError(error);
-        } else {
-          showSuccess('Update successfull');
-          gotoRoute(routeUtils.getListRoute(collectionName).name);
-        }
-      });
+      methods[collectionName].update.call(doc,
+        Alerts.handleCallback('admin.update', { props: () => ({ collectionName, doc }) }, (error) => {
+          if (!error) {
+            gotoRoute(routeUtils.getListRoute(collectionName).name);
+          }
+        }),
+    );
     },
     create(
-      { adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } },
+      { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
       collectionName, doc,
     ) {
-      methods[collectionName].create.call(doc, (error, _id) => {
-        if (error) {
-          showError(error);
-        } else {
-          showSuccess('Create successfull');
-          gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id });
-        }
-      });
+      methods[collectionName].create.call(doc,
+        Alerts.handleCallback('admin.create', { props: () => ({ collectionName, doc }) }, (error, _id) => {
+          if (!error) {
+            gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id });
+          }
+        }),
+    );
     },
     destroy(
-      { adminContext: { methods, gotoRoute, showError = _.noop, showSuccess = _.noop } },
+      { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
       collectionName, _id,
     ) {
       /* eslint no-alert: 0*/
       const confirmed = window.confirm("Really destroy? This can't be undone");
       if (confirmed) {
-        methods[collectionName].destroy.call({ _id }, (error) => {
-          if (error) {
-            showError(error);
-          } else {
-            showSuccess('Destroy successfull');
-            gotoRoute(routeUtils.getListRoute(collectionName).name);
-          }
-        });
+        methods[collectionName].destroy.call({ _id },
+          Alerts.handleCallback('admin.destroy', { props: () => ({ collectionName, _id }) }, (error) => {
+            if (!error) {
+              gotoRoute(routeUtils.getListRoute(collectionName).name);
+            }
+          }),
+      );
       }
     },
     downloadCsv(
-      { adminContext: { methods, showError = _.noop } },
+      { adminContext: { methods }, Alerts = FallbackAlerts },
       collectionName,
     ) {
-      methods[collectionName].export.call({}, (error, { data, keys }) => {
-        if (error) {
-          showError(error);
-        } else {
-          csv.exportAsCsv({ filename: `export_${collectionName}`, data, keys });
-        }
-      });
+      methods[collectionName].export.call({},
+        Alerts.handleCallback('admin.export', { props: () => ({ collectionName }) }, (error, { data, keys }) => {
+          if (!error) {
+            csv.exportAsCsv({ filename: `export_${collectionName}`, data, keys });
+          }
+        }),
+      );
     },
     importCsv(
       { adminContext: { methods } },

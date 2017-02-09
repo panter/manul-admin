@@ -15,8 +15,7 @@ export default ({
   components, // component definition, see readme
   /* eslint no-alert: 0*/
   gotoRoute = routeName => window.alert(`please provide a gotoRoute-function in adminContext that can jump to ${routeName}`),
-  showError = error => window.alert(`an error occured: ${error.reason || error.message}`),
-  showSuccess = message => window.alert(message),
+
 
 }) => {
   const neededMeteorPackages = [Meteor, ValidatedMethod, Counts];
@@ -42,8 +41,6 @@ export default ({
     config,
     adminRoutes,
     gotoRoute,
-    showError,
-    showSuccess,
     components,
     routeUtils,
     publicationUtils,

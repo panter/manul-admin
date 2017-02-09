@@ -1,19 +1,38 @@
 
-import SimpleSchema from 'simpl-schema';
+
 import flatten from 'flat';
 import _ from 'lodash';
 import IsAllowed from './is_allowed';
 
 
-export default ({ Meteor, ValidatedMethod }, config) => {
+export default (context, config) => {
+  const { Meteor, ValidatedMethod } = context;
+  let SimpleSchema;
+  try {
+    /* eslint global-require: 0 */
+    SimpleSchema = require('simpl-schema').default;
+  } catch (error) {
+    // try to get from context
+    SimpleSchema = context.SimpleSchema;
+  }
+  if (!SimpleSchema) {
+    throw new Error('please provide SimpleSchema by npm or in context (version 1)');
+  }
+  const extendSimpleSchema = (schema, otherSchema) => {
+    if (SimpleSchema.version === 2) {
+      return schema.extend(otherSchema);
+    }
+    return new SimpleSchema([schema, otherSchema]);
+  };
   const isAllowed = IsAllowed(config);
   const createFor = (collectionName) => {
     const { collection, allowInsertWithId } = config.collections[collectionName];
     return {
       update: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.update`,
-        validate: collection.simpleSchema()
-        .extend({ _id: { type: String } })
+        validate: extendSimpleSchema(
+          collection.simpleSchema(), { _id: { type: String } },
+        )
         .validator({ clean: true }),
         run({ _id, ...doc }) {
           // console.log('updating', collectionName, _id, doc);
@@ -30,7 +49,7 @@ export default ({ Meteor, ValidatedMethod }, config) => {
       create: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.create`,
         validate: (allowInsertWithId ?
-          collection.simpleSchema().extend({ _id: { type: String, optional: true } }) :
+          extendSimpleSchema(collection.simpleSchema(), { _id: { type: String, optional: true } }) :
           collection.simpleSchema()
         ).validator({ clean: true }),
         run(doc) {

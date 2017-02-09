@@ -3,7 +3,8 @@ import publicationUtils from './utils/publication_utils';
 import createMethods from './create_methods';
 import IsAllowed from './is_allowed';
 
-export default ({ Meteor, ValidatedMethod, Counts }, config) => {
+// SimpleSchema needs only to be passed, if its not in npm (version 2)
+export default ({ Meteor, ValidatedMethod, Counts, SimpleSchema = null }, config) => {
   const isAllowed = IsAllowed(config);
   const { collections } = config;
 
@@ -29,5 +30,5 @@ export default ({ Meteor, ValidatedMethod, Counts }, config) => {
     Object.keys(collections).forEach(createPublication);
   };
   createPublications();
-  createMethods({ Meteor, ValidatedMethod }, config);
+  createMethods({ Meteor, ValidatedMethod, SimpleSchema }, config);
 };

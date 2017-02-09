@@ -10,25 +10,29 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
 var _papaparse = require('papaparse');
 
 var _papaparse2 = _interopRequireDefault(_papaparse);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var _flat = require('flat');
 
 var _flat2 = _interopRequireDefault(_flat);
 
-var _utilsRoute_utils = require('./utils/route_utils');
+var _fallback_alerts = require('./fallback_alerts');
 
-var _utilsRoute_utils2 = _interopRequireDefault(_utilsRoute_utils);
+var _fallback_alerts2 = _interopRequireDefault(_fallback_alerts);
 
 var _utilsCsv = require('./utils/csv');
 
 var _utilsCsv2 = _interopRequireDefault(_utilsCsv);
+
+var _utilsRoute_utils = require('./utils/route_utils');
+
+var _utilsRoute_utils2 = _interopRequireDefault(_utilsRoute_utils);
 
 exports['default'] = {
   manulAdmin: {
@@ -51,76 +55,66 @@ exports['default'] = {
       var _ref4$adminContext = _ref4.adminContext;
       var methods = _ref4$adminContext.methods;
       var gotoRoute = _ref4$adminContext.gotoRoute;
-      var _ref4$adminContext$showError = _ref4$adminContext.showError;
-      var showError = _ref4$adminContext$showError === undefined ? _lodash2['default'].noop : _ref4$adminContext$showError;
-      var _ref4$adminContext$showSuccess = _ref4$adminContext.showSuccess;
-      var showSuccess = _ref4$adminContext$showSuccess === undefined ? _lodash2['default'].noop : _ref4$adminContext$showSuccess;
+      var _ref4$Alerts = _ref4.Alerts;
+      var Alerts = _ref4$Alerts === undefined ? _fallback_alerts2['default'] : _ref4$Alerts;
 
-      methods[collectionName].update.call(doc, function (error) {
-        if (error) {
-          showError(error);
-        } else {
-          showSuccess('Update successfull');
+      methods[collectionName].update.call(doc, Alerts.handleCallback('admin.update', { props: function props() {
+          return { collectionName: collectionName, doc: doc };
+        } }, function (error) {
+        if (!error) {
           gotoRoute(_utilsRoute_utils2['default'].getListRoute(collectionName).name);
         }
-      });
+      }));
     },
     create: function create(_ref5, collectionName, doc) {
       var _ref5$adminContext = _ref5.adminContext;
       var methods = _ref5$adminContext.methods;
       var gotoRoute = _ref5$adminContext.gotoRoute;
-      var _ref5$adminContext$showError = _ref5$adminContext.showError;
-      var showError = _ref5$adminContext$showError === undefined ? _lodash2['default'].noop : _ref5$adminContext$showError;
-      var _ref5$adminContext$showSuccess = _ref5$adminContext.showSuccess;
-      var showSuccess = _ref5$adminContext$showSuccess === undefined ? _lodash2['default'].noop : _ref5$adminContext$showSuccess;
+      var _ref5$Alerts = _ref5.Alerts;
+      var Alerts = _ref5$Alerts === undefined ? _fallback_alerts2['default'] : _ref5$Alerts;
 
-      methods[collectionName].create.call(doc, function (error, _id) {
-        if (error) {
-          showError(error);
-        } else {
-          showSuccess('Create successfull');
+      methods[collectionName].create.call(doc, Alerts.handleCallback('admin.create', { props: function props() {
+          return { collectionName: collectionName, doc: doc };
+        } }, function (error, _id) {
+        if (!error) {
           gotoRoute(_utilsRoute_utils2['default'].getEditRoute(collectionName).name, { _id: _id });
         }
-      });
+      }));
     },
     destroy: function destroy(_ref6, collectionName, _id) {
       var _ref6$adminContext = _ref6.adminContext;
       var methods = _ref6$adminContext.methods;
       var gotoRoute = _ref6$adminContext.gotoRoute;
-      var _ref6$adminContext$showError = _ref6$adminContext.showError;
-      var showError = _ref6$adminContext$showError === undefined ? _lodash2['default'].noop : _ref6$adminContext$showError;
-      var _ref6$adminContext$showSuccess = _ref6$adminContext.showSuccess;
-      var showSuccess = _ref6$adminContext$showSuccess === undefined ? _lodash2['default'].noop : _ref6$adminContext$showSuccess;
+      var _ref6$Alerts = _ref6.Alerts;
+      var Alerts = _ref6$Alerts === undefined ? _fallback_alerts2['default'] : _ref6$Alerts;
 
       /* eslint no-alert: 0*/
       var confirmed = window.confirm("Really destroy? This can't be undone");
       if (confirmed) {
-        methods[collectionName].destroy.call({ _id: _id }, function (error) {
-          if (error) {
-            showError(error);
-          } else {
-            showSuccess('Destroy successfull');
+        methods[collectionName].destroy.call({ _id: _id }, Alerts.handleCallback('admin.destroy', { props: function props() {
+            return { collectionName: collectionName, _id: _id };
+          } }, function (error) {
+          if (!error) {
             gotoRoute(_utilsRoute_utils2['default'].getListRoute(collectionName).name);
           }
-        });
+        }));
       }
     },
     downloadCsv: function downloadCsv(_ref7, collectionName) {
-      var _ref7$adminContext = _ref7.adminContext;
-      var methods = _ref7$adminContext.methods;
-      var _ref7$adminContext$showError = _ref7$adminContext.showError;
-      var showError = _ref7$adminContext$showError === undefined ? _lodash2['default'].noop : _ref7$adminContext$showError;
+      var methods = _ref7.adminContext.methods;
+      var _ref7$Alerts = _ref7.Alerts;
+      var Alerts = _ref7$Alerts === undefined ? _fallback_alerts2['default'] : _ref7$Alerts;
 
-      methods[collectionName]['export'].call({}, function (error, _ref8) {
+      methods[collectionName]['export'].call({}, Alerts.handleCallback('admin.export', { props: function props() {
+          return { collectionName: collectionName };
+        } }, function (error, _ref8) {
         var data = _ref8.data;
         var keys = _ref8.keys;
 
-        if (error) {
-          showError(error);
-        } else {
+        if (!error) {
           _utilsCsv2['default'].exportAsCsv({ filename: 'export_' + collectionName, data: data, keys: keys });
         }
-      });
+      }));
     },
     importCsv: function importCsv(_ref9, _ref10) {
       var methods = _ref9.adminContext.methods;

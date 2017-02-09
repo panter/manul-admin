@@ -39,14 +39,6 @@ exports['default'] = function (_ref) {
   gotoRoute = _ref$gotoRoute === undefined ? function (routeName) {
     return window.alert('please provide a gotoRoute-function in adminContext that can jump to ' + routeName);
   } : _ref$gotoRoute;
-  var _ref$showError = _ref.showError;
-  var showError = _ref$showError === undefined ? function (error) {
-    return window.alert('an error occured: ' + (error.reason || error.message));
-  } : _ref$showError;
-  var _ref$showSuccess = _ref.showSuccess;
-  var showSuccess = _ref$showSuccess === undefined ? function (message) {
-    return window.alert(message);
-  } : _ref$showSuccess;
 
   var neededMeteorPackages = [Meteor, ValidatedMethod, Counts];
   if (_lodash2['default'].some(neededMeteorPackages, _lodash2['default'].isNil)) {
@@ -74,8 +66,6 @@ exports['default'] = function (_ref) {
     config: config,
     adminRoutes: adminRoutes,
     gotoRoute: gotoRoute,
-    showError: showError,
-    showSuccess: showSuccess,
     components: components,
     routeUtils: _utilsRoute_utils2['default'],
     publicationUtils: _utilsPublication_utils2['default']
