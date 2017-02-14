@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import Papa from 'papaparse';
-
+import { saveAs } from 'file-saver';
 
 /**
 create a csv-file in the browser from the given data
@@ -21,16 +21,7 @@ const exportAsCsv = ({ filename, keys, columnTitles, data, useBom = false, parse
   const dataPadded = data.map(entry => (_.values({ ...defaults, ...entry })));
 
   const csv = Papa.unparse({ fields: columns, data: dataPadded }, parseOptions);
-
-  const blob = useBom ?
-    new window.Blob([Buffer.concat([new Buffer('\ufeff'), new Buffer(csv)])]) :
-    new window.Blob([csv]);
-  const a = window.document.createElement('a');
-  a.href = window.URL.createObjectURL(blob, { type: 'text/plain' });
-  a.download = `${filename}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  saveAs(new window.Blob([csv], { type: 'text/plain;charset=utf-8' }), `${filename}.csv`, useBom);
 };
 
 export default { exportAsCsv };
