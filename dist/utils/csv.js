@@ -16,6 +16,8 @@ var _papaparse = require('papaparse');
 
 var _papaparse2 = _interopRequireDefault(_papaparse);
 
+var _fileSaver = require('file-saver');
+
 /**
 create a csv-file in the browser from the given data
 
@@ -48,14 +50,7 @@ var exportAsCsv = function exportAsCsv(_ref) {
   });
 
   var csv = _papaparse2['default'].unparse({ fields: columns, data: dataPadded }, parseOptions);
-
-  var blob = useBom ? new window.Blob([Buffer.concat([new Buffer('﻿'), new Buffer(csv)])]) : new window.Blob([csv]);
-  var a = window.document.createElement('a');
-  a.href = window.URL.createObjectURL(blob, { type: 'text/plain' });
-  a.download = filename + '.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  (0, _fileSaver.saveAs)(new window.Blob([csv], { type: 'text/plain;charset=utf-8' }), filename + '.csv', useBom);
 };
 
 exports['default'] = { exportAsCsv: exportAsCsv };

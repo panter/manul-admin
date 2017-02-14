@@ -1,7 +1,7 @@
 {
   "name": "@panter/manul-admin",
   "description": "",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "Marco Wettstein",
     "email": "maw@panter.ch",
@@ -42,6 +42,7 @@
   },
   "main": "./dist/manul-admin.js",
   "dependencies": {
+    "file-saver": "^1.3.3",
     "flat": "^2.0.1",
     "papaparse": "^4.1.2"
   }
