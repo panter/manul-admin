@@ -1,20 +1,20 @@
 
-import SimpleSchema from 'simpl-schema';
+
 import flatten from 'flat';
 import _ from 'lodash';
 import IsAllowed from './is_allowed';
 
 
-export default ({ Meteor, ValidatedMethod }, config) => {
+export default ({ Meteor, ValidatedMethod, SimpleSchema }, config) => {
   const isAllowed = IsAllowed(config);
   const createFor = (collectionName) => {
     const { collection, allowInsertWithId } = config.collections[collectionName];
     return {
       update: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.update`,
-        validate: collection.simpleSchema()
-        .extend({ _id: { type: String } })
-        .validator({ clean: true }),
+        validate: new SimpleSchema(
+          [collection.simpleSchema(), { _id: { type: String } }],
+        ).validator({ clean: true }),
         run({ _id, ...doc }) {
           // console.log('updating', collectionName, _id, doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -29,10 +29,10 @@ export default ({ Meteor, ValidatedMethod }, config) => {
       }),
       create: new ValidatedMethod({
         name: `manulAdmin.${collectionName}.create`,
-        validate: (allowInsertWithId ?
-          collection.simpleSchema().extend({ _id: { type: String, optional: true } }) :
-          collection.simpleSchema()
-        ).validator({ clean: true }),
+        validate: collection.simpleSchema([
+          collection.simpleSchema(),
+          allowInsertWithId && { _id: { type: String, optinal: true } },
+        ]).validator({ clean: true }),
         run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {

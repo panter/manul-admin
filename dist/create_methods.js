@@ -14,10 +14,6 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _simplSchema = require('simpl-schema');
-
-var _simplSchema2 = _interopRequireDefault(_simplSchema);
-
 var _flat = require('flat');
 
 var _flat2 = _interopRequireDefault(_flat);
@@ -33,6 +29,7 @@ var _is_allowed2 = _interopRequireDefault(_is_allowed);
 exports['default'] = function (_ref, config) {
   var Meteor = _ref.Meteor;
   var ValidatedMethod = _ref.ValidatedMethod;
+  var SimpleSchema = _ref.SimpleSchema;
 
   var isAllowed = (0, _is_allowed2['default'])(config);
   var createFor = function createFor(collectionName) {
@@ -43,7 +40,7 @@ exports['default'] = function (_ref, config) {
     return {
       update: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.update',
-        validate: collection.simpleSchema().extend({ _id: { type: String } }).validator({ clean: true }),
+        validate: new SimpleSchema([collection.simpleSchema(), { _id: { type: String } }]).validator({ clean: true }),
         run: function run(_ref2) {
           var _id = _ref2._id;
 
@@ -62,7 +59,7 @@ exports['default'] = function (_ref, config) {
       }),
       create: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.create',
-        validate: (allowInsertWithId ? collection.simpleSchema().extend({ _id: { type: String, optional: true } }) : collection.simpleSchema()).validator({ clean: true }),
+        validate: collection.simpleSchema([collection.simpleSchema(), allowInsertWithId && { _id: { type: String, optinal: true } }]).validator({ clean: true }),
         run: function run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -73,7 +70,7 @@ exports['default'] = function (_ref, config) {
       }),
       destroy: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.destroy',
-        validate: new _simplSchema2['default']({ _id: { type: String } }).validator({ clean: true }),
+        validate: new SimpleSchema({ _id: { type: String } }).validator({ clean: true }),
         run: function run(_ref3) {
           var _id = _ref3._id;
 

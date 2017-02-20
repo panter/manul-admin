@@ -9,6 +9,7 @@ export default ({
   Meteor,
   ValidatedMethod,
   Counts,
+  SimpleSchema,
 
   config,  // admin config
   adminRoutes, // FlowRouter, manulRouter compatible routes
@@ -23,7 +24,7 @@ export default ({
   if (_.some(neededMeteorPackages, _.isNil)) {
     throw new Error('please provide all of the following meteor-packages', neededMeteorPackages);
   }
-  const methods = createMethods({ Meteor, ValidatedMethod, Counts }, config);
+  const methods = createMethods({ Meteor, ValidatedMethod, SimpleSchema, Counts }, config);
   const getComponent = ({ collectionName, type }) => {
     let Component = null;
     if (_.isFunction(components[type])) {
