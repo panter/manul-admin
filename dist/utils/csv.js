@@ -37,12 +37,14 @@ var exportAsCsv = function exportAsCsv(_ref) {
   var useBom = _ref$useBom === undefined ? false : _ref$useBom;
   var _ref$parseOptions = _ref.parseOptions;
   var parseOptions = _ref$parseOptions === undefined ? { delimiter: ';' } : _ref$parseOptions;
+  var _ref$nullValue = _ref.nullValue;
+  var nullValue = _ref$nullValue === undefined ? 'NULL' : _ref$nullValue;
 
   // we encode missing values with "NULL"
   // because CSV has no concept of null/missing values
   // good read: http://www.garretwilson.com/blog/2009/04/23/csvnull.xhtml
   var defaults = _lodash2['default'].zipObject(keys, keys.map(function () {
-    return 'NULL';
+    return nullValue;
   }));
   var columns = columnTitles || keys;
   var dataPadded = data.map(function (entry) {
