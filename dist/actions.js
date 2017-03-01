@@ -100,7 +100,7 @@ exports['default'] = {
         }));
       }
     },
-    downloadCsv: function downloadCsv(_ref7, collectionName) {
+    downloadCsv: function downloadCsv(_ref7, collectionName, options) {
       var methods = _ref7.adminContext.methods;
       var _ref7$Alerts = _ref7.Alerts;
       var Alerts = _ref7$Alerts === undefined ? _fallback_alerts2['default'] : _ref7$Alerts;
@@ -112,7 +112,7 @@ exports['default'] = {
         var keys = _ref8.keys;
 
         if (!error) {
-          _utilsCsv2['default'].exportAsCsv({ filename: 'export_' + collectionName, data: data, keys: keys });
+          _utilsCsv2['default'].exportAsCsv(_extends({ filename: 'export_' + collectionName, data: data, keys: keys }, options));
         }
       }));
     },
