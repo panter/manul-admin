@@ -59,12 +59,12 @@ export default {
     },
     downloadCsv(
       { adminContext: { methods }, Alerts = FallbackAlerts },
-      collectionName,
+      collectionName, options,
     ) {
       methods[collectionName].export.call({},
         Alerts.handleCallback('admin.export', { props: () => ({ collectionName }) }, (error, { data, keys }) => {
           if (!error) {
-            csv.exportAsCsv({ filename: `export_${collectionName}`, data, keys });
+            csv.exportAsCsv({ filename: `export_${collectionName}`, data, keys, ...options });
           }
         }),
       );
