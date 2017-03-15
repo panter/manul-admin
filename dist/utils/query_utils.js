@@ -42,7 +42,7 @@ var removeEmptyObjects = (0, _lodashFpOmitBy2['default'])(function (o) {
 
 /* eslint import/prefer-default-export: 0 */
 var filterToQuery = function filterToQuery(filter) {
-  console.log('got filter', filter);
+  // console.log('got filter', filter);
   // remove empty objects on filter
 
   if (_lodash2['default'].isEmpty(filter)) {
