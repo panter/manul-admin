@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = require('babel-runtime/helpers/extends')['default'];
+
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -7,19 +9,11 @@ Object.defineProperty(exports, '__esModule', {
 var _mantraCore = require('mantra-core');
 
 var depsMapper = function depsMapper(_context, actions) {
-  return {
+  return _extends({
     context: function context() {
       return _context;
-    },
-    create: actions.manulAdmin.create,
-    update: actions.manulAdmin.update,
-    insert: actions.manulAdmin.insert,
-    destroy: actions.manulAdmin.destroy,
-    gotoCreate: actions.manulAdmin.gotoCreate,
-    gotoEdit: actions.manulAdmin.gotoEdit,
-    gotoUpdate: actions.manulAdmin.gotoUpdate,
-    gotoList: actions.manulAdmin.gotoList
-  };
+    }
+  }, actions.manulAdmin);
 };
 
 exports.depsMapper = depsMapper;

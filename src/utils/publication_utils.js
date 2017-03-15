@@ -1,6 +1,7 @@
 const getEditPublicationName = name =>
    `admin.${name}.edit`
 ;
+
 const getListPublicationName = name =>
    `admin.${name}.list`
 ;
@@ -8,7 +9,6 @@ const getListPublicationName = name =>
 const getMatchingResultsCountName = name =>
    `admin.${name}.counts`
 ;
-
 
 const getPublications = name => ({
   list: getListPublicationName(name),
