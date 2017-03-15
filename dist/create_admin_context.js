@@ -28,6 +28,7 @@ exports['default'] = function (_ref) {
   Meteor = _ref.Meteor;
   var ValidatedMethod = _ref.ValidatedMethod;
   var Counts = _ref.Counts;
+  var LocalState = _ref.LocalState;
   var config = _ref.config;
   var // admin config
   adminRoutes = _ref.adminRoutes;
@@ -40,9 +41,9 @@ exports['default'] = function (_ref) {
     return window.alert('please provide a gotoRoute-function in adminContext that can jump to ' + routeName);
   } : _ref$gotoRoute;
 
-  var neededMeteorPackages = [Meteor, ValidatedMethod, Counts];
+  var neededMeteorPackages = { Meteor: Meteor, ValidatedMethod: ValidatedMethod, Counts: Counts, LocalState: LocalState };
   if (_lodash2['default'].some(neededMeteorPackages, _lodash2['default'].isNil)) {
-    throw new Error('please provide all of the following meteor-packages', neededMeteorPackages);
+    throw new Error('please provide all of the following meteor-packages: ' + _lodash2['default'].keys(neededMeteorPackages).join(', '));
   }
   var methods = (0, _create_methods2['default'])({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, Counts: Counts }, config);
   var getComponent = function getComponent(_ref2) {
@@ -61,6 +62,9 @@ exports['default'] = function (_ref) {
     return Component;
   };
   return {
+    Meteor: Meteor,
+    LocalState: LocalState,
+    Counts: Counts,
     methods: methods,
     getComponent: getComponent,
     config: config,

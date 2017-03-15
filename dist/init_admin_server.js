@@ -20,6 +20,8 @@ var _is_allowed = require('./is_allowed');
 
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
+var _utilsQuery_utils = require('./utils/query_utils');
+
 // SimpleSchema needs only to be passed, if its not in npm (version 2)
 
 exports['default'] = function (_ref, config) {
@@ -41,11 +43,12 @@ exports['default'] = function (_ref, config) {
     var collection = collections[name].collection;
 
     /* eslint meteor/audit-argument-checks: 0*/
-    Meteor.publish(list, function publishList(query, options) {
+    Meteor.publish(list, function publishList(filter) {
       if (isAllowed(name, this.userId)) {
-        // can't reuse "users" cursor
-        Counts.publish(this, counts, collection.find(query, options));
-        return collection.find(query, options);
+        var query = (0, _utilsQuery_utils.filterToQuery)(filter);
+        // counts is always without limiting
+        Counts.publish(this, counts, collection.find(query));
+        return collection.find(query);
       }
     });
     Meteor.publish(edit, function publishEdit(_id) {
