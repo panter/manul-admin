@@ -1,9 +1,21 @@
+
 import { composeWithTracker } from 'mantra-core';
-import publicationUtils from '../utils/publication_utils';
+import { filterToQuery, gridOptionsToQueryOptions } from '../utils/query_utils';
+import { stateListFilter, stateListSort, statePageProperties } from '../utils/local_state_utils';
+
 
 export const composer = () => ({ context, publications, collection, collectionName }, onData) => {
-  // currently not implemented, use MeteorGriddle
-  onData(null, { });
+  const { Meteor, LocalState } = context();
+  const filter = LocalState.get(stateListFilter(collectionName));
+  const sortProperties = LocalState.get(stateListSort(collectionName));
+  const pageProperties = LocalState.get(statePageProperties(collectionName));
+  Meteor.subscribe(publications.list, filter, { sortProperties, pageProperties });
+  const query = filterToQuery(filter);
+  const docs = collection.find(
+    query,
+    gridOptionsToQueryOptions({ sortProperties, pageProperties }),
+  ).fetch();
+  onData(null, { docs, filter, sortProperties, pageProperties, docsCount });
 };
 
 

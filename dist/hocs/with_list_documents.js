@@ -1,16 +1,14 @@
 'use strict';
 
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
 var _mantraCore = require('mantra-core');
 
-var _utilsPublication_utils = require('../utils/publication_utils');
+var _utilsQuery_utils = require('../utils/query_utils');
 
-var _utilsPublication_utils2 = _interopRequireDefault(_utilsPublication_utils);
+var _utilsLocal_state_utils = require('../utils/local_state_utils');
 
 var composer = function composer() {
   return function (_ref, onData) {
@@ -19,8 +17,18 @@ var composer = function composer() {
     var collection = _ref.collection;
     var collectionName = _ref.collectionName;
 
-    // currently not implemented, use MeteorGriddle
-    onData(null, {});
+    var _context = context();
+
+    var Meteor = _context.Meteor;
+    var LocalState = _context.LocalState;
+
+    var filter = LocalState.get((0, _utilsLocal_state_utils.stateListFilter)(collectionName));
+    var sortProperties = LocalState.get((0, _utilsLocal_state_utils.stateListSort)(collectionName));
+    var pageProperties = LocalState.get((0, _utilsLocal_state_utils.statePageProperties)(collectionName));
+    Meteor.subscribe(publications.list, filter, { sortProperties: sortProperties, pageProperties: pageProperties });
+    var query = (0, _utilsQuery_utils.filterToQuery)(filter);
+    var docs = collection.find(query, (0, _utilsQuery_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties })).fetch();
+    onData(null, { docs: docs, filter: filter, sortProperties: sortProperties, pageProperties: pageProperties, docsCount: docsCount });
   };
 };
 

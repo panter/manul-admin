@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 var getEditPublicationName = function getEditPublicationName(name) {
    return "admin." + name + ".edit";
 };
+
 var getListPublicationName = function getListPublicationName(name) {
    return "admin." + name + ".list";
 };

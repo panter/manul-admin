@@ -32,12 +32,14 @@
     "eslint-plugin-meteor": "^4.0.1",
     "eslint-plugin-react": "^6.8.0",
     "glob": "^5.0.15",
-    "tape": "^4.2.2"
+    "tape": "^4.2.2",
+    "watch": "^1.0.2"
   },
   "scripts": {
     "prepublish": "npm run compile",
     "test": "babel-node --stage 1 test/harness.js test/**/*.js",
     "compile": "npm run lint && babel src -s -d dist",
+    "compile:watch": "watch 'npm run compile' src",
     "lint": "eslint src/**.js"
   },
   "main": "./dist/manul-admin.js",

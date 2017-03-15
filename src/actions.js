@@ -5,6 +5,7 @@ import flat from 'flat';
 import FallbackAlerts from './fallback_alerts';
 import csv from './utils/csv';
 import routeUtils from './utils/route_utils';
+import { stateListFilter, stateListSort, statePageProperties } from './utils/local_state_utils';
 
 export default {
   manulAdmin: {
@@ -16,6 +17,32 @@ export default {
     },
     gotoList({ adminContext: { gotoRoute } }, collectionName) {
       gotoRoute(routeUtils.getListRoute(collectionName).name);
+    },
+    // sortProperty is according to react-griddle
+    listSortToggle({ LocalState }, collectionName, newSortProperty) {
+      const localStateSortProperties = stateListSort(collectionName);
+      const sortProperties = LocalState.get(localStateSortProperties) || [];
+      const oldProperty = _.find(sortProperties, s => s.id === newSortProperty.id);
+      let newSortProps = [];
+
+      if (!oldProperty) {
+        newSortProps = [{ ...newSortProperty, sortAscending: true }, ...sortProperties];
+      } else {
+        newSortProps = _.without(sortProperties, oldProperty);
+        if (oldProperty.sortAscending) {
+          newSortProps = [{ ...newSortProperty, sortAscending: false }, ...newSortProps];
+        }
+      }
+      LocalState.set(localStateSortProperties, newSortProps);
+    },
+    listSetSort({ LocalState }, collectionName, sortProperties) {
+      LocalState.set(stateListSort(collectionName), sortProperties);
+    },
+    listSetFilter({ LocalState }, collectionName, filter) {
+      LocalState.set(stateListFilter(collectionName), filter);
+    },
+    listSetPageProperties({ LocalState }, collectionName, pageProperties) {
+      LocalState.set(statePageProperties(collectionName), pageProperties);
     },
     update(
       { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },

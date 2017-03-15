@@ -2,6 +2,8 @@
 
 var _extends = require('babel-runtime/helpers/extends')['default'];
 
+var _toConsumableArray = require('babel-runtime/helpers/to-consumable-array')['default'];
+
 var _Set = require('babel-runtime/core-js/set')['default'];
 
 var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
@@ -34,6 +36,8 @@ var _utilsRoute_utils = require('./utils/route_utils');
 
 var _utilsRoute_utils2 = _interopRequireDefault(_utilsRoute_utils);
 
+var _utilsLocal_state_utils = require('./utils/local_state_utils');
+
 exports['default'] = {
   manulAdmin: {
     gotoCreate: function gotoCreate(_ref, collectionName) {
@@ -51,12 +55,48 @@ exports['default'] = {
 
       gotoRoute(_utilsRoute_utils2['default'].getListRoute(collectionName).name);
     },
-    update: function update(_ref4, collectionName, doc) {
-      var _ref4$adminContext = _ref4.adminContext;
-      var methods = _ref4$adminContext.methods;
-      var gotoRoute = _ref4$adminContext.gotoRoute;
-      var _ref4$Alerts = _ref4.Alerts;
-      var Alerts = _ref4$Alerts === undefined ? _fallback_alerts2['default'] : _ref4$Alerts;
+    // sortProperty is according to react-griddle
+    listSortToggle: function listSortToggle(_ref4, collectionName, newSortProperty) {
+      var LocalState = _ref4.LocalState;
+
+      var localStateSortProperties = (0, _utilsLocal_state_utils.stateListSort)(collectionName);
+      var sortProperties = LocalState.get(localStateSortProperties) || [];
+      var oldProperty = _lodash2['default'].find(sortProperties, function (s) {
+        return s.id === newSortProperty.id;
+      });
+      var newSortProps = [];
+
+      if (!oldProperty) {
+        newSortProps = [_extends({}, newSortProperty, { sortAscending: true })].concat(_toConsumableArray(sortProperties));
+      } else {
+        newSortProps = _lodash2['default'].without(sortProperties, oldProperty);
+        if (oldProperty.sortAscending) {
+          newSortProps = [_extends({}, newSortProperty, { sortAscending: false })].concat(_toConsumableArray(newSortProps));
+        }
+      }
+      LocalState.set(localStateSortProperties, newSortProps);
+    },
+    listSetSort: function listSetSort(_ref5, collectionName, sortProperties) {
+      var LocalState = _ref5.LocalState;
+
+      LocalState.set((0, _utilsLocal_state_utils.stateListSort)(collectionName), sortProperties);
+    },
+    listSetFilter: function listSetFilter(_ref6, collectionName, filter) {
+      var LocalState = _ref6.LocalState;
+
+      LocalState.set((0, _utilsLocal_state_utils.stateListFilter)(collectionName), filter);
+    },
+    listSetPageProperties: function listSetPageProperties(_ref7, collectionName, pageProperties) {
+      var LocalState = _ref7.LocalState;
+
+      LocalState.set((0, _utilsLocal_state_utils.statePageProperties)(collectionName), pageProperties);
+    },
+    update: function update(_ref8, collectionName, doc) {
+      var _ref8$adminContext = _ref8.adminContext;
+      var methods = _ref8$adminContext.methods;
+      var gotoRoute = _ref8$adminContext.gotoRoute;
+      var _ref8$Alerts = _ref8.Alerts;
+      var Alerts = _ref8$Alerts === undefined ? _fallback_alerts2['default'] : _ref8$Alerts;
 
       methods[collectionName].update.call(doc, Alerts.handleCallback('admin.update', { props: function props() {
           return { collectionName: collectionName, doc: doc };
@@ -66,12 +106,12 @@ exports['default'] = {
         }
       }));
     },
-    create: function create(_ref5, collectionName, doc) {
-      var _ref5$adminContext = _ref5.adminContext;
-      var methods = _ref5$adminContext.methods;
-      var gotoRoute = _ref5$adminContext.gotoRoute;
-      var _ref5$Alerts = _ref5.Alerts;
-      var Alerts = _ref5$Alerts === undefined ? _fallback_alerts2['default'] : _ref5$Alerts;
+    create: function create(_ref9, collectionName, doc) {
+      var _ref9$adminContext = _ref9.adminContext;
+      var methods = _ref9$adminContext.methods;
+      var gotoRoute = _ref9$adminContext.gotoRoute;
+      var _ref9$Alerts = _ref9.Alerts;
+      var Alerts = _ref9$Alerts === undefined ? _fallback_alerts2['default'] : _ref9$Alerts;
 
       methods[collectionName].create.call(doc, Alerts.handleCallback('admin.create', { props: function props() {
           return { collectionName: collectionName, doc: doc };
@@ -81,12 +121,12 @@ exports['default'] = {
         }
       }));
     },
-    destroy: function destroy(_ref6, collectionName, _id) {
-      var _ref6$adminContext = _ref6.adminContext;
-      var methods = _ref6$adminContext.methods;
-      var gotoRoute = _ref6$adminContext.gotoRoute;
-      var _ref6$Alerts = _ref6.Alerts;
-      var Alerts = _ref6$Alerts === undefined ? _fallback_alerts2['default'] : _ref6$Alerts;
+    destroy: function destroy(_ref10, collectionName, _id) {
+      var _ref10$adminContext = _ref10.adminContext;
+      var methods = _ref10$adminContext.methods;
+      var gotoRoute = _ref10$adminContext.gotoRoute;
+      var _ref10$Alerts = _ref10.Alerts;
+      var Alerts = _ref10$Alerts === undefined ? _fallback_alerts2['default'] : _ref10$Alerts;
 
       /* eslint no-alert: 0*/
       var confirmed = window.confirm("Really destroy? This can't be undone");
@@ -100,40 +140,40 @@ exports['default'] = {
         }));
       }
     },
-    downloadCsv: function downloadCsv(_ref7, collectionName, options) {
-      var methods = _ref7.adminContext.methods;
-      var _ref7$Alerts = _ref7.Alerts;
-      var Alerts = _ref7$Alerts === undefined ? _fallback_alerts2['default'] : _ref7$Alerts;
+    downloadCsv: function downloadCsv(_ref11, collectionName, options) {
+      var methods = _ref11.adminContext.methods;
+      var _ref11$Alerts = _ref11.Alerts;
+      var Alerts = _ref11$Alerts === undefined ? _fallback_alerts2['default'] : _ref11$Alerts;
 
       methods[collectionName]['export'].call({}, Alerts.handleCallback('admin.export', { props: function props() {
           return { collectionName: collectionName };
-        } }, function (error, _ref8) {
-        var data = _ref8.data;
-        var keys = _ref8.keys;
+        } }, function (error, _ref12) {
+        var data = _ref12.data;
+        var keys = _ref12.keys;
 
         if (!error) {
           _utilsCsv2['default'].exportAsCsv(_extends({ filename: 'export_' + collectionName, data: data, keys: keys }, options));
         }
       }));
     },
-    importCsv: function importCsv(_ref9, _ref10) {
-      var methods = _ref9.adminContext.methods;
-      var collectionName = _ref10.collectionName;
-      var file = _ref10.file;
-      var _ref10$onInsert = _ref10.onInsert;
-      var onInsert = _ref10$onInsert === undefined ? _lodash2['default'].noop : _ref10$onInsert;
-      var _ref10$onUpdate = _ref10.onUpdate;
-      var onUpdate = _ref10$onUpdate === undefined ? _lodash2['default'].noop : _ref10$onUpdate;
-      var _ref10$onComplete = _ref10.onComplete;
-      var onComplete = _ref10$onComplete === undefined ? _lodash2['default'].noop : _ref10$onComplete;
+    importCsv: function importCsv(_ref13, _ref14) {
+      var methods = _ref13.adminContext.methods;
+      var collectionName = _ref14.collectionName;
+      var file = _ref14.file;
+      var _ref14$onInsert = _ref14.onInsert;
+      var onInsert = _ref14$onInsert === undefined ? _lodash2['default'].noop : _ref14$onInsert;
+      var _ref14$onUpdate = _ref14.onUpdate;
+      var onUpdate = _ref14$onUpdate === undefined ? _lodash2['default'].noop : _ref14$onUpdate;
+      var _ref14$onComplete = _ref14.onComplete;
+      var onComplete = _ref14$onComplete === undefined ? _lodash2['default'].noop : _ref14$onComplete;
 
       var counter = -1;
       var imported = new _Set();
       _papaparse2['default'].parse(file, {
         header: true,
         dynamicTyping: true,
-        complete: function complete(_ref11) {
-          var data = _ref11.data;
+        complete: function complete(_ref15) {
+          var data = _ref15.data;
 
           data.forEach(function (entryUncleaned) {
             counter += 1;
