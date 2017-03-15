@@ -19,16 +19,19 @@ var composer = function composer() {
 
     var _context = context();
 
-    var Meteor = _context.Meteor;
-    var LocalState = _context.LocalState;
+    var _context$adminContext = _context.adminContext;
+    var Meteor = _context$adminContext.Meteor;
+    var LocalState = _context$adminContext.LocalState;
+    var Counts = _context$adminContext.Counts;
 
     var filter = LocalState.get((0, _utilsLocal_state_utils.stateListFilter)(collectionName));
     var sortProperties = LocalState.get((0, _utilsLocal_state_utils.stateListSort)(collectionName));
     var pageProperties = LocalState.get((0, _utilsLocal_state_utils.statePageProperties)(collectionName));
-    Meteor.subscribe(publications.list, filter, { sortProperties: sortProperties, pageProperties: pageProperties });
+    var docsLoaded = Meteor.subscribe(publications.list, filter).ready();
     var query = (0, _utilsQuery_utils.filterToQuery)(filter);
     var docs = collection.find(query, (0, _utilsQuery_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties })).fetch();
-    onData(null, { docs: docs, filter: filter, sortProperties: sortProperties, pageProperties: pageProperties, docsCount: docsCount });
+    var recordCount = Counts.get(publications.counts);
+    onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });
   };
 };
 

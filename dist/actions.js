@@ -91,12 +91,30 @@ exports['default'] = {
 
       LocalState.set((0, _utilsLocal_state_utils.statePageProperties)(collectionName), pageProperties);
     },
-    update: function update(_ref8, collectionName, doc) {
-      var _ref8$adminContext = _ref8.adminContext;
-      var methods = _ref8$adminContext.methods;
-      var gotoRoute = _ref8$adminContext.gotoRoute;
-      var _ref8$Alerts = _ref8.Alerts;
-      var Alerts = _ref8$Alerts === undefined ? _fallback_alerts2['default'] : _ref8$Alerts;
+    listGotoPage: function listGotoPage(_ref8, collectionName, currentPage) {
+      var LocalState = _ref8.LocalState;
+
+      var pageProperties = LocalState.get((0, _utilsLocal_state_utils.statePageProperties)(collectionName));
+      LocalState.set((0, _utilsLocal_state_utils.statePageProperties)(collectionName), _extends({}, pageProperties, { currentPage: currentPage }));
+    },
+    listGotoNextPage: function listGotoNextPage(_ref9, collectionName) {
+      var LocalState = _ref9.LocalState;
+
+      var pageProperties = LocalState.get((0, _utilsLocal_state_utils.statePageProperties)(collectionName));
+      LocalState.set((0, _utilsLocal_state_utils.statePageProperties)(collectionName), _extends({}, pageProperties, { currentPage: pageProperties.currentPage + 1 }));
+    },
+    listGotoPreviousPage: function listGotoPreviousPage(_ref10, collectionName) {
+      var LocalState = _ref10.LocalState;
+
+      var pageProperties = LocalState.get((0, _utilsLocal_state_utils.statePageProperties)(collectionName));
+      LocalState.set((0, _utilsLocal_state_utils.statePageProperties)(collectionName), _extends({}, pageProperties, { currentPage: pageProperties.currentPage - 1 }));
+    },
+    update: function update(_ref11, collectionName, doc) {
+      var _ref11$adminContext = _ref11.adminContext;
+      var methods = _ref11$adminContext.methods;
+      var gotoRoute = _ref11$adminContext.gotoRoute;
+      var _ref11$Alerts = _ref11.Alerts;
+      var Alerts = _ref11$Alerts === undefined ? _fallback_alerts2['default'] : _ref11$Alerts;
 
       methods[collectionName].update.call(doc, Alerts.handleCallback('admin.update', { props: function props() {
           return { collectionName: collectionName, doc: doc };
@@ -106,12 +124,12 @@ exports['default'] = {
         }
       }));
     },
-    create: function create(_ref9, collectionName, doc) {
-      var _ref9$adminContext = _ref9.adminContext;
-      var methods = _ref9$adminContext.methods;
-      var gotoRoute = _ref9$adminContext.gotoRoute;
-      var _ref9$Alerts = _ref9.Alerts;
-      var Alerts = _ref9$Alerts === undefined ? _fallback_alerts2['default'] : _ref9$Alerts;
+    create: function create(_ref12, collectionName, doc) {
+      var _ref12$adminContext = _ref12.adminContext;
+      var methods = _ref12$adminContext.methods;
+      var gotoRoute = _ref12$adminContext.gotoRoute;
+      var _ref12$Alerts = _ref12.Alerts;
+      var Alerts = _ref12$Alerts === undefined ? _fallback_alerts2['default'] : _ref12$Alerts;
 
       methods[collectionName].create.call(doc, Alerts.handleCallback('admin.create', { props: function props() {
           return { collectionName: collectionName, doc: doc };
@@ -121,12 +139,12 @@ exports['default'] = {
         }
       }));
     },
-    destroy: function destroy(_ref10, collectionName, _id) {
-      var _ref10$adminContext = _ref10.adminContext;
-      var methods = _ref10$adminContext.methods;
-      var gotoRoute = _ref10$adminContext.gotoRoute;
-      var _ref10$Alerts = _ref10.Alerts;
-      var Alerts = _ref10$Alerts === undefined ? _fallback_alerts2['default'] : _ref10$Alerts;
+    destroy: function destroy(_ref13, collectionName, _id) {
+      var _ref13$adminContext = _ref13.adminContext;
+      var methods = _ref13$adminContext.methods;
+      var gotoRoute = _ref13$adminContext.gotoRoute;
+      var _ref13$Alerts = _ref13.Alerts;
+      var Alerts = _ref13$Alerts === undefined ? _fallback_alerts2['default'] : _ref13$Alerts;
 
       /* eslint no-alert: 0*/
       var confirmed = window.confirm("Really destroy? This can't be undone");
@@ -140,40 +158,40 @@ exports['default'] = {
         }));
       }
     },
-    downloadCsv: function downloadCsv(_ref11, collectionName, options) {
-      var methods = _ref11.adminContext.methods;
-      var _ref11$Alerts = _ref11.Alerts;
-      var Alerts = _ref11$Alerts === undefined ? _fallback_alerts2['default'] : _ref11$Alerts;
+    downloadCsv: function downloadCsv(_ref14, collectionName, options) {
+      var methods = _ref14.adminContext.methods;
+      var _ref14$Alerts = _ref14.Alerts;
+      var Alerts = _ref14$Alerts === undefined ? _fallback_alerts2['default'] : _ref14$Alerts;
 
       methods[collectionName]['export'].call({}, Alerts.handleCallback('admin.export', { props: function props() {
           return { collectionName: collectionName };
-        } }, function (error, _ref12) {
-        var data = _ref12.data;
-        var keys = _ref12.keys;
+        } }, function (error, _ref15) {
+        var data = _ref15.data;
+        var keys = _ref15.keys;
 
         if (!error) {
           _utilsCsv2['default'].exportAsCsv(_extends({ filename: 'export_' + collectionName, data: data, keys: keys }, options));
         }
       }));
     },
-    importCsv: function importCsv(_ref13, _ref14) {
-      var methods = _ref13.adminContext.methods;
-      var collectionName = _ref14.collectionName;
-      var file = _ref14.file;
-      var _ref14$onInsert = _ref14.onInsert;
-      var onInsert = _ref14$onInsert === undefined ? _lodash2['default'].noop : _ref14$onInsert;
-      var _ref14$onUpdate = _ref14.onUpdate;
-      var onUpdate = _ref14$onUpdate === undefined ? _lodash2['default'].noop : _ref14$onUpdate;
-      var _ref14$onComplete = _ref14.onComplete;
-      var onComplete = _ref14$onComplete === undefined ? _lodash2['default'].noop : _ref14$onComplete;
+    importCsv: function importCsv(_ref16, _ref17) {
+      var methods = _ref16.adminContext.methods;
+      var collectionName = _ref17.collectionName;
+      var file = _ref17.file;
+      var _ref17$onInsert = _ref17.onInsert;
+      var onInsert = _ref17$onInsert === undefined ? _lodash2['default'].noop : _ref17$onInsert;
+      var _ref17$onUpdate = _ref17.onUpdate;
+      var onUpdate = _ref17$onUpdate === undefined ? _lodash2['default'].noop : _ref17$onUpdate;
+      var _ref17$onComplete = _ref17.onComplete;
+      var onComplete = _ref17$onComplete === undefined ? _lodash2['default'].noop : _ref17$onComplete;
 
       var counter = -1;
       var imported = new _Set();
       _papaparse2['default'].parse(file, {
         header: true,
         dynamicTyping: true,
-        complete: function complete(_ref15) {
-          var data = _ref15.data;
+        complete: function complete(_ref18) {
+          var data = _ref18.data;
 
           data.forEach(function (entryUncleaned) {
             counter += 1;

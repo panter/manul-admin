@@ -50,7 +50,7 @@ var filterToQuery = function filterToQuery(filter) {
   }
 
   var query = removeEmptyObjects(filter);
-  console.log('query is', query);
+  // console.log('query is', query);
   return query;
 };
 
@@ -59,6 +59,7 @@ var sortPropsToMongoSort = (0, _lodashFpFlow2['default'])((0, _lodashFpKeyBy2['d
   var sortAscending = _ref.sortAscending;
   return sortAscending ? 1 : -1;
 }));
+
 var pagePropertiesToLimitAndSkip = function pagePropertiesToLimitAndSkip() {
   var _ref2 = arguments.length <= 0 || arguments[0] === undefined ? { currentPage: 1, pageSize: 10 } : arguments[0];
 
@@ -66,16 +67,16 @@ var pagePropertiesToLimitAndSkip = function pagePropertiesToLimitAndSkip() {
   var pageSize = _ref2.pageSize;
   return {
     limit: pageSize,
-    skip: currentPage * pageSize
+    skip: (currentPage - 1) * pageSize
   };
 };
 var gridOptionsToQueryOptions = function gridOptionsToQueryOptions(_ref3) {
   var sortProperties = _ref3.sortProperties;
   var pageProperties = _ref3.pageProperties;
 
-  console.log('got sortProperties', sortProperties);
+  // console.log('got sortProperties', sortProperties);
   var sort = sortPropsToMongoSort(sortProperties);
-  console.log('mongo sort', sort);
+  // console.log('mongo sort', sort);
   var limitAndSkip = pagePropertiesToLimitAndSkip(pageProperties);
   return _extends({
     sort: sort

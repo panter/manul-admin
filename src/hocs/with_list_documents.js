@@ -5,17 +5,18 @@ import { stateListFilter, stateListSort, statePageProperties } from '../utils/lo
 
 
 export const composer = () => ({ context, publications, collection, collectionName }, onData) => {
-  const { Meteor, LocalState } = context();
+  const { adminContext: { Meteor, LocalState, Counts } } = context();
   const filter = LocalState.get(stateListFilter(collectionName));
   const sortProperties = LocalState.get(stateListSort(collectionName));
   const pageProperties = LocalState.get(statePageProperties(collectionName));
-  Meteor.subscribe(publications.list, filter, { sortProperties, pageProperties });
+  const docsLoaded = Meteor.subscribe(publications.list, filter).ready();
   const query = filterToQuery(filter);
   const docs = collection.find(
     query,
     gridOptionsToQueryOptions({ sortProperties, pageProperties }),
   ).fetch();
-  onData(null, { docs, filter, sortProperties, pageProperties, docsCount });
+  const recordCount = Counts.get(publications.counts);
+  onData(null, { docsLoaded, docs, filter, sortProperties, pageProperties, recordCount });
 };
 
 

@@ -43,13 +43,12 @@ exports['default'] = function (_ref, config) {
     var collection = collections[name].collection;
 
     /* eslint meteor/audit-argument-checks: 0*/
-    Meteor.publish(list, function publishList(filter, gridOptions) {
+    Meteor.publish(list, function publishList(filter) {
       if (isAllowed(name, this.userId)) {
         var query = (0, _utilsQuery_utils.filterToQuery)(filter);
-        var options = (0, _utilsQuery_utils.gridOptionsToQueryOptions)(gridOptions);
-        // can't reuse "users" cursor
-        Counts.publish(this, counts, collection.find(query, options));
-        return collection.find(query, options);
+        // counts is always without limiting
+        Counts.publish(this, counts, collection.find(query));
+        return collection.find(query);
       }
     });
     Meteor.publish(edit, function publishEdit(_id) {

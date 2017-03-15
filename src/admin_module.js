@@ -13,7 +13,7 @@ const load = ({ LocalState, adminContext }) => {
     LocalState.set(stateListSort(collectionName), []);
     LocalState.set(statePageProperties(collectionName), {
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 100,
     });
   });
 };

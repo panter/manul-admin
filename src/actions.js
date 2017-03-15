@@ -7,6 +7,7 @@ import csv from './utils/csv';
 import routeUtils from './utils/route_utils';
 import { stateListFilter, stateListSort, statePageProperties } from './utils/local_state_utils';
 
+
 export default {
   manulAdmin: {
     gotoCreate({ adminContext: { gotoRoute } }, collectionName) {
@@ -43,6 +44,23 @@ export default {
     },
     listSetPageProperties({ LocalState }, collectionName, pageProperties) {
       LocalState.set(statePageProperties(collectionName), pageProperties);
+    },
+    listGotoPage({ LocalState }, collectionName, currentPage) {
+      const pageProperties = LocalState.get(statePageProperties(collectionName));
+      LocalState.set(statePageProperties(collectionName), { ...pageProperties, currentPage });
+    },
+    listGotoNextPage({ LocalState }, collectionName) {
+      const pageProperties = LocalState.get(statePageProperties(collectionName));
+      LocalState.set(statePageProperties(
+        collectionName),
+        { ...pageProperties, currentPage: pageProperties.currentPage + 1 },
+      );
+    },
+    listGotoPreviousPage({ LocalState }, collectionName) {
+      const pageProperties = LocalState.get(statePageProperties(collectionName));
+      LocalState.set(statePageProperties(
+        collectionName), { ...pageProperties, currentPage: pageProperties.currentPage - 1 },
+      );
     },
     update(
       { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },

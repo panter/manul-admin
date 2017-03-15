@@ -2,7 +2,7 @@
 import publicationUtils from './utils/publication_utils';
 import createMethods from './create_methods';
 import IsAllowed from './is_allowed';
-import { filterToQuery, gridOptionsToQueryOptions } from './utils/query_utils';
+import { filterToQuery } from './utils/query_utils';
 
 // SimpleSchema needs only to be passed, if its not in npm (version 2)
 export default ({ Meteor, ValidatedMethod, Counts, SimpleSchema = null }, config) => {
@@ -14,13 +14,12 @@ export default ({ Meteor, ValidatedMethod, Counts, SimpleSchema = null }, config
     const { collection } = collections[name];
 
     /* eslint meteor/audit-argument-checks: 0*/
-    Meteor.publish(list, function publishList(filter, gridOptions) {
+    Meteor.publish(list, function publishList(filter) {
       if (isAllowed(name, this.userId)) {
         const query = filterToQuery(filter);
-        const options = gridOptionsToQueryOptions(gridOptions);
-          // can't reuse "users" cursor
-        Counts.publish(this, counts, collection.find(query, options));
-        return collection.find(query, options);
+        // counts is always without limiting
+        Counts.publish(this, counts, collection.find(query));
+        return collection.find(query);
       }
     });
     Meteor.publish(edit, function publishEdit(_id) {

@@ -9,6 +9,7 @@ export default ({
   Meteor,
   ValidatedMethod,
   Counts,
+  LocalState,
 
   config,  // admin config
   adminRoutes, // FlowRouter, manulRouter compatible routes
@@ -18,9 +19,9 @@ export default ({
 
 
 }) => {
-  const neededMeteorPackages = [Meteor, ValidatedMethod, Counts];
+  const neededMeteorPackages = { Meteor, ValidatedMethod, Counts, LocalState };
   if (_.some(neededMeteorPackages, _.isNil)) {
-    throw new Error('please provide all of the following meteor-packages', neededMeteorPackages);
+    throw new Error(`please provide all of the following meteor-packages: ${_.keys(neededMeteorPackages).join(', ')}`);
   }
   const methods = createMethods({ Meteor, ValidatedMethod, Counts }, config);
   const getComponent = ({ collectionName, type }) => {
@@ -36,6 +37,9 @@ export default ({
     return Component;
   };
   return {
+    Meteor,
+    LocalState,
+    Counts,
     methods,
     getComponent,
     config,
