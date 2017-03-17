@@ -1,26 +1,26 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.composer = undefined;
 
 var _mantraCore = require('mantra-core');
 
-var composer = function composer() {
+var composer = exports.composer = function composer() {
   return function (_ref, onData) {
-    var context = _ref.context;
-    var publications = _ref.publications;
-    var collection = _ref.collection;
-    var collectionName = _ref.collectionName;
-    var _ref$params = _ref.params;
-    var params = _ref$params === undefined ? {} : _ref$params;
-    var _id = _ref._id;
+    var context = _ref.context,
+        publications = _ref.publications,
+        collection = _ref.collection,
+        collectionName = _ref.collectionName,
+        _ref$params = _ref.params,
+        params = _ref$params === undefined ? {} : _ref$params,
+        _id = _ref._id;
 
     var docId = _id || params._id; // for route usage
 
-    var _context = context();
-
-    var Meteor = _context.Meteor;
+    var _context = context(),
+        Meteor = _context.Meteor;
 
     var docLoaded = docId && Meteor.subscribe(publications.edit, docId).ready();
     var doc = docId && collection.findOne(docId);
@@ -28,9 +28,7 @@ var composer = function composer() {
   };
 };
 
-exports.composer = composer;
-
-exports['default'] = function () {
+exports.default = function () {
   return (0, _mantraCore.composeWithTracker)(composer());
 };
 //# sourceMappingURL=with_edit_document.js.map

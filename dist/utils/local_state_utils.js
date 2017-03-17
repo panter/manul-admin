@@ -1,27 +1,23 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var getStateName = function getStateName(name, key) {
+var getStateName = exports.getStateName = function getStateName(name, key) {
   return 'manulAdmin.' + name + '.' + key;
 };
 
-exports.getStateName = getStateName;
-var stateListFilter = function stateListFilter(name) {
+var stateListFilter = exports.stateListFilter = function stateListFilter(name) {
   return getStateName(name, 'filter');
 };
-exports.stateListFilter = stateListFilter;
-var stateListSort = function stateListSort(name) {
+var stateListSort = exports.stateListSort = function stateListSort(name) {
   return getStateName(name, 'sort');
 };
-exports.stateListSort = stateListSort;
-var statePageProperties = function statePageProperties(name) {
+var statePageProperties = exports.statePageProperties = function statePageProperties(name) {
   return getStateName(name, 'pageProperties');
 };
 
-exports.statePageProperties = statePageProperties;
-exports['default'] = {
+exports.default = {
   stateListFilter: stateListFilter,
   stateListSort: stateListSort,
   statePageProperties: statePageProperties

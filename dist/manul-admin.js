@@ -1,10 +1,9 @@
 'use strict';
 
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.createAdminContext = exports.initAdminServer = exports.adminModule = undefined;
 
 var _admin_module = require('./admin_module');
 
@@ -18,7 +17,9 @@ var _create_admin_context = require('./create_admin_context');
 
 var _create_admin_context2 = _interopRequireDefault(_create_admin_context);
 
-exports.adminModule = _admin_module2['default'];
-exports.initAdminServer = _init_admin_server2['default'];
-exports.createAdminContext = _create_admin_context2['default'];
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.adminModule = _admin_module2.default;
+exports.initAdminServer = _init_admin_server2.default;
+exports.createAdminContext = _create_admin_context2.default;
 //# sourceMappingURL=manul-admin.js.map

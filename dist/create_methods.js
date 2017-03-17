@@ -1,39 +1,51 @@
 'use strict';
 
-var _objectWithoutProperties = require('babel-runtime/helpers/object-without-properties')['default'];
-
-var _toConsumableArray = require('babel-runtime/helpers/to-consumable-array')['default'];
-
-var _Set = require('babel-runtime/core-js/set')['default'];
-
-var _Object$keys = require('babel-runtime/core-js/object/keys')['default'];
-
-var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
-
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _keys2 = require('lodash/keys');
+
+var _keys3 = _interopRequireDefault(_keys2);
+
+var _omitBy2 = require('lodash/omitBy');
+
+var _omitBy3 = _interopRequireDefault(_omitBy2);
+
+var _isEmpty2 = require('lodash/isEmpty');
+
+var _isEmpty3 = _interopRequireDefault(_isEmpty2);
+
+var _isDate2 = require('lodash/isDate');
+
+var _isDate3 = _interopRequireDefault(_isDate2);
+
+var _isObject2 = require('lodash/isObject');
+
+var _isObject3 = _interopRequireDefault(_isObject2);
 
 var _flat = require('flat');
 
 var _flat2 = _interopRequireDefault(_flat);
 
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
 var _is_allowed = require('./is_allowed');
 
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
-exports['default'] = function (context, config) {
-  var Meteor = context.Meteor;
-  var ValidatedMethod = context.ValidatedMethod;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-  var SimpleSchema = undefined;
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+exports.default = function (context, config) {
+  var Meteor = context.Meteor,
+      ValidatedMethod = context.ValidatedMethod;
+
+  var SimpleSchema = void 0;
   try {
     /* eslint global-require: 0 */
-    SimpleSchema = require('simpl-schema')['default'];
+    SimpleSchema = require('simpl-schema').default;
   } catch (error) {
     // try to get from context
     SimpleSchema = context.SimpleSchema;
@@ -47,20 +59,19 @@ exports['default'] = function (context, config) {
     }
     return new SimpleSchema([schema, otherSchema]);
   };
-  var isAllowed = (0, _is_allowed2['default'])(config);
+  var isAllowed = (0, _is_allowed2.default)(config);
   var createFor = function createFor(collectionName) {
-    var _config$collections$collectionName = config.collections[collectionName];
-    var collection = _config$collections$collectionName.collection;
-    var allowInsertWithId = _config$collections$collectionName.allowInsertWithId;
+    var _config$collections$c = config.collections[collectionName],
+        collection = _config$collections$c.collection,
+        allowInsertWithId = _config$collections$c.allowInsertWithId;
 
     return {
       update: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.update',
         validate: extendSimpleSchema(collection.simpleSchema(), { _id: { type: String } }).validator({ clean: true }),
         run: function run(_ref) {
-          var _id = _ref._id;
-
-          var doc = _objectWithoutProperties(_ref, ['_id']);
+          var _id = _ref._id,
+              doc = _objectWithoutProperties(_ref, ['_id']);
 
           // console.log('updating', collectionName, _id, doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -97,44 +108,36 @@ exports['default'] = function (context, config) {
           return collection.remove(_id);
         }
       }),
-      'export': new ValidatedMethod({
+      export: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.export',
         validate: function validate() {},
         run: function run() {
-          var _this = this;
-
           if (Meteor.isServer) {
-            var _ret = (function () {
-              // TODO: allow filtering and sorting
-              if (!isAllowed(collectionName, _this.userId)) {
-                throw new Meteor.Error('not allowed', 'You are not allowed');
-              }
+            // TODO: allow filtering and sorting
+            if (!isAllowed(collectionName, this.userId)) {
+              throw new Meteor.Error('not allowed', 'You are not allowed');
+            }
 
-              // empty objects like {} are preserved by flat, but we like to have them empty (null)
-              var isEmptyObject = function isEmptyObject(field) {
-                return _lodash2['default'].isObject(field) && !_lodash2['default'].isDate(field) && _lodash2['default'].isEmpty(field);
-              };
-              var removeEmptyObjects = function removeEmptyObjects(doc) {
-                return _lodash2['default'].omitBy(doc, isEmptyObject);
-              };
+            // empty objects like {} are preserved by flat, but we like to have them empty (null)
+            var isEmptyObject = function isEmptyObject(field) {
+              return (0, _isObject3.default)(field) && !(0, _isDate3.default)(field) && (0, _isEmpty3.default)(field);
+            };
+            var removeEmptyObjects = function removeEmptyObjects(doc) {
+              return (0, _omitBy3.default)(doc, isEmptyObject);
+            };
 
-              // TODO: use schema to define keys
+            // TODO: use schema to define keys
 
-              var data = collection.find().map(_flat2['default']).map(removeEmptyObjects);
-              var keysSet = new _Set();
-              data.forEach(function (entry) {
-                return _lodash2['default'].keys(entry).forEach(function (key) {
-                  return keysSet.add(key);
-                });
+            var data = collection.find().map(_flat2.default).map(removeEmptyObjects);
+            var keysSet = new Set();
+            data.forEach(function (entry) {
+              return (0, _keys3.default)(entry).forEach(function (key) {
+                return keysSet.add(key);
               });
-              return {
-                v: {
-                  data: data, keys: [].concat(_toConsumableArray(keysSet.values()))
-                }
-              };
-            })();
-
-            if (typeof _ret === 'object') return _ret.v;
+            });
+            return {
+              data: data, keys: [].concat(_toConsumableArray(keysSet.values()))
+            };
           }
           return null;
         }
@@ -144,11 +147,9 @@ exports['default'] = function (context, config) {
   };
 
   var methods = {};
-  _Object$keys(config.collections).forEach(function (collectionName) {
+  Object.keys(config.collections).forEach(function (collectionName) {
     methods[collectionName] = createFor(collectionName);
   });
   return methods;
 };
-
-module.exports = exports['default'];
 //# sourceMappingURL=create_methods.js.map

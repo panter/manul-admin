@@ -1,6 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var getListRoute = function getListRoute(name) {
@@ -35,6 +35,5 @@ var getRoute = function getRoute(type, name) {
   }
 };
 
-exports['default'] = { getRoute: getRoute, getListRoute: getListRoute, getEditRoute: getEditRoute, getCreateRoute: getCreateRoute };
-module.exports = exports['default'];
+exports.default = { getRoute: getRoute, getListRoute: getListRoute, getEditRoute: getEditRoute, getCreateRoute: getCreateRoute };
 //# sourceMappingURL=route_utils.js.map
