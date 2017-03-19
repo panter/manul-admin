@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -24,12 +28,9 @@ var _with_deps2 = _interopRequireDefault(_with_deps);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 exports.default = (0, _mantraCore.composeAll)((0, _with_edit_document2.default)(), (0, _with_collection_props2.default)('edit'), (0, _with_deps2.default)())(function (_ref) {
   var Component = _ref.Component,
-      props = _objectWithoutProperties(_ref, ['Component']);
-
+      props = (0, _objectWithoutProperties3.default)(_ref, ['Component']);
   return _react2.default.createElement(Component, props);
 });
 //# sourceMappingURL=edit.js.map

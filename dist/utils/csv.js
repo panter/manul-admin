@@ -4,6 +4,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _values2 = require('lodash/values');
 
 var _values3 = _interopRequireDefault(_values2);
@@ -12,8 +20,6 @@ var _zipObject2 = require('lodash/zipObject');
 
 var _zipObject3 = _interopRequireDefault(_zipObject2);
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _papaparse = require('papaparse');
 
 var _papaparse2 = _interopRequireDefault(_papaparse);
@@ -21,8 +27,6 @@ var _papaparse2 = _interopRequireDefault(_papaparse);
 var _fileSaver = require('file-saver');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 /**
 create a csv-file in the browser from the given data
@@ -49,7 +53,7 @@ var exportAsCsv = function exportAsCsv(_ref) {
       quotes = _ref$quotes === undefined ? true : _ref$quotes,
       _ref$nullValue = _ref.nullValue,
       nullValue = _ref$nullValue === undefined ? 'NULL' : _ref$nullValue,
-      additionalProps = _objectWithoutProperties(_ref, ['filename', 'keys', 'columnTitles', 'data', 'useBom', 'delimiter', 'quotes', 'nullValue']);
+      additionalProps = (0, _objectWithoutProperties3.default)(_ref, ['filename', 'keys', 'columnTitles', 'data', 'useBom', 'delimiter', 'quotes', 'nullValue']);
 
   // we encode missing values with "NULL"
   // because CSV has no concept of null/missing values
@@ -59,9 +63,9 @@ var exportAsCsv = function exportAsCsv(_ref) {
   }));
   var columns = columnTitles || keys;
   var dataPadded = data.map(function (entry) {
-    return (0, _values3.default)(_extends({}, defaults, entry));
+    return (0, _values3.default)((0, _extends3.default)({}, defaults, entry));
   });
-  var papaOptions = _extends({ delimiter: delimiter, quotes: quotes }, additionalProps);
+  var papaOptions = (0, _extends3.default)({ delimiter: delimiter, quotes: quotes }, additionalProps);
   var csv = _papaparse2.default.unparse({ fields: columns, data: dataPadded }, papaOptions);
   (0, _fileSaver.saveAs)(new window.Blob([csv], { type: 'text/plain;charset=utf-8' }), filename + '.csv', useBom);
 };

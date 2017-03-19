@@ -5,23 +5,37 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.composer = undefined;
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _result2 = require('lodash/result');
 
 var _result3 = _interopRequireDefault(_result2);
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _mantraCore = require('mantra-core');
+
+var _simplSchema = require('simpl-schema');
+
+var _simplSchema2 = _interopRequireDefault(_simplSchema);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
+var searchSchema = new _simplSchema2.default({
+  searchTerm: {
+    type: String,
+    optional: true
+  }
+});
 var composer = function composer(type) {
   return function (_ref, onData) {
     var context = _ref.context,
         collectionName = _ref.collectionName,
-        props = _objectWithoutProperties(_ref, ['context', 'collectionName']);
+        props = (0, _objectWithoutProperties3.default)(_ref, ['context', 'collectionName']);
 
     var _context = context(),
         _context$adminContext = _context.adminContext,
@@ -32,17 +46,17 @@ var composer = function composer(type) {
     var collections = config.collections;
 
     var publications = publicationUtils.getPublications(collectionName);
-
     var _collections$collecti = collections[collectionName],
         collection = _collections$collecti.collection,
         schema = _collections$collecti.schema,
-        colConfig = _objectWithoutProperties(_collections$collecti, ['collection', 'schema']);
+        colConfig = (0, _objectWithoutProperties3.default)(_collections$collecti, ['collection', 'schema']);
 
     var Component = getComponent({ collectionName: collectionName, type: type });
-    onData(null, _extends({
+    onData(null, (0, _extends3.default)({
       Component: Component,
       collection: collection,
       schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
+      searchSchema: searchSchema,
       publications: publications
     }, colConfig, props));
   };

@@ -4,9 +4,25 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys2 = require('lodash/keys');
+var _keys2 = require('babel-runtime/core-js/object/keys');
 
 var _keys3 = _interopRequireDefault(_keys2);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _set = require('babel-runtime/core-js/set');
+
+var _set2 = _interopRequireDefault(_set);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _keys4 = require('lodash/keys');
+
+var _keys5 = _interopRequireDefault(_keys4);
 
 var _omitBy2 = require('lodash/omitBy');
 
@@ -33,10 +49,6 @@ var _is_allowed = require('./is_allowed');
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 exports.default = function (context, config) {
   var Meteor = context.Meteor,
@@ -71,7 +83,7 @@ exports.default = function (context, config) {
         validate: extendSimpleSchema(collection.simpleSchema(), { _id: { type: String } }).validator({ clean: true }),
         run: function run(_ref) {
           var _id = _ref._id,
-              doc = _objectWithoutProperties(_ref, ['_id']);
+              doc = (0, _objectWithoutProperties3.default)(_ref, ['_id']);
 
           // console.log('updating', collectionName, _id, doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -129,14 +141,14 @@ exports.default = function (context, config) {
             // TODO: use schema to define keys
 
             var data = collection.find().map(_flat2.default).map(removeEmptyObjects);
-            var keysSet = new Set();
+            var keysSet = new _set2.default();
             data.forEach(function (entry) {
-              return (0, _keys3.default)(entry).forEach(function (key) {
+              return (0, _keys5.default)(entry).forEach(function (key) {
                 return keysSet.add(key);
               });
             });
             return {
-              data: data, keys: [].concat(_toConsumableArray(keysSet.values()))
+              data: data, keys: [].concat((0, _toConsumableArray3.default)(keysSet.values()))
             };
           }
           return null;
@@ -147,7 +159,7 @@ exports.default = function (context, config) {
   };
 
   var methods = {};
-  Object.keys(config.collections).forEach(function (collectionName) {
+  (0, _keys3.default)(config.collections).forEach(function (collectionName) {
     methods[collectionName] = createFor(collectionName);
   });
   return methods;

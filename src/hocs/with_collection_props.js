@@ -1,7 +1,14 @@
 
 import { composeWithTracker } from 'mantra-core';
 import _ from 'lodash';
+import SimpleSchema from 'simpl-schema';
 
+const searchSchema = new SimpleSchema({
+  searchTerm: {
+    type: String,
+    optional: true,
+  },
+});
 export const composer = type => ({ context, collectionName, ...props }, onData) => {
   const {
     adminContext: {
@@ -16,6 +23,7 @@ export const composer = type => ({ context, collectionName, ...props }, onData) 
     Component,
     collection,
     schema: schema || _.result(collection, 'simpleSchema'),
+    searchSchema,
     publications,
     ...colConfig,
     ...props, // allow override

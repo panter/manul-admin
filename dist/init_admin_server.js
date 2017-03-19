@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _publication_utils = require('./utils/publication_utils');
 
 var _publication_utils2 = _interopRequireDefault(_publication_utils);
@@ -38,13 +42,17 @@ exports.default = function (_ref, config) {
         edit = _publicationUtils$get.edit,
         counts = _publicationUtils$get.counts;
 
-    var collection = collections[name].collection;
+    var _collections$name = collections[name],
+        collection = _collections$name.collection,
+        searchFields = _collections$name.searchFields;
 
     /* eslint meteor/audit-argument-checks: 0*/
 
     Meteor.publish(list, function publishList(filter) {
+      var searchTerm = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
       if (isAllowed(name, this.userId)) {
-        var query = (0, _query_utils.filterToQuery)(filter);
+        var query = (0, _query_utils.filterToQuery)(filter, searchTerm && { searchFields: searchFields, searchTerm: searchTerm });
         // counts is always without limiting
         Counts.publish(this, counts, collection.find(query));
         return collection.find(query);
@@ -57,7 +65,7 @@ exports.default = function (_ref, config) {
     });
   };
   var createPublications = function createPublications() {
-    Object.keys(collections).forEach(createPublication);
+    (0, _keys2.default)(collections).forEach(createPublication);
   };
   createPublications();
   (0, _create_methods2.default)({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, SimpleSchema: SimpleSchema }, config);

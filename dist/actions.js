@@ -4,6 +4,18 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _set = require('babel-runtime/core-js/set');
+
+var _set2 = _interopRequireDefault(_set);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _omitBy2 = require('lodash/omitBy');
 
 var _omitBy3 = _interopRequireDefault(_omitBy2);
@@ -19,8 +31,6 @@ var _without3 = _interopRequireDefault(_without2);
 var _find2 = require('lodash/find');
 
 var _find3 = _interopRequireDefault(_find2);
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _papaparse = require('papaparse');
 
@@ -45,8 +55,6 @@ var _route_utils2 = _interopRequireDefault(_route_utils);
 var _local_state_utils = require('./utils/local_state_utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 exports.default = {
   manulAdmin: {
@@ -78,11 +86,11 @@ exports.default = {
       var newSortProps = [];
 
       if (!oldProperty) {
-        newSortProps = [_extends({}, newSortProperty, { sortAscending: true })].concat(_toConsumableArray(sortProperties));
+        newSortProps = [(0, _extends3.default)({}, newSortProperty, { sortAscending: true })].concat((0, _toConsumableArray3.default)(sortProperties));
       } else {
         newSortProps = (0, _without3.default)(sortProperties, oldProperty);
         if (oldProperty.sortAscending) {
-          newSortProps = [_extends({}, newSortProperty, { sortAscending: false })].concat(_toConsumableArray(newSortProps));
+          newSortProps = [(0, _extends3.default)({}, newSortProperty, { sortAscending: false })].concat((0, _toConsumableArray3.default)(newSortProps));
         }
       }
       LocalState.set(localStateSortProperties, newSortProps);
@@ -97,35 +105,40 @@ exports.default = {
 
       LocalState.set((0, _local_state_utils.stateListFilter)(collectionName), filter);
     },
-    listSetPageProperties: function listSetPageProperties(_ref7, collectionName, pageProperties) {
+    listSetSearchTerm: function listSetSearchTerm(_ref7, collectionName, searchTerm) {
       var LocalState = _ref7.LocalState;
+
+      LocalState.set((0, _local_state_utils.stateListSearch)(collectionName), searchTerm);
+    },
+    listSetPageProperties: function listSetPageProperties(_ref8, collectionName, pageProperties) {
+      var LocalState = _ref8.LocalState;
 
       LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), pageProperties);
     },
-    listGotoPage: function listGotoPage(_ref8, collectionName, currentPage) {
-      var LocalState = _ref8.LocalState;
-
-      var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
-      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), _extends({}, pageProperties, { currentPage: currentPage }));
-    },
-    listGotoNextPage: function listGotoNextPage(_ref9, collectionName) {
+    listGotoPage: function listGotoPage(_ref9, collectionName, currentPage) {
       var LocalState = _ref9.LocalState;
 
       var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
-      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), _extends({}, pageProperties, { currentPage: pageProperties.currentPage + 1 }));
+      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, { currentPage: currentPage }));
     },
-    listGotoPreviousPage: function listGotoPreviousPage(_ref10, collectionName) {
+    listGotoNextPage: function listGotoNextPage(_ref10, collectionName) {
       var LocalState = _ref10.LocalState;
 
       var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
-      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), _extends({}, pageProperties, { currentPage: pageProperties.currentPage - 1 }));
+      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, { currentPage: pageProperties.currentPage + 1 }));
     },
-    update: function update(_ref11, collectionName, doc) {
-      var _ref11$adminContext = _ref11.adminContext,
-          methods = _ref11$adminContext.methods,
-          gotoRoute = _ref11$adminContext.gotoRoute,
-          _ref11$Alerts = _ref11.Alerts,
-          Alerts = _ref11$Alerts === undefined ? _fallback_alerts2.default : _ref11$Alerts;
+    listGotoPreviousPage: function listGotoPreviousPage(_ref11, collectionName) {
+      var LocalState = _ref11.LocalState;
+
+      var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
+      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, { currentPage: pageProperties.currentPage - 1 }));
+    },
+    update: function update(_ref12, collectionName, doc) {
+      var _ref12$adminContext = _ref12.adminContext,
+          methods = _ref12$adminContext.methods,
+          gotoRoute = _ref12$adminContext.gotoRoute,
+          _ref12$Alerts = _ref12.Alerts,
+          Alerts = _ref12$Alerts === undefined ? _fallback_alerts2.default : _ref12$Alerts;
 
       methods[collectionName].update.call(doc, Alerts.handleCallback('admin.update', { props: function props() {
           return { collectionName: collectionName, doc: doc };
@@ -135,12 +148,12 @@ exports.default = {
         }
       }));
     },
-    create: function create(_ref12, collectionName, doc) {
-      var _ref12$adminContext = _ref12.adminContext,
-          methods = _ref12$adminContext.methods,
-          gotoRoute = _ref12$adminContext.gotoRoute,
-          _ref12$Alerts = _ref12.Alerts,
-          Alerts = _ref12$Alerts === undefined ? _fallback_alerts2.default : _ref12$Alerts;
+    create: function create(_ref13, collectionName, doc) {
+      var _ref13$adminContext = _ref13.adminContext,
+          methods = _ref13$adminContext.methods,
+          gotoRoute = _ref13$adminContext.gotoRoute,
+          _ref13$Alerts = _ref13.Alerts,
+          Alerts = _ref13$Alerts === undefined ? _fallback_alerts2.default : _ref13$Alerts;
 
       methods[collectionName].create.call(doc, Alerts.handleCallback('admin.create', { props: function props() {
           return { collectionName: collectionName, doc: doc };
@@ -150,12 +163,12 @@ exports.default = {
         }
       }));
     },
-    destroy: function destroy(_ref13, collectionName, _id) {
-      var _ref13$adminContext = _ref13.adminContext,
-          methods = _ref13$adminContext.methods,
-          gotoRoute = _ref13$adminContext.gotoRoute,
-          _ref13$Alerts = _ref13.Alerts,
-          Alerts = _ref13$Alerts === undefined ? _fallback_alerts2.default : _ref13$Alerts;
+    destroy: function destroy(_ref14, collectionName, _id) {
+      var _ref14$adminContext = _ref14.adminContext,
+          methods = _ref14$adminContext.methods,
+          gotoRoute = _ref14$adminContext.gotoRoute,
+          _ref14$Alerts = _ref14.Alerts,
+          Alerts = _ref14$Alerts === undefined ? _fallback_alerts2.default : _ref14$Alerts;
 
       /* eslint no-alert: 0*/
       var confirmed = window.confirm("Really destroy? This can't be undone");
@@ -169,40 +182,40 @@ exports.default = {
         }));
       }
     },
-    downloadCsv: function downloadCsv(_ref14, collectionName, options) {
-      var methods = _ref14.adminContext.methods,
-          _ref14$Alerts = _ref14.Alerts,
-          Alerts = _ref14$Alerts === undefined ? _fallback_alerts2.default : _ref14$Alerts;
+    downloadCsv: function downloadCsv(_ref15, collectionName, options) {
+      var methods = _ref15.adminContext.methods,
+          _ref15$Alerts = _ref15.Alerts,
+          Alerts = _ref15$Alerts === undefined ? _fallback_alerts2.default : _ref15$Alerts;
 
       methods[collectionName].export.call({}, Alerts.handleCallback('admin.export', { props: function props() {
           return { collectionName: collectionName };
-        } }, function (error, _ref15) {
-        var data = _ref15.data,
-            keys = _ref15.keys;
+        } }, function (error, _ref16) {
+        var data = _ref16.data,
+            keys = _ref16.keys;
 
         if (!error) {
-          _csv2.default.exportAsCsv(_extends({ filename: 'export_' + collectionName, data: data, keys: keys }, options));
+          _csv2.default.exportAsCsv((0, _extends3.default)({ filename: 'export_' + collectionName, data: data, keys: keys }, options));
         }
       }));
     },
-    importCsv: function importCsv(_ref16, _ref17) {
-      var methods = _ref16.adminContext.methods;
-      var collectionName = _ref17.collectionName,
-          file = _ref17.file,
-          _ref17$onInsert = _ref17.onInsert,
-          onInsert = _ref17$onInsert === undefined ? _noop3.default : _ref17$onInsert,
-          _ref17$onUpdate = _ref17.onUpdate,
-          onUpdate = _ref17$onUpdate === undefined ? _noop3.default : _ref17$onUpdate,
-          _ref17$onComplete = _ref17.onComplete,
-          onComplete = _ref17$onComplete === undefined ? _noop3.default : _ref17$onComplete;
+    importCsv: function importCsv(_ref17, _ref18) {
+      var methods = _ref17.adminContext.methods;
+      var collectionName = _ref18.collectionName,
+          file = _ref18.file,
+          _ref18$onInsert = _ref18.onInsert,
+          onInsert = _ref18$onInsert === undefined ? _noop3.default : _ref18$onInsert,
+          _ref18$onUpdate = _ref18.onUpdate,
+          onUpdate = _ref18$onUpdate === undefined ? _noop3.default : _ref18$onUpdate,
+          _ref18$onComplete = _ref18.onComplete,
+          onComplete = _ref18$onComplete === undefined ? _noop3.default : _ref18$onComplete;
 
       var counter = -1;
-      var imported = new Set();
+      var imported = new _set2.default();
       _papaparse2.default.parse(file, {
         header: true,
         dynamicTyping: true,
-        complete: function complete(_ref18) {
-          var data = _ref18.data;
+        complete: function complete(_ref19) {
+          var data = _ref19.data;
 
           data.forEach(function (entryUncleaned) {
             counter += 1;
@@ -226,7 +239,7 @@ exports.default = {
             } else {
               delete entry._id; // if falsy
               methods[collectionName].create.call(entry, function (error, _id) {
-                onInsert(index, error, _extends({ _id: _id }, entry));
+                onInsert(index, error, (0, _extends3.default)({ _id: _id }, entry));
                 checkForComplete();
               });
             }

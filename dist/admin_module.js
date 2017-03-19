@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _routes = require('./routes');
 
 var _routes2 = _interopRequireDefault(_routes);
@@ -24,7 +28,7 @@ var load = function load(_ref) {
     throw new Error('Please provide a adminContext-object in your mantra-context. use createAdminContext for that');
   }
   // set initial values
-  Object.keys(adminContext.config.collections).forEach(function (collectionName) {
+  (0, _keys2.default)(adminContext.config.collections).forEach(function (collectionName) {
     LocalState.set((0, _local_state_utils.stateListSort)(collectionName), []);
     LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), {
       currentPage: 1,
