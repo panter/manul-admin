@@ -78,12 +78,12 @@ var createSearchQuery = exports.createSearchQuery = function createSearchQuery(f
 /* eslint import/prefer-default-export: 0 */
 var filterToQuery = exports.filterToQuery = function filterToQuery(filter, search) {
   // console.log('got filter', filter);
-  console.log('got search', search);
+  // console.log('got search', search);
 
   // remove empty objects on filter
 
   var query = (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) && removeEmptyObjects(filter), !(0, _isEmpty3.default)(search) && createSearchQuery(search.searchFields, termToTermList(search.searchTerm)));
-  console.log('query is', query);
+  // console.log('query is', query);
   return query;
 };
 
