@@ -5,7 +5,7 @@ import { stateListFilter, stateListSort, statePageProperties, stateListSearch } 
 
 
 export const composer = () => (
-  { context, publications, collection, collectionName, searchFields }, onData,
+  { context, publications, collection, collectionName, searchFields, sortCursor = false }, onData,
 ) => {
   const { adminContext: { Meteor, LocalState, Counts } } = context();
   const filter = LocalState.get(stateListFilter(collectionName));
@@ -16,7 +16,7 @@ export const composer = () => (
   const query = filterToQuery(filter, { searchTerm, searchFields });
   const docs = collection.find(
     query,
-    gridOptionsToQueryOptions({ sortProperties, pageProperties }),
+    { ...(sortCursor && gridOptionsToQueryOptions({ sortProperties, pageProperties })) },
   ).fetch();
   const recordCount = Counts.get(publications.counts);
   onData(null,

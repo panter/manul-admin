@@ -1,7 +1,4 @@
 
-
-import flatten from 'flat';
-import _ from 'lodash';
 import IsAllowed from './is_allowed';
 
 
@@ -71,34 +68,6 @@ export default (context, config) => {
             throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           return collection.remove(_id);
-        },
-      }),
-      export: new ValidatedMethod({
-        name: `manulAdmin.${collectionName}.export`,
-        validate() {},
-        run() {
-          if (Meteor.isServer) {
-            // TODO: allow filtering and sorting
-            if (!isAllowed(collectionName, this.userId)) {
-              throw new Meteor.Error('not allowed', 'You are not allowed');
-            }
-
-            // empty objects like {} are preserved by flat, but we like to have them empty (null)
-            const isEmptyObject = (
-              field => _.isObject(field) && !_.isDate(field) && _.isEmpty(field)
-            );
-            const removeEmptyObjects = doc => _.omitBy(doc, isEmptyObject);
-
-            // TODO: use schema to define keys
-
-            const data = collection.find().map(flatten).map(removeEmptyObjects);
-            const keysSet = new Set();
-            data.forEach(entry => _.keys(entry).forEach(key => keysSet.add(key)));
-            return {
-              data, keys: [...keysSet.values()],
-            };
-          }
-          return null;
         },
       }),
 

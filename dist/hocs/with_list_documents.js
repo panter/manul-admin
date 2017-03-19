@@ -5,11 +5,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.composer = undefined;
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _mantraCore = require('mantra-core');
 
 var _query_utils = require('../utils/query_utils');
 
 var _local_state_utils = require('../utils/local_state_utils');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var composer = exports.composer = function composer() {
   return function (_ref, onData) {
@@ -17,7 +23,9 @@ var composer = exports.composer = function composer() {
         publications = _ref.publications,
         collection = _ref.collection,
         collectionName = _ref.collectionName,
-        searchFields = _ref.searchFields;
+        searchFields = _ref.searchFields,
+        _ref$sortCursor = _ref.sortCursor,
+        sortCursor = _ref$sortCursor === undefined ? false : _ref$sortCursor;
 
     var _context = context(),
         _context$adminContext = _context.adminContext,
@@ -31,7 +39,7 @@ var composer = exports.composer = function composer() {
     var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
     var docsLoaded = Meteor.subscribe(publications.list, filter).ready();
     var query = (0, _query_utils.filterToQuery)(filter, { searchTerm: searchTerm, searchFields: searchFields });
-    var docs = collection.find(query, (0, _query_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties })).fetch();
+    var docs = collection.find(query, (0, _extends3.default)({}, sortCursor && (0, _query_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties }))).fetch();
     var recordCount = Counts.get(publications.counts);
     onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, searchTerm: searchTerm, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });
   };

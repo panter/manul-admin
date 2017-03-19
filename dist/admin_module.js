@@ -32,7 +32,7 @@ var load = function load(_ref) {
     LocalState.set((0, _local_state_utils.stateListSort)(collectionName), []);
     LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), {
       currentPage: 1,
-      pageSize: 100
+      pageSize: 20
     });
   });
 };

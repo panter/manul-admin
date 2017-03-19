@@ -8,6 +8,10 @@ var _set = require('babel-runtime/core-js/set');
 
 var _set2 = _interopRequireDefault(_set);
 
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
@@ -16,21 +20,45 @@ var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-var _omitBy2 = require('lodash/omitBy');
+var _map2 = require('lodash/fp/map');
 
-var _omitBy3 = _interopRequireDefault(_omitBy2);
+var _map3 = _interopRequireDefault(_map2);
+
+var _find2 = require('lodash/fp/find');
+
+var _find3 = _interopRequireDefault(_find2);
+
+var _flow2 = require('lodash/fp/flow');
+
+var _flow3 = _interopRequireDefault(_flow2);
 
 var _noop2 = require('lodash/noop');
 
 var _noop3 = _interopRequireDefault(_noop2);
 
+var _keys2 = require('lodash/keys');
+
+var _keys3 = _interopRequireDefault(_keys2);
+
+var _omitBy2 = require('lodash/omitBy');
+
+var _omitBy3 = _interopRequireDefault(_omitBy2);
+
+var _isEmpty2 = require('lodash/isEmpty');
+
+var _isEmpty3 = _interopRequireDefault(_isEmpty2);
+
+var _isDate2 = require('lodash/isDate');
+
+var _isDate3 = _interopRequireDefault(_isDate2);
+
+var _isObject2 = require('lodash/isObject');
+
+var _isObject3 = _interopRequireDefault(_isObject2);
+
 var _without2 = require('lodash/without');
 
 var _without3 = _interopRequireDefault(_without2);
-
-var _find2 = require('lodash/find');
-
-var _find3 = _interopRequireDefault(_find2);
 
 var _papaparse = require('papaparse');
 
@@ -80,9 +108,9 @@ exports.default = {
 
       var localStateSortProperties = (0, _local_state_utils.stateListSort)(collectionName);
       var sortProperties = LocalState.get(localStateSortProperties) || [];
-      var oldProperty = (0, _find3.default)(sortProperties, function (s) {
+      var oldProperty = (0, _find3.default)(function (s) {
         return s.id === newSortProperty.id;
-      });
+      })(sortProperties);
       var newSortProps = [];
 
       if (!oldProperty) {
@@ -182,21 +210,34 @@ exports.default = {
         }));
       }
     },
-    downloadCsv: function downloadCsv(_ref15, collectionName, options) {
-      var methods = _ref15.adminContext.methods,
-          _ref15$Alerts = _ref15.Alerts,
-          Alerts = _ref15$Alerts === undefined ? _fallback_alerts2.default : _ref15$Alerts;
+    exportCsv: function exportCsv(_ref16, docs) {
+      var methods = _ref16.adminContext.methods,
+          _ref16$Alerts = _ref16.Alerts,
+          Alerts = _ref16$Alerts === undefined ? _fallback_alerts2.default : _ref16$Alerts;
 
-      methods[collectionName].export.call({}, Alerts.handleCallback('admin.export', { props: function props() {
-          return { collectionName: collectionName };
-        } }, function (error, _ref16) {
-        var data = _ref16.data,
-            keys = _ref16.keys;
+      var _ref15 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-        if (!error) {
-          _csv2.default.exportAsCsv((0, _extends3.default)({ filename: 'export_' + collectionName, data: data, keys: keys }, options));
-        }
-      }));
+      var _ref15$filename = _ref15.filename,
+          filename = _ref15$filename === undefined ? 'export.csv' : _ref15$filename,
+          options = (0, _objectWithoutProperties3.default)(_ref15, ['filename']);
+
+      var isEmptyObject = function isEmptyObject(field) {
+        return (0, _isObject3.default)(field) && !(0, _isDate3.default)(field) && (0, _isEmpty3.default)(field);
+      };
+      var removeEmptyObjects = function removeEmptyObjects(doc) {
+        return (0, _omitBy3.default)(doc, isEmptyObject);
+      };
+      var transform = (0, _flow3.default)((0, _map3.default)(_flat2.default), (0, _map3.default)(removeEmptyObjects));
+      var data = transform(docs);
+      var keysSet = new _set2.default();
+      data.forEach(function (entry) {
+        return (0, _keys3.default)(entry).forEach(function (key) {
+          return keysSet.add(key);
+        });
+      });
+      var keys = [].concat((0, _toConsumableArray3.default)(keysSet.values()));
+
+      _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
     },
     importCsv: function importCsv(_ref17, _ref18) {
       var methods = _ref17.adminContext.methods;
