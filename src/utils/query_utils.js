@@ -29,7 +29,7 @@ export const filterToQuery = (filter, search) => {
 
   const query = {
     ...!isEmpty(filter) && removeEmptyObjects(filter),
-    ...(!isEmpty(search) && (
+    ...(!isEmpty(search) && !isEmpty(search.searchFields) && !isEmpty(search.searchTerm) && (
       createSearchQuery(search.searchFields, termToTermList(search.searchTerm))
     )),
   };
