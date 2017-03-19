@@ -1,24 +1,38 @@
-import _ from 'lodash';import omitBy from 'lodash/fp/omitBy';
 
-import isObject from 'lodash/fp/isObject';
-import mapValues from 'lodash/fp/mapValues';
-import keyBy from 'lodash/fp/keyBy';
-import isEmpty from 'lodash/fp/isEmpty';
-import flow from 'lodash/fp/flow';
+import { omitBy, map, isObject, mapValues, keyBy, isEmpty, flow, split, trim } from 'lodash/fp';
+
 
 const removeEmptyObjects = omitBy(o => isObject(o) && isEmpty(o));
 
-
+const queryListFromRegex = regex => flow(
+  map(field => ({
+    [field]: regex,
+  })),
+);
+const queryForTerm = term => fields => (
+  {
+    $or: queryListFromRegex(new RegExp(term, 'i'))(fields),
+  }
+);
+const termToTermList = flow(split(' '), map(trim));
+export const createSearchQuery = (fields, terms) => (
+  {
+    $and: map(term => queryForTerm(term)(fields))(terms),
+  }
+);
 /* eslint import/prefer-default-export: 0 */
-export const filterToQuery = (filter) => {
+export const filterToQuery = (filter, search) => {
   // console.log('got filter', filter);
+  // console.log('got search', search);
+
   // remove empty objects on filter
 
-  if (_.isEmpty(filter)) {
-    return {};
-  }
-
-  const query = removeEmptyObjects(filter);
+  const query = {
+    ...!isEmpty(filter) && removeEmptyObjects(filter),
+    ...(!isEmpty(search) && (
+      createSearchQuery(search.searchFields, termToTermList(search.searchTerm))
+    )),
+  };
   // console.log('query is', query);
   return query;
 };

@@ -1,43 +1,43 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.composer = undefined;
 
 var _mantraCore = require('mantra-core');
 
-var _utilsQuery_utils = require('../utils/query_utils');
+var _query_utils = require('../utils/query_utils');
 
-var _utilsLocal_state_utils = require('../utils/local_state_utils');
+var _local_state_utils = require('../utils/local_state_utils');
 
-var composer = function composer() {
+var composer = exports.composer = function composer() {
   return function (_ref, onData) {
-    var context = _ref.context;
-    var publications = _ref.publications;
-    var collection = _ref.collection;
-    var collectionName = _ref.collectionName;
+    var context = _ref.context,
+        publications = _ref.publications,
+        collection = _ref.collection,
+        collectionName = _ref.collectionName,
+        searchFields = _ref.searchFields;
 
-    var _context = context();
+    var _context = context(),
+        _context$adminContext = _context.adminContext,
+        Meteor = _context$adminContext.Meteor,
+        LocalState = _context$adminContext.LocalState,
+        Counts = _context$adminContext.Counts;
 
-    var _context$adminContext = _context.adminContext;
-    var Meteor = _context$adminContext.Meteor;
-    var LocalState = _context$adminContext.LocalState;
-    var Counts = _context$adminContext.Counts;
-
-    var filter = LocalState.get((0, _utilsLocal_state_utils.stateListFilter)(collectionName));
-    var sortProperties = LocalState.get((0, _utilsLocal_state_utils.stateListSort)(collectionName));
-    var pageProperties = LocalState.get((0, _utilsLocal_state_utils.statePageProperties)(collectionName));
+    var filter = LocalState.get((0, _local_state_utils.stateListFilter)(collectionName));
+    var sortProperties = LocalState.get((0, _local_state_utils.stateListSort)(collectionName));
+    var searchTerm = LocalState.get((0, _local_state_utils.stateListSearch)(collectionName));
+    var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
     var docsLoaded = Meteor.subscribe(publications.list, filter).ready();
-    var query = (0, _utilsQuery_utils.filterToQuery)(filter);
-    var docs = collection.find(query, (0, _utilsQuery_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties })).fetch();
+    var query = (0, _query_utils.filterToQuery)(filter, { searchTerm: searchTerm, searchFields: searchFields });
+    var docs = collection.find(query, (0, _query_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties })).fetch();
     var recordCount = Counts.get(publications.counts);
-    onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });
+    onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, searchTerm: searchTerm, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });
   };
 };
 
-exports.composer = composer;
-
-exports['default'] = function () {
+exports.default = function () {
   return (0, _mantraCore.composeWithTracker)(composer());
 };
 //# sourceMappingURL=with_list_documents.js.map

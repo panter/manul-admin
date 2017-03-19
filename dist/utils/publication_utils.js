@@ -23,8 +23,7 @@ var getPublications = function getPublications(name) {
    };
 };
 
-exports["default"] = {
+exports.default = {
    getPublications: getPublications, getEditPublicationName: getEditPublicationName, getListPublicationName: getListPublicationName, getMatchingResultsCountName: getMatchingResultsCountName
 };
-module.exports = exports["default"];
 //# sourceMappingURL=publication_utils.js.map

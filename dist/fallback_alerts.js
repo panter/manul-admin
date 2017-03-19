@@ -1,12 +1,12 @@
-/**
-Best use https://github.com/panter/manul-alerts !
-**/
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = {
+/**
+Best use https://github.com/panter/manul-alerts !
+**/
+exports.default = {
   handleCallback: function handleCallback(namespace, _ref, next) {
     var props = _ref.props;
 
@@ -20,5 +20,4 @@ exports["default"] = {
     };
   }
 };
-module.exports = exports["default"];
 //# sourceMappingURL=fallback_alerts.js.map
