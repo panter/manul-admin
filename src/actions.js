@@ -1,7 +1,7 @@
 import Papa from 'papaparse';
 import _ from 'lodash';
 import flat from 'flat';
-
+import { flow, find, map } from 'lodash/fp';
 import FallbackAlerts from './fallback_alerts';
 import csv from './utils/csv';
 import routeUtils from './utils/route_utils';
@@ -23,7 +23,7 @@ export default {
     listSortToggle({ LocalState }, collectionName, newSortProperty) {
       const localStateSortProperties = stateListSort(collectionName);
       const sortProperties = LocalState.get(localStateSortProperties) || [];
-      const oldProperty = _.find(sortProperties, s => s.id === newSortProperty.id);
+      const oldProperty = find(s => s.id === newSortProperty.id)(sortProperties);
       let newSortProps = [];
 
       if (!oldProperty) {
@@ -105,17 +105,24 @@ export default {
       );
       }
     },
-    downloadCsv(
+    exportCsv(
       { adminContext: { methods }, Alerts = FallbackAlerts },
-      collectionName, options,
+      docs, { filename = 'export.csv', ...options } = {},
     ) {
-      methods[collectionName].export.call({},
-        Alerts.handleCallback('admin.export', { props: () => ({ collectionName }) }, (error, { data, keys }) => {
-          if (!error) {
-            csv.exportAsCsv({ filename: `export_${collectionName}`, data, keys, ...options });
-          }
-        }),
+      const isEmptyObject = (
+        field => _.isObject(field) && !_.isDate(field) && _.isEmpty(field)
       );
+      const removeEmptyObjects = doc => _.omitBy(doc, isEmptyObject);
+      const transform = flow(
+        map(flat),
+        map(removeEmptyObjects),
+      );
+      const data = transform(docs);
+      const keysSet = new Set();
+      data.forEach(entry => _.keys(entry).forEach(key => keysSet.add(key)));
+      const keys = [...keysSet.values()];
+
+      csv.exportAsCsv({ filename, data, keys, ...options });
     },
     importCsv(
       { adminContext: { methods } },

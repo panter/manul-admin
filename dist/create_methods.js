@@ -4,45 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys2 = require('babel-runtime/core-js/object/keys');
+var _keys = require('babel-runtime/core-js/object/keys');
 
-var _keys3 = _interopRequireDefault(_keys2);
-
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
-var _set = require('babel-runtime/core-js/set');
-
-var _set2 = _interopRequireDefault(_set);
+var _keys2 = _interopRequireDefault(_keys);
 
 var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
-
-var _keys4 = require('lodash/keys');
-
-var _keys5 = _interopRequireDefault(_keys4);
-
-var _omitBy2 = require('lodash/omitBy');
-
-var _omitBy3 = _interopRequireDefault(_omitBy2);
-
-var _isEmpty2 = require('lodash/isEmpty');
-
-var _isEmpty3 = _interopRequireDefault(_isEmpty2);
-
-var _isDate2 = require('lodash/isDate');
-
-var _isDate3 = _interopRequireDefault(_isDate2);
-
-var _isObject2 = require('lodash/isObject');
-
-var _isObject3 = _interopRequireDefault(_isObject2);
-
-var _flat = require('flat');
-
-var _flat2 = _interopRequireDefault(_flat);
 
 var _is_allowed = require('./is_allowed');
 
@@ -119,47 +87,13 @@ exports.default = function (context, config) {
           }
           return collection.remove(_id);
         }
-      }),
-      export: new ValidatedMethod({
-        name: 'manulAdmin.' + collectionName + '.export',
-        validate: function validate() {},
-        run: function run() {
-          if (Meteor.isServer) {
-            // TODO: allow filtering and sorting
-            if (!isAllowed(collectionName, this.userId)) {
-              throw new Meteor.Error('not allowed', 'You are not allowed');
-            }
-
-            // empty objects like {} are preserved by flat, but we like to have them empty (null)
-            var isEmptyObject = function isEmptyObject(field) {
-              return (0, _isObject3.default)(field) && !(0, _isDate3.default)(field) && (0, _isEmpty3.default)(field);
-            };
-            var removeEmptyObjects = function removeEmptyObjects(doc) {
-              return (0, _omitBy3.default)(doc, isEmptyObject);
-            };
-
-            // TODO: use schema to define keys
-
-            var data = collection.find().map(_flat2.default).map(removeEmptyObjects);
-            var keysSet = new _set2.default();
-            data.forEach(function (entry) {
-              return (0, _keys5.default)(entry).forEach(function (key) {
-                return keysSet.add(key);
-              });
-            });
-            return {
-              data: data, keys: [].concat((0, _toConsumableArray3.default)(keysSet.values()))
-            };
-          }
-          return null;
-        }
       })
 
     };
   };
 
   var methods = {};
-  (0, _keys3.default)(config.collections).forEach(function (collectionName) {
+  (0, _keys2.default)(config.collections).forEach(function (collectionName) {
     methods[collectionName] = createFor(collectionName);
   });
   return methods;
