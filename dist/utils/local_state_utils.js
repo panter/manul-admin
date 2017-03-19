@@ -16,10 +16,14 @@ var stateListSort = exports.stateListSort = function stateListSort(name) {
 var statePageProperties = exports.statePageProperties = function statePageProperties(name) {
   return getStateName(name, 'pageProperties');
 };
+var stateListSearch = exports.stateListSearch = function stateListSearch(name) {
+  return getStateName(name, 'search');
+};
 
 exports.default = {
   stateListFilter: stateListFilter,
   stateListSort: stateListSort,
-  statePageProperties: statePageProperties
+  statePageProperties: statePageProperties,
+  stateListSearch: stateListSearch
 };
 //# sourceMappingURL=local_state_utils.js.map

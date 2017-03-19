@@ -16,7 +16,8 @@ var composer = exports.composer = function composer() {
     var context = _ref.context,
         publications = _ref.publications,
         collection = _ref.collection,
-        collectionName = _ref.collectionName;
+        collectionName = _ref.collectionName,
+        searchFields = _ref.searchFields;
 
     var _context = context(),
         _context$adminContext = _context.adminContext,
@@ -26,12 +27,13 @@ var composer = exports.composer = function composer() {
 
     var filter = LocalState.get((0, _local_state_utils.stateListFilter)(collectionName));
     var sortProperties = LocalState.get((0, _local_state_utils.stateListSort)(collectionName));
+    var searchTerm = LocalState.get((0, _local_state_utils.stateListSearch)(collectionName));
     var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
     var docsLoaded = Meteor.subscribe(publications.list, filter).ready();
-    var query = (0, _query_utils.filterToQuery)(filter);
+    var query = (0, _query_utils.filterToQuery)(filter, { searchTerm: searchTerm, searchFields: searchFields });
     var docs = collection.find(query, (0, _query_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties })).fetch();
     var recordCount = Counts.get(publications.counts);
-    onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });
+    onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, searchTerm: searchTerm, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });
   };
 };
 

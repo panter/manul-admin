@@ -5,7 +5,7 @@ import flat from 'flat';
 import FallbackAlerts from './fallback_alerts';
 import csv from './utils/csv';
 import routeUtils from './utils/route_utils';
-import { stateListFilter, stateListSort, statePageProperties } from './utils/local_state_utils';
+import { stateListFilter, stateListSort, statePageProperties, stateListSearch } from './utils/local_state_utils';
 
 
 export default {
@@ -41,6 +41,9 @@ export default {
     },
     listSetFilter({ LocalState }, collectionName, filter) {
       LocalState.set(stateListFilter(collectionName), filter);
+    },
+    listSetSearchTerm({ LocalState }, collectionName, searchTerm) {
+      LocalState.set(stateListSearch(collectionName), searchTerm);
     },
     listSetPageProperties({ LocalState }, collectionName, pageProperties) {
       LocalState.set(statePageProperties(collectionName), pageProperties);

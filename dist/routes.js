@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -42,7 +46,7 @@ exports.default = function (injectDeps, _ref) {
       components = adminContext.components,
       config = adminContext.config;
 
-  Object.keys(config.collections).forEach(function (collectionName) {
+  (0, _keys2.default)(config.collections).forEach(function (collectionName) {
     ['create', 'list', 'edit'].forEach(function (type) {
       var _routeUtils$getRoute = _route_utils2.default.getRoute(type, collectionName),
           path = _routeUtils$getRoute.path,

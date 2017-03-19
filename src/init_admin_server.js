@@ -11,12 +11,12 @@ export default ({ Meteor, ValidatedMethod, Counts, SimpleSchema = null }, config
 
   const createPublication = (name) => {
     const { list, edit, counts } = publicationUtils.getPublications(name);
-    const { collection } = collections[name];
+    const { collection, searchFields } = collections[name];
 
     /* eslint meteor/audit-argument-checks: 0*/
-    Meteor.publish(list, function publishList(filter) {
+    Meteor.publish(list, function publishList(filter, searchTerm = null) {
       if (isAllowed(name, this.userId)) {
-        const query = filterToQuery(filter);
+        const query = filterToQuery(filter, searchTerm && { searchFields, searchTerm });
         // counts is always without limiting
         Counts.publish(this, counts, collection.find(query));
         return collection.find(query);
