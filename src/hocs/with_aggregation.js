@@ -4,19 +4,29 @@ import { composeWithTracker } from 'mantra-core';
 import { get } from 'lodash/fp';
 
 export const composer = () => (
-  { context, config, collectionName, aggregationName, docs, aggregations }, onData,
+  props, onData,
 ) => {
+  const { aggregationName, aggregations } = props;
   const aggregation = get(aggregationName)(aggregations);
   if (!aggregation) {
     onData(new Error(`unkown aggregation:${aggregationName}`));
   } else {
-    const { aggregate, columns = [] } = aggregation;
-    const docsAggregated = aggregate(docs);
-    onData(null, {
-      docs: docsAggregated,
-      columns,
+    const { aggregate, aggregateComposer, ...aggregationProps } = aggregation;
+    const allAggregationProps = {
+      ...aggregationProps,
       isAggregation: true,
-    });
+    };
+    if (aggregateComposer) {
+      aggregateComposer(props, (e, p) => onData(e, { ...allAggregationProps, ...p }));
+    } else if (aggregate) {
+      const docsAggregated = aggregate(props.docs, props);
+      onData(null, {
+        docs: docsAggregated,
+        ...allAggregationProps,
+      });
+    } else {
+      onData(new Error('specify either aggregate or aggregateComposer'));
+    }
   }
 };
 

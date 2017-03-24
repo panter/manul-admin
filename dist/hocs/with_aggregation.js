@@ -5,6 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.composer = undefined;
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 var _get2 = require('lodash/fp/get');
 
 var _get3 = _interopRequireDefault(_get2);
@@ -13,32 +21,39 @@ var _mantraCore = require('mantra-core');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var composer = exports.composer = function composer() {
-  return function (_ref, onData) {
-    var context = _ref.context,
-        config = _ref.config,
-        collectionName = _ref.collectionName,
-        aggregationName = _ref.aggregationName,
-        docs = _ref.docs,
-        aggregations = _ref.aggregations;
+var composer = function composer() {
+  return function (props, onData) {
+    var aggregationName = props.aggregationName,
+        aggregations = props.aggregations;
 
     var aggregation = (0, _get3.default)(aggregationName)(aggregations);
     if (!aggregation) {
       onData(new Error('unkown aggregation:' + aggregationName));
     } else {
       var aggregate = aggregation.aggregate,
-          _aggregation$columns = aggregation.columns,
-          columns = _aggregation$columns === undefined ? [] : _aggregation$columns;
+          aggregateComposer = aggregation.aggregateComposer,
+          aggregationProps = (0, _objectWithoutProperties3.default)(aggregation, ['aggregate', 'aggregateComposer']);
 
-      var docsAggregated = aggregate(docs);
-      onData(null, {
-        docs: docsAggregated,
-        columns: columns,
+      var allAggregationProps = (0, _extends3.default)({}, aggregationProps, {
         isAggregation: true
       });
+      if (aggregateComposer) {
+        aggregateComposer(props, function (e, p) {
+          return onData(e, (0, _extends3.default)({}, allAggregationProps, p));
+        });
+      } else if (aggregate) {
+        var docsAggregated = aggregate(props.docs, props);
+        onData(null, (0, _extends3.default)({
+          docs: docsAggregated
+        }, allAggregationProps));
+      } else {
+        onData(new Error('specify either aggregate or aggregateComposer'));
+      }
     }
   };
 };
+
+exports.composer = composer;
 
 exports.default = function (type) {
   return (0, _mantraCore.composeWithTracker)(composer(type));
