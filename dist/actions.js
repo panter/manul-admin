@@ -167,12 +167,15 @@ exports.default = {
           gotoRoute = _ref12$adminContext.gotoRoute,
           _ref12$Alerts = _ref12.Alerts,
           Alerts = _ref12$Alerts === undefined ? _fallback_alerts2.default : _ref12$Alerts;
+      var onSuccess = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {
+        return gotoRoute(_route_utils2.default.getListRoute(collectionName).name);
+      };
 
       methods[collectionName].update.call(doc, Alerts.handleCallback('admin.update', { props: function props() {
           return { collectionName: collectionName, doc: doc };
         } }, function (error) {
         if (!error) {
-          gotoRoute(_route_utils2.default.getListRoute(collectionName).name);
+          onSuccess({ collectionName: collectionName, doc: doc, _id: doc._id });
         }
       }));
     },
@@ -182,21 +185,28 @@ exports.default = {
           gotoRoute = _ref13$adminContext.gotoRoute,
           _ref13$Alerts = _ref13.Alerts,
           Alerts = _ref13$Alerts === undefined ? _fallback_alerts2.default : _ref13$Alerts;
+      var onSuccess = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function (_ref14) {
+        var _id = _ref14._id;
+        return gotoRoute(_route_utils2.default.getEditRoute(collectionName).name, { _id: _id });
+      };
 
       methods[collectionName].create.call(doc, Alerts.handleCallback('admin.create', { props: function props() {
           return { collectionName: collectionName, doc: doc };
         } }, function (error, _id) {
         if (!error) {
-          gotoRoute(_route_utils2.default.getEditRoute(collectionName).name, { _id: _id });
+          onSuccess({ collectionName: collectionName, _id: _id });
         }
       }));
     },
-    destroy: function destroy(_ref14, collectionName, _id) {
-      var _ref14$adminContext = _ref14.adminContext,
-          methods = _ref14$adminContext.methods,
-          gotoRoute = _ref14$adminContext.gotoRoute,
-          _ref14$Alerts = _ref14.Alerts,
-          Alerts = _ref14$Alerts === undefined ? _fallback_alerts2.default : _ref14$Alerts;
+    destroy: function destroy(_ref15, collectionName, _id) {
+      var _ref15$adminContext = _ref15.adminContext,
+          methods = _ref15$adminContext.methods,
+          gotoRoute = _ref15$adminContext.gotoRoute,
+          _ref15$Alerts = _ref15.Alerts,
+          Alerts = _ref15$Alerts === undefined ? _fallback_alerts2.default : _ref15$Alerts;
+      var onSuccess = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function () {
+        return gotoRoute(_route_utils2.default.getListRoute(collectionName).name);
+      };
 
       /* eslint no-alert: 0*/
       var confirmed = window.confirm("Really destroy? This can't be undone");
@@ -205,21 +215,21 @@ exports.default = {
             return { collectionName: collectionName, _id: _id };
           } }, function (error) {
           if (!error) {
-            gotoRoute(_route_utils2.default.getListRoute(collectionName).name);
+            onSuccess({ collectionName: collectionName, _id: _id });
           }
         }));
       }
     },
-    exportCsv: function exportCsv(_ref16, docs) {
-      var methods = _ref16.adminContext.methods,
-          _ref16$Alerts = _ref16.Alerts,
-          Alerts = _ref16$Alerts === undefined ? _fallback_alerts2.default : _ref16$Alerts;
+    exportCsv: function exportCsv(_ref17, docs) {
+      var methods = _ref17.adminContext.methods,
+          _ref17$Alerts = _ref17.Alerts,
+          Alerts = _ref17$Alerts === undefined ? _fallback_alerts2.default : _ref17$Alerts;
 
-      var _ref15 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var _ref16 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      var _ref15$filename = _ref15.filename,
-          filename = _ref15$filename === undefined ? 'export.csv' : _ref15$filename,
-          options = (0, _objectWithoutProperties3.default)(_ref15, ['filename']);
+      var _ref16$filename = _ref16.filename,
+          filename = _ref16$filename === undefined ? 'export.csv' : _ref16$filename,
+          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename']);
 
       var isEmptyObject = function isEmptyObject(field) {
         return (0, _isObject3.default)(field) && !(0, _isDate3.default)(field) && (0, _isEmpty3.default)(field);
@@ -239,24 +249,24 @@ exports.default = {
 
       _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
     },
-    importCsv: function importCsv(_ref17, _ref18) {
-      var methods = _ref17.adminContext.methods;
-      var collectionName = _ref18.collectionName,
-          file = _ref18.file,
-          _ref18$onInsert = _ref18.onInsert,
-          onInsert = _ref18$onInsert === undefined ? _noop3.default : _ref18$onInsert,
-          _ref18$onUpdate = _ref18.onUpdate,
-          onUpdate = _ref18$onUpdate === undefined ? _noop3.default : _ref18$onUpdate,
-          _ref18$onComplete = _ref18.onComplete,
-          onComplete = _ref18$onComplete === undefined ? _noop3.default : _ref18$onComplete;
+    importCsv: function importCsv(_ref18, _ref19) {
+      var methods = _ref18.adminContext.methods;
+      var collectionName = _ref19.collectionName,
+          file = _ref19.file,
+          _ref19$onInsert = _ref19.onInsert,
+          onInsert = _ref19$onInsert === undefined ? _noop3.default : _ref19$onInsert,
+          _ref19$onUpdate = _ref19.onUpdate,
+          onUpdate = _ref19$onUpdate === undefined ? _noop3.default : _ref19$onUpdate,
+          _ref19$onComplete = _ref19.onComplete,
+          onComplete = _ref19$onComplete === undefined ? _noop3.default : _ref19$onComplete;
 
       var counter = -1;
       var imported = new _set2.default();
       _papaparse2.default.parse(file, {
         header: true,
         dynamicTyping: true,
-        complete: function complete(_ref19) {
-          var data = _ref19.data;
+        complete: function complete(_ref20) {
+          var data = _ref20.data;
 
           data.forEach(function (entryUncleaned) {
             counter += 1;

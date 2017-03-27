@@ -24,17 +24,25 @@ var _some2 = require('lodash/some');
 
 var _some3 = _interopRequireDefault(_some2);
 
+var _defaultsDeep2 = require('lodash/defaultsDeep');
+
+var _defaultsDeep3 = _interopRequireDefault(_defaultsDeep2);
+
 var _create_methods = require('./create_methods');
 
 var _create_methods2 = _interopRequireDefault(_create_methods);
 
-var _route_utils = require('./utils/route_utils');
+var _default_components = require('./default_components');
 
-var _route_utils2 = _interopRequireDefault(_route_utils);
+var _default_components2 = _interopRequireDefault(_default_components);
 
 var _publication_utils = require('./utils/publication_utils');
 
 var _publication_utils2 = _interopRequireDefault(_publication_utils);
+
+var _route_utils = require('./utils/route_utils');
+
+var _route_utils2 = _interopRequireDefault(_route_utils);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -50,6 +58,8 @@ exports.default = function (_ref) {
       gotoRoute = _ref$gotoRoute === undefined ? function (routeName) {
     return window.alert('please provide a gotoRoute-function in adminContext that can jump to ' + routeName);
   } : _ref$gotoRoute;
+
+  (0, _defaultsDeep3.default)(components, _default_components2.default);
 
   var neededMeteorPackages = { Meteor: Meteor, ValidatedMethod: ValidatedMethod, Counts: Counts, LocalState: LocalState };
   if ((0, _some3.default)(neededMeteorPackages, _isNil3.default)) {
