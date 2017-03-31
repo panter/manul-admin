@@ -1,7 +1,9 @@
 import _ from 'lodash';
+
 import createMethods from './create_methods';
-import routeUtils from './utils/route_utils';
+import defaultComponents from './default_components';
 import publicationUtils from './utils/publication_utils';
+import routeUtils from './utils/route_utils';
 
 
 export default ({
@@ -19,6 +21,8 @@ export default ({
 
 
 }) => {
+  _.defaultsDeep(components, defaultComponents);
+
   const neededMeteorPackages = { Meteor, ValidatedMethod, Counts, LocalState };
   if (_.some(neededMeteorPackages, _.isNil)) {
     throw new Error(`please provide all of the following meteor-packages: ${_.keys(neededMeteorPackages).join(', ')}`);

@@ -68,23 +68,26 @@ export default {
     update(
       { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
       collectionName, doc,
+      onSuccess = () => gotoRoute(routeUtils.getListRoute(collectionName).name),
     ) {
       methods[collectionName].update.call(doc,
         Alerts.handleCallback('admin.update', { props: () => ({ collectionName, doc }) }, (error) => {
           if (!error) {
-            gotoRoute(routeUtils.getListRoute(collectionName).name);
+            onSuccess({ collectionName, doc, _id: doc._id });
           }
         }),
     );
     },
     create(
       { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
-      collectionName, doc,
+      collectionName,
+      doc,
+      onSuccess = ({ _id }) => gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id }),
     ) {
       methods[collectionName].create.call(doc,
         Alerts.handleCallback('admin.create', { props: () => ({ collectionName, doc }) }, (error, _id) => {
           if (!error) {
-            gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id });
+            onSuccess({ collectionName, _id });
           }
         }),
     );
@@ -92,6 +95,7 @@ export default {
     destroy(
       { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
       collectionName, _id,
+      onSuccess = () => gotoRoute(routeUtils.getListRoute(collectionName).name),
     ) {
       /* eslint no-alert: 0*/
       const confirmed = window.confirm("Really destroy? This can't be undone");
@@ -99,7 +103,7 @@ export default {
         methods[collectionName].destroy.call({ _id },
           Alerts.handleCallback('admin.destroy', { props: () => ({ collectionName, _id }) }, (error) => {
             if (!error) {
-              gotoRoute(routeUtils.getListRoute(collectionName).name);
+              onSuccess({ collectionName, _id });
             }
           }),
       );
