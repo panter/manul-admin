@@ -25,7 +25,11 @@ var composer = exports.composer = function composer() {
         collectionName = _ref.collectionName,
         searchFields = _ref.searchFields,
         _ref$sortCursor = _ref.sortCursor,
-        sortCursor = _ref$sortCursor === undefined ? false : _ref$sortCursor;
+        sortCursor = _ref$sortCursor === undefined ? false : _ref$sortCursor,
+        filterProps = _ref.filter,
+        sortPropertiesProps = _ref.sortProperties,
+        searchTermProps = _ref.searchTerm,
+        pagePropertiesProps = _ref.pageProperties;
 
     var _context = context(),
         _context$adminContext = _context.adminContext,
@@ -33,10 +37,10 @@ var composer = exports.composer = function composer() {
         LocalState = _context$adminContext.LocalState,
         Counts = _context$adminContext.Counts;
 
-    var filter = LocalState.get((0, _local_state_utils.stateListFilter)(collectionName));
-    var sortProperties = LocalState.get((0, _local_state_utils.stateListSort)(collectionName));
-    var searchTerm = LocalState.get((0, _local_state_utils.stateListSearch)(collectionName));
-    var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
+    var filter = filterProps || LocalState.get((0, _local_state_utils.stateListFilter)(collectionName));
+    var sortProperties = sortPropertiesProps || LocalState.get((0, _local_state_utils.stateListSort)(collectionName));
+    var searchTerm = searchTermProps || LocalState.get((0, _local_state_utils.stateListSearch)(collectionName));
+    var pageProperties = pagePropertiesProps || LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
     var docsLoaded = Meteor.subscribe(publications.list, filter).ready();
     var query = (0, _query_utils.filterToQuery)(filter, { searchTerm: searchTerm, searchFields: searchFields });
     var docs = collection.find(query, (0, _extends3.default)({}, sortCursor && (0, _query_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties }))).fetch();

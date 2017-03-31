@@ -5,13 +5,24 @@ import { stateListFilter, stateListSort, statePageProperties, stateListSearch } 
 
 
 export const composer = () => (
-  { context, publications, collection, collectionName, searchFields, sortCursor = false }, onData,
+  {
+    context,
+    publications,
+    collection,
+    collectionName,
+    searchFields,
+    sortCursor = false,
+    filter: filterProps,
+    sortProperties: sortPropertiesProps,
+    searchTerm: searchTermProps,
+    pageProperties: pagePropertiesProps,
+  }, onData,
 ) => {
   const { adminContext: { Meteor, LocalState, Counts } } = context();
-  const filter = LocalState.get(stateListFilter(collectionName));
-  const sortProperties = LocalState.get(stateListSort(collectionName));
-  const searchTerm = LocalState.get(stateListSearch(collectionName));
-  const pageProperties = LocalState.get(statePageProperties(collectionName));
+  const filter = filterProps || LocalState.get(stateListFilter(collectionName));
+  const sortProperties = sortPropertiesProps || LocalState.get(stateListSort(collectionName));
+  const searchTerm = searchTermProps || LocalState.get(stateListSearch(collectionName));
+  const pageProperties = pagePropertiesProps || LocalState.get(statePageProperties(collectionName));
   const docsLoaded = Meteor.subscribe(publications.list, filter).ready();
   const query = filterToQuery(filter, { searchTerm, searchFields });
   const docs = collection.find(
