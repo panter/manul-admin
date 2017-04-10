@@ -67,7 +67,7 @@ var exportAsCsv = function exportAsCsv(_ref) {
   });
   var papaOptions = (0, _extends3.default)({ delimiter: delimiter, quotes: quotes }, additionalProps);
   var csv = _papaparse2.default.unparse({ fields: columns, data: dataPadded }, papaOptions);
-  (0, _fileSaver.saveAs)(new window.Blob([csv], { type: 'text/plain;charset=utf-8' }), filename + '.csv', useBom);
+  (0, _fileSaver.saveAs)(new window.Blob([csv], { type: 'text/plain;charset=utf-8' }), filename + '.csv', !useBom);
 };
 
 exports.default = { exportAsCsv: exportAsCsv };
