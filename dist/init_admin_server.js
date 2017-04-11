@@ -54,7 +54,6 @@ exports['default'] = function (_ref, config) {
         }).keyBy().mapValues(function () {
           return 1;
         }).value();
-        console.log(fields);
         var findOptions = _extends({}, options, {
           fields: fields
         });
