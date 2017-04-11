@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = require('babel-runtime/helpers/extends')['default'];
+
 var _Object$keys = require('babel-runtime/core-js/object/keys')['default'];
 
 var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
@@ -7,6 +9,10 @@ var _interopRequireDefault = require('babel-runtime/helpers/interop-require-defa
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var _utilsPublication_utils = require('./utils/publication_utils');
 
@@ -35,14 +41,25 @@ exports['default'] = function (_ref, config) {
     var list = _publicationUtils$getPublications.list;
     var edit = _publicationUtils$getPublications.edit;
     var counts = _publicationUtils$getPublications.counts;
-    var collection = collections[name].collection;
+    var _collections$name = collections[name];
+    var collection = _collections$name.collection;
+    var columns = _collections$name.columns;
 
     /* eslint meteor/audit-argument-checks: 0*/
     Meteor.publish(list, function publishList(query, options) {
       if (isAllowed(name, this.userId)) {
-        // can't reuse "users" cursor
+        // only restrict to first, because emails.0.address does not work
+        var fields = _lodash2['default'].chain(columns).map(function (c) {
+          return _lodash2['default'].first(c.split('.'));
+        }).keyBy().mapValues(function () {
+          return 1;
+        }).value();
+        console.log(fields);
+        var findOptions = _extends({}, options, {
+          fields: fields
+        });
         Counts.publish(this, counts, collection.find(query, options));
-        return collection.find(query, options);
+        return collection.find(query, findOptions);
       }
     });
     Meteor.publish(edit, function publishEdit(_id) {

@@ -1,7 +1,8 @@
-
+import _ from 'lodash';
 import publicationUtils from './utils/publication_utils';
 import createMethods from './create_methods';
 import IsAllowed from './is_allowed';
+
 
 export default ({ Meteor, SimpleSchema, ValidatedMethod, Counts }, config) => {
   const isAllowed = IsAllowed(config);
@@ -9,14 +10,22 @@ export default ({ Meteor, SimpleSchema, ValidatedMethod, Counts }, config) => {
 
   const createPublication = (name) => {
     const { list, edit, counts } = publicationUtils.getPublications(name);
-    const { collection } = collections[name];
+    const { collection, columns } = collections[name];
 
     /* eslint meteor/audit-argument-checks: 0*/
     Meteor.publish(list, function publishList(query, options) {
       if (isAllowed(name, this.userId)) {
-        // can't reuse "users" cursor
+        // only restrict to first, because emails.0.address does not work
+        const fields = _.chain(columns).map(
+          c => _.first(c.split('.')),
+        ).keyBy().mapValues(() => 1)
+        .value();
+        const findOptions = {
+          ...options,
+          fields,
+        };
         Counts.publish(this, counts, collection.find(query, options));
-        return collection.find(query, options);
+        return collection.find(query, findOptions);
       }
     });
     Meteor.publish(edit, function publishEdit(_id) {
