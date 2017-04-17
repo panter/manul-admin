@@ -27,6 +27,7 @@ var composer = exports.composer = function composer() {
         _ref$sortCursor = _ref.sortCursor,
         sortCursor = _ref$sortCursor === undefined ? false : _ref$sortCursor,
         filterProps = _ref.filter,
+        transformFilter = _ref.transformFilter,
         sortPropertiesProps = _ref.sortProperties,
         searchTermProps = _ref.searchTerm,
         pagePropertiesProps = _ref.pageProperties;
@@ -42,7 +43,7 @@ var composer = exports.composer = function composer() {
     var searchTerm = searchTermProps || LocalState.get((0, _local_state_utils.stateListSearch)(collectionName));
     var pageProperties = pagePropertiesProps || LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
     var docsLoaded = Meteor.subscribe(publications.list, filter).ready();
-    var query = (0, _query_utils.filterToQuery)(filter, { searchTerm: searchTerm, searchFields: searchFields });
+    var query = (0, _query_utils.filterToQuery)(filter, { searchTerm: searchTerm, searchFields: searchFields }, transformFilter);
     var docs = collection.find(query, (0, _extends3.default)({}, sortCursor && (0, _query_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties }))).fetch();
     var recordCount = Counts.get(publications.counts);
     onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, searchTerm: searchTerm, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });

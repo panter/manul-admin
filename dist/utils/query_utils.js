@@ -77,12 +77,15 @@ var createSearchQuery = exports.createSearchQuery = function createSearchQuery(f
 };
 /* eslint import/prefer-default-export: 0 */
 var filterToQuery = exports.filterToQuery = function filterToQuery(filter, search) {
+  var transformFilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (f) {
+    return f;
+  };
+
   // console.log('got filter', filter);
   // console.log('got search', search);
 
   // remove empty objects on filter
-
-  var query = (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) && removeEmptyObjects(filter), !(0, _isEmpty3.default)(search) && !(0, _isEmpty3.default)(search.searchFields) && !(0, _isEmpty3.default)(search.searchTerm) && createSearchQuery(search.searchFields, termToTermList(search.searchTerm)));
+  var query = (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) && removeEmptyObjects(transformFilter(filter)), !(0, _isEmpty3.default)(search) && !(0, _isEmpty3.default)(search.searchFields) && !(0, _isEmpty3.default)(search.searchTerm) && createSearchQuery(search.searchFields, termToTermList(search.searchTerm)));
   // console.log('query is', query);
   return query;
 };

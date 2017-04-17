@@ -13,6 +13,7 @@ export const composer = () => (
     searchFields,
     sortCursor = false,
     filter: filterProps,
+    transformFilter,
     sortProperties: sortPropertiesProps,
     searchTerm: searchTermProps,
     pageProperties: pagePropertiesProps,
@@ -24,7 +25,7 @@ export const composer = () => (
   const searchTerm = searchTermProps || LocalState.get(stateListSearch(collectionName));
   const pageProperties = pagePropertiesProps || LocalState.get(statePageProperties(collectionName));
   const docsLoaded = Meteor.subscribe(publications.list, filter).ready();
-  const query = filterToQuery(filter, { searchTerm, searchFields });
+  const query = filterToQuery(filter, { searchTerm, searchFields }, transformFilter);
   const docs = collection.find(
     query,
     { ...(sortCursor && gridOptionsToQueryOptions({ sortProperties, pageProperties })) },
