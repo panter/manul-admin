@@ -33,7 +33,7 @@ const exportAsCsv = ({
   const dataPadded = data.map(entry => (_.values({ ...defaults, ...entry })));
   const papaOptions = { delimiter, quotes, ...additionalProps };
   const csv = Papa.unparse({ fields: columns, data: dataPadded }, papaOptions);
-  saveAs(new window.Blob([csv], { type: 'text/plain;charset=utf-8' }), `${filename}.csv`, useBom);
+  saveAs(new window.Blob([csv], { type: 'text/plain;charset=utf-8' }), `${filename}.csv`, !useBom);
 };
 
 export default { exportAsCsv };
