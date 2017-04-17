@@ -44,7 +44,8 @@ exports.default = function (_ref, config) {
 
     var _collections$name = collections[name],
         collection = _collections$name.collection,
-        searchFields = _collections$name.searchFields;
+        searchFields = _collections$name.searchFields,
+        transformFilter = _collections$name.transformFilter;
 
     /* eslint meteor/audit-argument-checks: 0*/
 
@@ -52,7 +53,7 @@ exports.default = function (_ref, config) {
       var searchTerm = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
       if (isAllowed(name, this.userId)) {
-        var query = (0, _query_utils.filterToQuery)(filter, searchTerm && { searchFields: searchFields, searchTerm: searchTerm });
+        var query = (0, _query_utils.filterToQuery)(filter, searchTerm && { searchFields: searchFields, searchTerm: searchTerm }, transformFilter);
         // counts is always without limiting
         Counts.publish(this, counts, collection.find(query));
         return collection.find(query);

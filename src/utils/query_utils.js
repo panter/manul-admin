@@ -21,14 +21,13 @@ export const createSearchQuery = (fields, terms) => (
   }
 );
 /* eslint import/prefer-default-export: 0 */
-export const filterToQuery = (filter, search) => {
+export const filterToQuery = (filter, search, transformFilter = f => f) => {
   // console.log('got filter', filter);
   // console.log('got search', search);
 
   // remove empty objects on filter
-
   const query = {
-    ...!isEmpty(filter) && removeEmptyObjects(filter),
+    ...!isEmpty(filter) && removeEmptyObjects(transformFilter(filter)),
     ...(!isEmpty(search) && !isEmpty(search.searchFields) && !isEmpty(search.searchTerm) && (
       createSearchQuery(search.searchFields, termToTermList(search.searchTerm))
     )),
