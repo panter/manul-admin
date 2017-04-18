@@ -12,18 +12,19 @@ export const composer = () => (
     collectionName,
     searchFields,
     sortCursor = false,
-    filter: filterProps,
+    filter: filterBase,
     transformFilter,
-    sortProperties: sortPropertiesProps,
-    searchTerm: searchTermProps,
-    pageProperties: pagePropertiesProps,
   }, onData,
 ) => {
   const { adminContext: { Meteor, LocalState, Counts } } = context();
-  const filter = filterProps || LocalState.get(stateListFilter(collectionName));
-  const sortProperties = sortPropertiesProps || LocalState.get(stateListSort(collectionName));
-  const searchTerm = searchTermProps || LocalState.get(stateListSearch(collectionName));
-  const pageProperties = pagePropertiesProps || LocalState.get(statePageProperties(collectionName));
+  const filterLocal = LocalState.get(stateListFilter(collectionName));
+  const filter = {
+    ...filterLocal,
+    ...filterBase,
+  };
+  const sortProperties = LocalState.get(stateListSort(collectionName));
+  const searchTerm = LocalState.get(stateListSearch(collectionName));
+  const pageProperties = LocalState.get(statePageProperties(collectionName));
   const docsLoaded = Meteor.subscribe(publications.list, filter).ready();
   const query = filterToQuery(filter, { searchTerm, searchFields }, transformFilter);
   const docs = collection.find(
