@@ -27,11 +27,11 @@ export default {
       let newSortProps = [];
 
       if (!oldProperty) {
-        newSortProps = [{ ...newSortProperty, sortAscending: true }, ...sortProperties];
+        newSortProps = [{ ...newSortProperty, sortAscending: true }];
       } else {
         newSortProps = _.without(sortProperties, oldProperty);
         if (oldProperty.sortAscending) {
-          newSortProps = [{ ...newSortProperty, sortAscending: false }, ...newSortProps];
+          newSortProps = [{ ...newSortProperty, sortAscending: false }];
         }
       }
       LocalState.set(localStateSortProperties, newSortProps);
@@ -70,8 +70,11 @@ export default {
       collectionName, doc,
       onSuccess = () => gotoRoute(routeUtils.getListRoute(collectionName).name),
     ) {
+      const handleCallback = (
+        Alerts.handleCallback.bind(Alerts) || FallbackAlerts.handleCallback.bind(FallbackAlerts)
+      );
       methods[collectionName].update.call(doc,
-        Alerts.handleCallback('admin.update', { props: () => ({ collectionName, doc }) }, (error) => {
+        handleCallback('admin.update', { props: () => ({ collectionName, doc }) }, (error) => {
           if (!error) {
             onSuccess({ collectionName, doc, _id: doc._id });
           }
@@ -84,8 +87,11 @@ export default {
       doc,
       onSuccess = ({ _id }) => gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id }),
     ) {
+      const handleCallback = (
+        Alerts.handleCallback.bind(Alerts) || FallbackAlerts.handleCallback.bind(FallbackAlerts)
+      );
       methods[collectionName].create.call(doc,
-        Alerts.handleCallback('admin.create', { props: () => ({ collectionName, doc }) }, (error, _id) => {
+        handleCallback('admin.create', { props: () => ({ collectionName, doc }) }, (error, _id) => {
           if (!error) {
             onSuccess({ collectionName, _id });
           }
@@ -99,9 +105,12 @@ export default {
     ) {
       /* eslint no-alert: 0*/
       const confirmed = window.confirm("Really destroy? This can't be undone");
+      const handleCallback = (
+        Alerts.handleCallback.bind(Alerts) || FallbackAlerts.handleCallback.bind(FallbackAlerts)
+      );
       if (confirmed) {
         methods[collectionName].destroy.call({ _id },
-          Alerts.handleCallback('admin.destroy', { props: () => ({ collectionName, _id }) }, (error) => {
+          handleCallback('admin.destroy', { props: () => ({ collectionName, _id }) }, (error) => {
             if (!error) {
               onSuccess({ collectionName, _id });
             }

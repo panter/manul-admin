@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _set = require('babel-runtime/core-js/set');
 
 var _set2 = _interopRequireDefault(_set);
@@ -15,10 +19,6 @@ var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
-
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
 var _map2 = require('lodash/fp/map');
 
@@ -114,11 +114,11 @@ exports.default = {
       var newSortProps = [];
 
       if (!oldProperty) {
-        newSortProps = [(0, _extends3.default)({}, newSortProperty, { sortAscending: true })].concat((0, _toConsumableArray3.default)(sortProperties));
+        newSortProps = [(0, _extends3.default)({}, newSortProperty, { sortAscending: true })];
       } else {
         newSortProps = (0, _without3.default)(sortProperties, oldProperty);
         if (oldProperty.sortAscending) {
-          newSortProps = [(0, _extends3.default)({}, newSortProperty, { sortAscending: false })].concat((0, _toConsumableArray3.default)(newSortProps));
+          newSortProps = [(0, _extends3.default)({}, newSortProperty, { sortAscending: false })];
         }
       }
       LocalState.set(localStateSortProperties, newSortProps);
@@ -171,7 +171,8 @@ exports.default = {
         return gotoRoute(_route_utils2.default.getListRoute(collectionName).name);
       };
 
-      methods[collectionName].update.call(doc, Alerts.handleCallback('admin.update', { props: function props() {
+      var handleCallback = Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
+      methods[collectionName].update.call(doc, handleCallback('admin.update', { props: function props() {
           return { collectionName: collectionName, doc: doc };
         } }, function (error) {
         if (!error) {
@@ -190,7 +191,8 @@ exports.default = {
         return gotoRoute(_route_utils2.default.getEditRoute(collectionName).name, { _id: _id });
       };
 
-      methods[collectionName].create.call(doc, Alerts.handleCallback('admin.create', { props: function props() {
+      var handleCallback = Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
+      methods[collectionName].create.call(doc, handleCallback('admin.create', { props: function props() {
           return { collectionName: collectionName, doc: doc };
         } }, function (error, _id) {
         if (!error) {
@@ -210,8 +212,9 @@ exports.default = {
 
       /* eslint no-alert: 0*/
       var confirmed = window.confirm("Really destroy? This can't be undone");
+      var handleCallback = Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
       if (confirmed) {
-        methods[collectionName].destroy.call({ _id: _id }, Alerts.handleCallback('admin.destroy', { props: function props() {
+        methods[collectionName].destroy.call({ _id: _id }, handleCallback('admin.destroy', { props: function props() {
             return { collectionName: collectionName, _id: _id };
           } }, function (error) {
           if (!error) {

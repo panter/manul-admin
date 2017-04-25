@@ -19,18 +19,8 @@ var _result3 = _interopRequireDefault(_result2);
 
 var _mantraCore = require('mantra-core');
 
-var _simplSchema = require('simpl-schema');
-
-var _simplSchema2 = _interopRequireDefault(_simplSchema);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var searchSchema = new _simplSchema2.default({
-  searchTerm: {
-    type: String,
-    optional: true
-  }
-});
 var composer = function composer(type) {
   return function (_ref, onData) {
     var context = _ref.context,
@@ -39,26 +29,46 @@ var composer = function composer(type) {
 
     var _context = context(),
         _context$adminContext = _context.adminContext,
+        SimpleSchema1 = _context$adminContext.SimpleSchema,
         getComponent = _context$adminContext.getComponent,
         publicationUtils = _context$adminContext.publicationUtils,
         config = _context$adminContext.config;
 
-    var collections = config.collections;
+    var SimpleSchema = void 0;
+    try {
+      /* eslint global-require: 0 */
+      SimpleSchema = require('simpl-schema').default;
+    } catch (error) {
+      // try to get from context
+      SimpleSchema = SimpleSchema1;
+    }
+    if (!SimpleSchema) {
+      onData(new Error('please provide SimpleSchema by npm or in context (version 1)'));
+    } else {
+      var searchSchema = new SimpleSchema({
+        searchTerm: {
+          type: String,
+          optional: true
+        }
+      });
 
-    var publications = publicationUtils.getPublications(collectionName);
-    var _collections$collecti = collections[collectionName],
-        collection = _collections$collecti.collection,
-        schema = _collections$collecti.schema,
-        colConfig = (0, _objectWithoutProperties3.default)(_collections$collecti, ['collection', 'schema']);
+      var collections = config.collections;
 
-    var Component = getComponent({ collectionName: collectionName, type: type });
-    onData(null, (0, _extends3.default)({
-      Component: Component,
-      collection: collection,
-      schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
-      searchSchema: searchSchema,
-      publications: publications
-    }, colConfig, props));
+      var publications = publicationUtils.getPublications(collectionName);
+      var _collections$collecti = collections[collectionName],
+          collection = _collections$collecti.collection,
+          schema = _collections$collecti.schema,
+          colConfig = (0, _objectWithoutProperties3.default)(_collections$collecti, ['collection', 'schema']);
+
+      var Component = getComponent({ collectionName: collectionName, type: type });
+      onData(null, (0, _extends3.default)({
+        Component: Component,
+        collection: collection,
+        schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
+        searchSchema: searchSchema,
+        publications: publications
+      }, colConfig, props));
+    }
   };
 };
 

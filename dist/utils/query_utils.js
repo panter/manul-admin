@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.gridOptionsToQueryOptions = exports.filterToQuery = exports.createSearchQuery = undefined;
+exports.gridOptionsToQueryOptions = exports.sortPropsToMongoSort = exports.filterToQuery = exports.createSearchQuery = undefined;
 
 var _extends2 = require('babel-runtime/helpers/extends');
 
@@ -90,7 +90,7 @@ var filterToQuery = exports.filterToQuery = function filterToQuery(filter, searc
   return query;
 };
 
-var sortPropsToMongoSort = (0, _flow3.default)((0, _keyBy3.default)('id'), (0, _mapValues3.default)(function (_ref2) {
+var sortPropsToMongoSort = exports.sortPropsToMongoSort = (0, _flow3.default)((0, _keyBy3.default)('id'), (0, _mapValues3.default)(function (_ref2) {
   var sortAscending = _ref2.sortAscending;
   return sortAscending ? 1 : -1;
 }));

@@ -24,7 +24,10 @@ var _query_utils = require('./utils/query_utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var HARD_LIMIT = 1000;
+
 // SimpleSchema needs only to be passed, if its not in npm (version 2)
+
 exports.default = function (_ref, config) {
   var Meteor = _ref.Meteor,
       ValidatedMethod = _ref.ValidatedMethod,
@@ -51,12 +54,15 @@ exports.default = function (_ref, config) {
 
     Meteor.publish(list, function publishList(filter) {
       var searchTerm = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var sortProperties = arguments[2];
 
       if (isAllowed(name, this.userId)) {
         var query = (0, _query_utils.filterToQuery)(filter, searchTerm && { searchFields: searchFields, searchTerm: searchTerm }, transformFilter);
         // counts is always without limiting
+
         Counts.publish(this, counts, collection.find(query));
-        return collection.find(query);
+        var sort = (0, _query_utils.sortPropsToMongoSort)(sortProperties);
+        return collection.find(query, { sort: sort, limit: HARD_LIMIT });
       }
     });
     Meteor.publish(edit, function publishEdit(_id) {

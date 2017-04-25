@@ -51,6 +51,7 @@ exports.default = function (_ref) {
       ValidatedMethod = _ref.ValidatedMethod,
       Counts = _ref.Counts,
       LocalState = _ref.LocalState,
+      SimpleSchema = _ref.SimpleSchema,
       config = _ref.config,
       adminRoutes = _ref.adminRoutes,
       components = _ref.components,
@@ -65,7 +66,7 @@ exports.default = function (_ref) {
   if ((0, _some3.default)(neededMeteorPackages, _isNil3.default)) {
     throw new Error('please provide all of the following meteor-packages: ' + (0, _keys3.default)(neededMeteorPackages).join(', '));
   }
-  var methods = (0, _create_methods2.default)({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, Counts: Counts }, config);
+  var methods = (0, _create_methods2.default)({ Meteor: Meteor, SimpleSchema: SimpleSchema, ValidatedMethod: ValidatedMethod, Counts: Counts }, config);
   var getComponent = function getComponent(_ref2) {
     var collectionName = _ref2.collectionName,
         type = _ref2.type;
@@ -84,6 +85,7 @@ exports.default = function (_ref) {
   return {
     Meteor: Meteor,
     LocalState: LocalState,
+    SimpleSchema: SimpleSchema,
     Counts: Counts,
     methods: methods,
     getComponent: getComponent,
