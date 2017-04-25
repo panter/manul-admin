@@ -36,7 +36,7 @@ export const filterToQuery = (filter, search, transformFilter = f => f) => {
   return query;
 };
 
-const sortPropsToMongoSort = flow(
+export const sortPropsToMongoSort = flow(
   keyBy('id'),
   mapValues(({ sortAscending }) => (sortAscending ? 1 : -1)),
 );

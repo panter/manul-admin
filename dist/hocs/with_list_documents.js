@@ -40,9 +40,11 @@ var composer = exports.composer = function composer() {
     var sortProperties = LocalState.get((0, _local_state_utils.stateListSort)(collectionName));
     var searchTerm = LocalState.get((0, _local_state_utils.stateListSearch)(collectionName));
     var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
-    var docsLoaded = Meteor.subscribe(publications.list, filter).ready();
+    var docsLoaded = Meteor.subscribe(publications.list, filter, searchTerm, sortProperties).ready();
     var query = (0, _query_utils.filterToQuery)(filter, { searchTerm: searchTerm, searchFields: searchFields }, transformFilter);
-    var docs = collection.find(query, (0, _extends3.default)({}, sortCursor && (0, _query_utils.gridOptionsToQueryOptions)({ sortProperties: sortProperties, pageProperties: pageProperties }))).fetch();
+    var docs = collection.find(query, {
+      sort: (0, _query_utils.sortPropsToMongoSort)(sortProperties)
+    }).fetch();
     var recordCount = Counts.get(publications.counts);
     onData(null, { docsLoaded: docsLoaded, docs: docs, filter: filter, searchTerm: searchTerm, sortProperties: sortProperties, pageProperties: pageProperties, recordCount: recordCount });
   };
