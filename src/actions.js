@@ -71,7 +71,8 @@ export default {
       onSuccess = () => gotoRoute(routeUtils.getListRoute(collectionName).name),
     ) {
       const handleCallback = (
-        Alerts.handleCallback.bind(Alerts) || FallbackAlerts.handleCallback.bind(FallbackAlerts)
+        (Alerts.handleCallback && Alerts.handleCallback.bind(Alerts)) ||
+        FallbackAlerts.handleCallback.bind(FallbackAlerts)
       );
       methods[collectionName].update.call(doc,
         handleCallback('admin.update', { props: () => ({ collectionName, doc }) }, (error) => {
@@ -88,7 +89,8 @@ export default {
       onSuccess = ({ _id }) => gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id }),
     ) {
       const handleCallback = (
-        Alerts.handleCallback.bind(Alerts) || FallbackAlerts.handleCallback.bind(FallbackAlerts)
+        (Alerts.handleCallback && Alerts.handleCallback.bind(Alerts)) ||
+        FallbackAlerts.handleCallback.bind(FallbackAlerts)
       );
       methods[collectionName].create.call(doc,
         handleCallback('admin.create', { props: () => ({ collectionName, doc }) }, (error, _id) => {
@@ -106,7 +108,8 @@ export default {
       /* eslint no-alert: 0*/
       const confirmed = window.confirm("Really destroy? This can't be undone");
       const handleCallback = (
-        Alerts.handleCallback.bind(Alerts) || FallbackAlerts.handleCallback.bind(FallbackAlerts)
+        (Alerts.handleCallback && Alerts.handleCallback.bind(Alerts)) ||
+        FallbackAlerts.handleCallback.bind(FallbackAlerts)
       );
       if (confirmed) {
         methods[collectionName].destroy.call({ _id },

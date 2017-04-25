@@ -171,7 +171,7 @@ exports.default = {
         return gotoRoute(_route_utils2.default.getListRoute(collectionName).name);
       };
 
-      var handleCallback = Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
+      var handleCallback = Alerts.handleCallback && Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
       methods[collectionName].update.call(doc, handleCallback('admin.update', { props: function props() {
           return { collectionName: collectionName, doc: doc };
         } }, function (error) {
@@ -191,7 +191,7 @@ exports.default = {
         return gotoRoute(_route_utils2.default.getEditRoute(collectionName).name, { _id: _id });
       };
 
-      var handleCallback = Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
+      var handleCallback = Alerts.handleCallback && Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
       methods[collectionName].create.call(doc, handleCallback('admin.create', { props: function props() {
           return { collectionName: collectionName, doc: doc };
         } }, function (error, _id) {
@@ -212,7 +212,7 @@ exports.default = {
 
       /* eslint no-alert: 0*/
       var confirmed = window.confirm("Really destroy? This can't be undone");
-      var handleCallback = Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
+      var handleCallback = Alerts.handleCallback && Alerts.handleCallback.bind(Alerts) || _fallback_alerts2.default.handleCallback.bind(_fallback_alerts2.default);
       if (confirmed) {
         methods[collectionName].destroy.call({ _id: _id }, handleCallback('admin.destroy', { props: function props() {
             return { collectionName: collectionName, _id: _id };
