@@ -9,6 +9,10 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
@@ -49,21 +53,30 @@ var _omitBy2 = require('lodash/fp/omitBy');
 
 var _omitBy3 = _interopRequireDefault(_omitBy2);
 
+var _capitalize2 = require('lodash/fp/capitalize');
+
+var _capitalize3 = _interopRequireDefault(_capitalize2);
+
+var _toLower2 = require('lodash/fp/toLower');
+
+var _toLower3 = _interopRequireDefault(_toLower2);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var removeEmptyObjects = (0, _omitBy3.default)(function (o) {
   return (0, _isObject3.default)(o) && (0, _isEmpty3.default)(o);
 });
 
-var queryListFromRegex = function queryListFromRegex(regex) {
+var queryListFromTerm = function queryListFromTerm(term, transform) {
   return (0, _flow3.default)((0, _map3.default)(function (field) {
-    return (0, _defineProperty3.default)({}, field, regex);
+    return (0, _defineProperty3.default)({}, field, new RegExp('^' + transform(term)));
   }));
 };
+// using case-insensitive regex makes it slow, so we do a little hack
 var queryForTerm = function queryForTerm(term) {
   return function (fields) {
     return {
-      $or: queryListFromRegex(new RegExp(term, 'i'))(fields)
+      $or: [].concat((0, _toConsumableArray3.default)(queryListFromTerm(term, _toLower3.default)(fields)), (0, _toConsumableArray3.default)(queryListFromTerm(term, _capitalize3.default)(fields)))
     };
   };
 };
@@ -86,7 +99,6 @@ var filterToQuery = exports.filterToQuery = function filterToQuery(filter, searc
 
   // remove empty objects on filter
   var query = (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) && removeEmptyObjects(transformFilter(filter)), !(0, _isEmpty3.default)(search) && !(0, _isEmpty3.default)(search.searchFields) && !(0, _isEmpty3.default)(search.searchTerm) && createSearchQuery(search.searchFields, termToTermList(search.searchTerm)));
-  // console.log('query is', query);
   return query;
 };
 

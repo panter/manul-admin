@@ -1,17 +1,22 @@
 
-import { omitBy, map, isObject, mapValues, keyBy, isEmpty, flow, split, trim } from 'lodash/fp';
+import { toLower, capitalize, omitBy, map, isObject, mapValues, keyBy, isEmpty, flow, split, trim } from 'lodash/fp';
 
 
 const removeEmptyObjects = omitBy(o => isObject(o) && isEmpty(o));
 
-const queryListFromRegex = regex => flow(
+
+const queryListFromTerm = (term, transform) => flow(
   map(field => ({
-    [field]: regex,
+    [field]: new RegExp(`^${transform(term)}`),
   })),
 );
+// using case-insensitive regex makes it slow, so we do a little hack
 const queryForTerm = term => fields => (
   {
-    $or: queryListFromRegex(new RegExp(term, 'i'))(fields),
+    $or: [
+      ...queryListFromTerm(term, toLower)(fields),
+      ...queryListFromTerm(term, capitalize)(fields),
+    ],
   }
 );
 const termToTermList = flow(split(' '), map(trim));
@@ -32,7 +37,6 @@ export const filterToQuery = (filter, search, transformFilter = f => f) => {
       createSearchQuery(search.searchFields, termToTermList(search.searchTerm))
     )),
   };
-  // console.log('query is', query);
   return query;
 };
 
