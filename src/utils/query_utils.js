@@ -1,5 +1,5 @@
 
-import { toLower, capitalize, omitBy, map, isObject, mapValues, keyBy, isEmpty, flow, split, trim } from 'lodash/fp';
+import { identity, capitalize, omitBy, map, isObject, mapValues, keyBy, isEmpty, flow, split, trim } from 'lodash/fp';
 
 
 const removeEmptyObjects = omitBy(o => isObject(o) && isEmpty(o));
@@ -14,7 +14,7 @@ const queryListFromTerm = (term, transform) => flow(
 const queryForTerm = term => fields => (
   {
     $or: [
-      ...queryListFromTerm(term, toLower)(fields),
+      ...queryListFromTerm(term, identity)(fields),
       ...queryListFromTerm(term, capitalize)(fields),
     ],
   }
