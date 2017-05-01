@@ -19,7 +19,7 @@ const queryForTerm = term => fields => (
     ],
   }
 );
-const termToTermList = flow(split(' '), map(trim));
+const termToTermList = term => term.match(/\w+|"(?:\\"|[^"])+"/g).map(k => k.replace(/"/g, '')).map(trim);
 export const createSearchQuery = (fields, terms) => (
   {
     $and: map(term => queryForTerm(term)(fields))(terms),
