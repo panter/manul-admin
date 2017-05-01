@@ -57,9 +57,9 @@ var _capitalize2 = require('lodash/fp/capitalize');
 
 var _capitalize3 = _interopRequireDefault(_capitalize2);
 
-var _toLower2 = require('lodash/fp/toLower');
+var _identity2 = require('lodash/fp/identity');
 
-var _toLower3 = _interopRequireDefault(_toLower2);
+var _identity3 = _interopRequireDefault(_identity2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -76,7 +76,7 @@ var queryListFromTerm = function queryListFromTerm(term, transform) {
 var queryForTerm = function queryForTerm(term) {
   return function (fields) {
     return {
-      $or: [].concat((0, _toConsumableArray3.default)(queryListFromTerm(term, _toLower3.default)(fields)), (0, _toConsumableArray3.default)(queryListFromTerm(term, _capitalize3.default)(fields)))
+      $or: [].concat((0, _toConsumableArray3.default)(queryListFromTerm(term, _identity3.default)(fields)), (0, _toConsumableArray3.default)(queryListFromTerm(term, _capitalize3.default)(fields)))
     };
   };
 };
