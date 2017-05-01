@@ -21,10 +21,6 @@ var _trim2 = require('lodash/fp/trim');
 
 var _trim3 = _interopRequireDefault(_trim2);
 
-var _split2 = require('lodash/fp/split');
-
-var _split3 = _interopRequireDefault(_split2);
-
 var _flow2 = require('lodash/fp/flow');
 
 var _flow3 = _interopRequireDefault(_flow2);
@@ -80,7 +76,11 @@ var queryForTerm = function queryForTerm(term) {
     };
   };
 };
-var termToTermList = (0, _flow3.default)((0, _split3.default)(' '), (0, _map3.default)(_trim3.default));
+var termToTermList = function termToTermList(term) {
+  return term.match(/\w+|"(?:\\"|[^"])+"/g).map(function (k) {
+    return k.replace(/"/g, '');
+  }).map(_trim3.default);
+};
 var createSearchQuery = exports.createSearchQuery = function createSearchQuery(fields, terms) {
   return {
     $and: (0, _map3.default)(function (term) {
