@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/containers/link.js"],"names":[],"mappings":";;;;;;AAAA;;;;;;kBAEe,oBAAK,GAAL,C","file":"link.js","sourcesContent":["import link from '../hocs/link';\n\nexport default link('a');\n"]}

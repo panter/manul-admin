@@ -3,30 +3,32 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
-
-var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
+exports.depsMapper = undefined;
 
 var _mantraCore = require('mantra-core');
 
-var _with_collection_props = require('../hocs/with_collection_props');
+var _manulI18n = require('@panter/manul-i18n');
 
-var _with_collection_props2 = _interopRequireDefault(_with_collection_props);
+var _create = require('../components/create');
 
-var _with_deps = require('../hocs/with_deps');
+var _create2 = _interopRequireDefault(_create);
 
-var _with_deps2 = _interopRequireDefault(_with_deps);
+var _component_from_context_or = require('../hocs/component_from_context_or');
+
+var _component_from_context_or2 = _interopRequireDefault(_component_from_context_or);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _mantraCore.composeAll)((0, _with_collection_props2.default)('create'), (0, _with_deps2.default)())(function (_ref) {
-  var Component = _ref.Component,
-      props = (0, _objectWithoutProperties3.default)(_ref, ['Component']);
-  return _react2.default.createElement(Component, props);
-});
+var depsMapper = exports.depsMapper = function depsMapper(_context) {
+  return {
+    context: function context() {
+      return _context;
+    }
+  };
+};
+
+exports.default = (0, _mantraCore.composeAll)((0, _manulI18n.withTranslatedSchema)(function (_ref) {
+  var collectionName = _ref.collectionName;
+  return { schema: collectionName };
+}), (0, _mantraCore.useDeps)(depsMapper))((0, _component_from_context_or2.default)('views.create', _create2.default));
 //# sourceMappingURL=create.js.map

@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/components/table/table.jsx"],"names":[],"mappings":";;;;;;;;;;;;AAAA;;;;AACA;;;;;;kBAEe,gD","file":"table.js","sourcesContent":["import styled from 'styled-components';\nimport Table from 'griddle-react/dist/module/components/Table';\n\nexport default styled(Table)`\n  width: 100%;\n`;\n"]}

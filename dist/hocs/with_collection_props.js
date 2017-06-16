@@ -21,7 +21,7 @@ var _mantraCore = require('mantra-core');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var composer = function composer(type) {
+var composer = function composer() {
   return function (_ref, onData) {
     var context = _ref.context,
         collectionName = _ref.collectionName,
@@ -30,7 +30,6 @@ var composer = function composer(type) {
     var _context = context(),
         _context$adminContext = _context.adminContext,
         SimpleSchema1 = _context$adminContext.SimpleSchema,
-        getComponent = _context$adminContext.getComponent,
         publicationUtils = _context$adminContext.publicationUtils,
         config = _context$adminContext.config;
 
@@ -60,9 +59,7 @@ var composer = function composer(type) {
           schema = _collections$collecti.schema,
           colConfig = (0, _objectWithoutProperties3.default)(_collections$collecti, ['collection', 'schema']);
 
-      var Component = getComponent({ collectionName: collectionName, type: type });
       onData(null, (0, _extends3.default)({
-        Component: Component,
         collection: collection,
         schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
         searchSchema: searchSchema,

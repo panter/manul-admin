@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/containers/nav_link.js"],"names":[],"mappings":";;;;;;AAAA;;;;AACA;;;;;;kBAEe,uC","file":"nav_link.js","sourcesContent":["import NavLink from '../components/nav_link';\nimport link from '../hocs/link';\n\nexport default link(NavLink);\n"]}

@@ -2,20 +2,33 @@ import { isEmpty, upperFirst } from 'lodash/fp';
 import React from 'react';
 import { mount } from 'react-mounter';
 import routeUtils from './utils/route_utils';
+import Layout from './containers/layout';
+import Home from './containers/admin_home';
 
-import * as containers from './containers';
+import * as composers from './containers/composers';
 
 /* eslint react/display-name: 0*/
 export default (injectDeps, { adminContext }) => {
-  const { adminRoutes, components, config } = adminContext;
+  const { adminRoutes, config } = adminContext;
+
+  adminRoutes.route('/', {
+    name: 'admin.index',
+    action() {
+      mount(injectDeps(Layout), {
+        content: () => (
+          <Home />
+        ),
+      });
+    },
+  });
 
   const createRoute = (type, collectionName, aggregationName = null) => {
-    const Container = containers[upperFirst(type)];
+    const Container = composers[upperFirst(type)];
     const { path, name } = routeUtils.getRoute(type, collectionName, aggregationName);
     adminRoutes.route(path, {
       name,
       action(params) {
-        mount(injectDeps(components.layout), {
+        mount(injectDeps(Layout), {
           content: () => (
             <Container
               collectionName={collectionName}

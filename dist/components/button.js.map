@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/components/button.jsx"],"names":[],"mappings":";;;;;;AAAA;;AACA;;;;;;kBAEe,yCAAY,QAAZ,qB","file":"button.js","sourcesContent":["import { Button } from 'reactstrap';\nimport fromContext from '../hocs/component_from_context_or';\n\nexport default fromContext('Button', Button);\n"]}
