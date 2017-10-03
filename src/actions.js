@@ -123,14 +123,19 @@ export default {
     },
     exportCsv(
       { adminContext: { methods }, Alerts = FallbackAlerts },
-      docs, { filename = 'export.csv', ...options } = {},
+      docs, { filename = 'export.csv', fieldsToExport = [], ...options } = {},
     ) {
       const isEmptyObject = (
         field => _.isObject(field) && !_.isDate(field) && _.isEmpty(field)
       );
+      const isFieldToExport = (
+        (val, key) => _.indexOf(fieldsToExport, key) >= 0
+      );
       const removeEmptyObjects = doc => _.omitBy(doc, isEmptyObject);
+      const pickFieldsToExport = doc => fieldsToExport.length > 0 && _.pickBy(doc, isFieldToExport);
       const transform = flow(
         map(flat),
+        map(pickFieldsToExport),
         map(removeEmptyObjects),
       );
       const data = transform(docs);
