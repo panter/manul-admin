@@ -5,7 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.composer = undefined;
 
-var _manulMantraCore = require('manul-mantra-core');
+var _composeWithTracker = require('../utils/composeWithTracker');
+
+var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var composer = exports.composer = function composer() {
   return function (_ref, onData) {
@@ -29,6 +33,6 @@ var composer = exports.composer = function composer() {
 };
 
 exports.default = function () {
-  return (0, _manulMantraCore.composeWithTracker)(composer());
+  return (0, _composeWithTracker2.default)(composer());
 };
 //# sourceMappingURL=with_edit_document.js.map

@@ -1,4 +1,4 @@
-import { composeWithTracker } from 'manul-mantra-core';
+import composeWithTracker from '../utils/composeWithTracker';
 
 
 export const composer = () => (

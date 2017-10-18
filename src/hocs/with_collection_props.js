@@ -1,5 +1,5 @@
 
-import { composeWithTracker } from 'manul-mantra-core';
+import composeWithTracker from '../utils/composeWithTracker';
 import _ from 'lodash';
 
 

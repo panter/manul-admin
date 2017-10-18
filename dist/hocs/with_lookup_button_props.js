@@ -13,6 +13,10 @@ var _manulMantraCore = require('manul-mantra-core');
 
 var _recompose = require('recompose');
 
+var _composeWithTracker = require('../utils/composeWithTracker');
+
+var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var composer = function composer() {
@@ -34,6 +38,6 @@ var composer = function composer() {
 exports.composer = composer;
 
 exports.default = function () {
-  return (0, _manulMantraCore.composeAll)((0, _recompose.withState)('showLookupModal', 'setShowLookupModal'), (0, _manulMantraCore.composeWithTracker)(composer()));
+  return (0, _manulMantraCore.composeAll)((0, _recompose.withState)('showLookupModal', 'setShowLookupModal'), (0, _composeWithTracker2.default)(composer()));
 };
 //# sourceMappingURL=with_lookup_button_props.js.map
