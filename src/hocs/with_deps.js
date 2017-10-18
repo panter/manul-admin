@@ -1,4 +1,4 @@
-import { useDeps } from 'mantra-core';
+import { useDeps } from 'manul-mantra-core';
 
 export const depsMapper = (context, actions) => ({
   context: () => context,

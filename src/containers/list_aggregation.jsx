@@ -1,5 +1,5 @@
 import React from 'react';
-import { composeAll } from 'mantra-core';
+import { composeAll } from 'manul-mantra-core';
 import withCollectionProps from '../hocs/with_collection_props';
 import withListDocuments from '../hocs/with_list_documents';
 import withAggregation from '../hocs/with_aggregation';

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.composer = undefined;
 
-var _mantraCore = require('mantra-core');
+var _manulMantraCore = require('manul-mantra-core');
 
 var composer = exports.composer = function composer() {
   return function (_ref, onData) {
@@ -29,6 +29,6 @@ var composer = exports.composer = function composer() {
 };
 
 exports.default = function () {
-  return (0, _mantraCore.composeWithTracker)(composer());
+  return (0, _manulMantraCore.composeWithTracker)(composer());
 };
 //# sourceMappingURL=with_edit_document.js.map

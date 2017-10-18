@@ -17,7 +17,7 @@ var _result2 = require('lodash/result');
 
 var _result3 = _interopRequireDefault(_result2);
 
-var _mantraCore = require('mantra-core');
+var _manulMantraCore = require('manul-mantra-core');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -67,7 +67,8 @@ var composer = function composer(type) {
         schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
         searchSchema: searchSchema,
         publications: publications
-      }, colConfig, props));
+      }, colConfig, props) // allow override
+      );
     }
   };
 };
@@ -75,6 +76,6 @@ var composer = function composer(type) {
 exports.composer = composer;
 
 exports.default = function (type) {
-  return (0, _mantraCore.composeWithTracker)(composer(type));
+  return (0, _manulMantraCore.composeWithTracker)(composer(type));
 };
 //# sourceMappingURL=with_collection_props.js.map

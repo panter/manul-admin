@@ -1,5 +1,5 @@
 
-import { composeWithTracker } from 'mantra-core';
+import { composeWithTracker } from 'manul-mantra-core';
 import { filterToQuery, sortPropsToMongoSort } from '../utils/query_utils';
 import { stateListFilter, stateListSort, statePageProperties, stateListSearch } from '../utils/local_state_utils';
 

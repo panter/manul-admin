@@ -16,9 +16,9 @@
   "peerDependencies": {
     "babel-runtime": "*.*.*",
     "lodash": "^4.0.0",
-    "mantra-core": "^1.7.0",
-    "react": "^15.0.0",
-    "react-komposer": "^1.0.0",
+    "manul-mantra-core": "^1.7.x",
+    "react": "16.0.0",
+    "manul-react-komposer": "^0.0.x",
     "react-mounter": "^1.2.0"
   },
   "devDependencies": {

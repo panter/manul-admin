@@ -40,9 +40,17 @@ var _keys2 = require('lodash/keys');
 
 var _keys3 = _interopRequireDefault(_keys2);
 
+var _pickBy2 = require('lodash/pickBy');
+
+var _pickBy3 = _interopRequireDefault(_pickBy2);
+
 var _omitBy2 = require('lodash/omitBy');
 
 var _omitBy3 = _interopRequireDefault(_omitBy2);
+
+var _indexOf2 = require('lodash/indexOf');
+
+var _indexOf3 = _interopRequireDefault(_indexOf2);
 
 var _isEmpty2 = require('lodash/isEmpty');
 
@@ -232,15 +240,23 @@ exports.default = {
 
       var _ref16$filename = _ref16.filename,
           filename = _ref16$filename === undefined ? 'export.csv' : _ref16$filename,
-          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename']);
+          _ref16$fieldsToExport = _ref16.fieldsToExport,
+          fieldsToExport = _ref16$fieldsToExport === undefined ? [] : _ref16$fieldsToExport,
+          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename', 'fieldsToExport']);
 
       var isEmptyObject = function isEmptyObject(field) {
         return (0, _isObject3.default)(field) && !(0, _isDate3.default)(field) && (0, _isEmpty3.default)(field);
       };
+      var isFieldToExport = function isFieldToExport(val, key) {
+        return (0, _indexOf3.default)(fieldsToExport, key) >= 0;
+      };
       var removeEmptyObjects = function removeEmptyObjects(doc) {
         return (0, _omitBy3.default)(doc, isEmptyObject);
       };
-      var transform = (0, _flow3.default)((0, _map3.default)(_flat2.default), (0, _map3.default)(removeEmptyObjects));
+      var pickFieldsToExport = function pickFieldsToExport(doc) {
+        return fieldsToExport.length > 0 && (0, _pickBy3.default)(doc, isFieldToExport);
+      };
+      var transform = (0, _flow3.default)((0, _map3.default)(_flat2.default), (0, _map3.default)(pickFieldsToExport), (0, _map3.default)(removeEmptyObjects));
       var data = transform(docs);
       var keysSet = new _set2.default();
       data.forEach(function (entry) {

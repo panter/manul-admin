@@ -1,5 +1,5 @@
 
-import { composeWithTracker, composeAll } from 'mantra-core';
+import { composeWithTracker, composeAll } from 'manul-mantra-core';
 import { withState } from 'recompose';
 
 export const composer = () => ({ context, collectionName, ...props }, onData) => {

@@ -9,11 +9,9 @@ var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProp
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
-var _withState2 = require('recompose/withState');
+var _manulMantraCore = require('manul-mantra-core');
 
-var _withState3 = _interopRequireDefault(_withState2);
-
-var _mantraCore = require('mantra-core');
+var _recompose = require('recompose');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36,6 +34,6 @@ var composer = function composer() {
 exports.composer = composer;
 
 exports.default = function () {
-  return (0, _mantraCore.composeAll)((0, _withState3.default)('showLookupModal', 'setShowLookupModal'), (0, _mantraCore.composeWithTracker)(composer()));
+  return (0, _manulMantraCore.composeAll)((0, _recompose.withState)('showLookupModal', 'setShowLookupModal'), (0, _manulMantraCore.composeWithTracker)(composer()));
 };
 //# sourceMappingURL=with_lookup_button_props.js.map
