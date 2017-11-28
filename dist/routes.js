@@ -26,9 +26,17 @@ var _route_utils = require('./utils/route_utils');
 
 var _route_utils2 = _interopRequireDefault(_route_utils);
 
-var _containers = require('./containers');
+var _layout = require('./containers/layout');
 
-var containers = _interopRequireWildcard(_containers);
+var _layout2 = _interopRequireDefault(_layout);
+
+var _admin_home = require('./containers/admin_home');
+
+var _admin_home2 = _interopRequireDefault(_admin_home);
+
+var _composers = require('./containers/composers');
+
+var composers = _interopRequireWildcard(_composers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -38,14 +46,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = function (injectDeps, _ref) {
   var adminContext = _ref.adminContext;
   var adminRoutes = adminContext.adminRoutes,
-      components = adminContext.components,
       config = adminContext.config;
 
+
+  adminRoutes.route('/', {
+    name: 'admin.index',
+    action: function action() {
+      (0, _reactMounter.mount)(injectDeps(_layout2.default), {
+        content: function content() {
+          return _react2.default.createElement(_admin_home2.default, null);
+        }
+      });
+    }
+  });
 
   var createRoute = function createRoute(type, collectionName) {
     var aggregationName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
-    var Container = containers[(0, _upperFirst3.default)(type)];
+    var Container = composers[(0, _upperFirst3.default)(type)];
 
     var _routeUtils$getRoute = _route_utils2.default.getRoute(type, collectionName, aggregationName),
         path = _routeUtils$getRoute.path,
@@ -54,7 +72,7 @@ exports.default = function (injectDeps, _ref) {
     adminRoutes.route(path, {
       name: name,
       action: function action(params) {
-        (0, _reactMounter.mount)(injectDeps(components.layout), {
+        (0, _reactMounter.mount)(injectDeps(_layout2.default), {
           content: function content() {
             return _react2.default.createElement(Container, {
               collectionName: collectionName,

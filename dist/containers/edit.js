@@ -3,34 +3,50 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
-
-var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
+exports.depsMapper = exports.composer = undefined;
 
 var _mantraCore = require('mantra-core');
 
-var _with_collection_props = require('../hocs/with_collection_props');
+var _manulI18n = require('@panter/manul-i18n');
 
-var _with_collection_props2 = _interopRequireDefault(_with_collection_props);
+var _edit = require('../components/edit');
 
-var _with_edit_document = require('../hocs/with_edit_document');
+var _edit2 = _interopRequireDefault(_edit);
 
-var _with_edit_document2 = _interopRequireDefault(_with_edit_document);
+var _component_from_context_or = require('../hocs/component_from_context_or');
 
-var _with_deps = require('../hocs/with_deps');
-
-var _with_deps2 = _interopRequireDefault(_with_deps);
+var _component_from_context_or2 = _interopRequireDefault(_component_from_context_or);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _mantraCore.composeAll)((0, _with_edit_document2.default)(), (0, _with_collection_props2.default)('edit'), (0, _with_deps2.default)())(function (_ref) {
-  var Component = _ref.Component,
-      props = (0, _objectWithoutProperties3.default)(_ref, ['Component']);
-  return _react2.default.createElement(Component, props);
-});
+var composer = exports.composer = function composer(_ref, onData) {
+  var context = _ref.context,
+      _id = _ref.params._id,
+      docLoaded = _ref.docLoaded,
+      doc = _ref.doc,
+      update = _ref.update,
+      create = _ref.create,
+      allowInsertWithId = _ref.allowInsertWithId;
+
+  if (docLoaded) {
+    if (!doc && allowInsertWithId) {
+      onData(null, { upsert: create, doc: { _id: _id } });
+    } else {
+      onData(null, { upsert: update, doc: doc });
+    }
+  }
+};
+
+var depsMapper = exports.depsMapper = function depsMapper(_context) {
+  return {
+    context: function context() {
+      return _context;
+    }
+  };
+};
+
+exports.default = (0, _mantraCore.composeAll)((0, _mantraCore.compose)(composer), (0, _manulI18n.withTranslatedSchema)(function (_ref2) {
+  var collectionName = _ref2.collectionName;
+  return { schema: collectionName };
+}), (0, _mantraCore.useDeps)(depsMapper))((0, _component_from_context_or2.default)('views.edit', _edit2.default));
 //# sourceMappingURL=edit.js.map

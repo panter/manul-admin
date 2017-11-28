@@ -3,10 +3,10 @@ import { composeWithTracker } from 'mantra-core';
 import _ from 'lodash';
 
 
-export const composer = type => ({ context, collectionName, ...props }, onData) => {
+export const composer = () => ({ context, collectionName, ...props }, onData) => {
   const {
     adminContext: {
-      SimpleSchema: SimpleSchema1, getComponent, publicationUtils, config,
+      SimpleSchema: SimpleSchema1, publicationUtils, config,
     },
   } = context();
   let SimpleSchema;
@@ -30,9 +30,7 @@ export const composer = type => ({ context, collectionName, ...props }, onData) 
     const { collections } = config;
     const publications = publicationUtils.getPublications(collectionName);
     const { collection, schema, ...colConfig } = collections[collectionName];
-    const Component = getComponent({ collectionName, type });
     onData(null, {
-      Component,
       collection,
       schema: schema || _.result(collection, 'simpleSchema'),
       searchSchema,

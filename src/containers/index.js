@@ -1,9 +1,10 @@
-
+import AdminHome from './admin_home';
+import AdminLayout from './admin_layout';
+import Create from './create';
 import Edit from './edit';
 import List from './list';
-import ListAggregation from './list_aggregation';
-import Preview from './preview';
-import Create from './create';
-import LookupButton from './lookup_button';
+import DocumentPreview from './document_preview';
 
-export { Edit, List, ListAggregation, Preview, Create, LookupButton };
+export {
+  AdminHome, AdminLayout, Create, Edit, List, DocumentPreview,
+};

@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/containers/link_button.js"],"names":[],"mappings":";;;;;;AAAA;;;;AACA;;;;AACA;;;;;;kBAEe,oBAAK,6CAAL,C","file":"link_button.js","sourcesContent":["import Button from '../components/button';\nimport link from '../hocs/link';\nimport linkWrapper from '../components/link_wrapper';\n\nexport default link(linkWrapper(Button));\n"]}

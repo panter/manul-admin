@@ -78,12 +78,14 @@ var Modal = function Modal() {
 };
 
 exports.default = {
-  layout: Layout,
-  list: List,
-  create: Create,
-  edit: Edit,
-  preview: Preview,
-  lookupButton: LookupButton,
-  modal: Modal
+  views: {
+    layout: Layout,
+    list: List,
+    create: Create,
+    edit: Edit,
+    preview: Preview,
+    lookupButton: LookupButton,
+    modal: Modal
+  }
 };
 //# sourceMappingURL=default_components.js.map
