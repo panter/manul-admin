@@ -32,14 +32,18 @@ export default (context, config) => {
         )
         .validator({ clean: true }),
         run({ _id, ...doc }) {
-          // console.log('updating', collectionName, _id, doc);
-          if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed', 'You are not allowed');
-          }
-
-          const updated = collection.update(_id, { $set: doc });
-          if (updated === 0) {
-            throw new Meteor.Error('not found', 'Entry not found');
+          console.log('updating', collectionName, _id, doc);
+          if (Meteor.isServer) {
+            if (!isAllowed(collectionName, this.userId)) {
+              throw new Meteor.Error('not allowed', 'You are not allowed');
+            }
+            const cleanSchema = collection.schema.clean(doc);
+            const updated = collection.update(
+              _id, { $set: cleanSchema }, { bypassCollection2: true },
+            );
+            if (updated === 0) {
+              throw new Meteor.Error('not found', 'Entry not found');
+            }
           }
         },
       }),
