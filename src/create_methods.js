@@ -32,14 +32,15 @@ export default (context, config) => {
         )
         .validator({ clean: true }),
         run({ _id, ...doc }) {
-          console.log('updating', collectionName, _id, doc);
+          //console.log('updating', collectionName, _id, doc);
           if (Meteor.isServer) {
             if (!isAllowed(collectionName, this.userId)) {
               throw new Meteor.Error('not allowed', 'You are not allowed');
             }
-            const cleanSchema = collection.schema.clean(doc);
+
+            // need bypassCollection2: true it could not update the whoe doc anymore
             const updated = collection.update(
-              _id, { $set: cleanSchema }, { bypassCollection2: true },
+              _id, { $set: doc }, { bypassCollection2: true },
             );
             if (updated === 0) {
               throw new Meteor.Error('not found', 'Entry not found');
