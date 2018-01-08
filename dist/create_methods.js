@@ -54,13 +54,18 @@ exports.default = function (context, config) {
               doc = (0, _objectWithoutProperties3.default)(_ref, ['_id']);
 
           // console.log('updating', collectionName, _id, doc);
-          if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed', 'You are not allowed');
-          }
+          if (Meteor.isServer) {
+            if (!isAllowed(collectionName, this.userId)) {
+              throw new Meteor.Error('not allowed', 'You are not allowed');
+            }
 
-          var updated = collection.update(_id, { $set: doc });
-          if (updated === 0) {
-            throw new Meteor.Error('not found', 'Entry not found');
+            // Whole-doc update is not supported by simpl-schema,
+            // as workaround we use bypassCollection2: true
+            // https://github.com/aldeed/meteor-simple-schema/issues/175
+            var updated = collection.update(_id, { $set: doc }, { bypassCollection2: true });
+            if (updated === 0) {
+              throw new Meteor.Error('not found', 'Entry not found');
+            }
           }
         }
       }),

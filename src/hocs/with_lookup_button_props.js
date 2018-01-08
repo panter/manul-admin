@@ -1,6 +1,7 @@
 
-import { composeWithTracker, composeAll } from 'mantra-core';
+import { composeAll } from '@storybook/mantra-core';
 import { withState } from 'recompose';
+import composeWithTracker from '../utils/composeWithTracker';
 
 export const composer = () => ({ context, collectionName, ...props }, onData) => {
   const {

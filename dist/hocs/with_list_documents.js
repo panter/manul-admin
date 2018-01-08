@@ -9,7 +9,9 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _mantraCore = require('mantra-core');
+var _composeWithTracker = require('../utils/composeWithTracker');
+
+var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
 
 var _query_utils = require('../utils/query_utils');
 
@@ -51,6 +53,6 @@ var composer = exports.composer = function composer() {
 };
 
 exports.default = function () {
-  return (0, _mantraCore.composeWithTracker)(composer());
+  return (0, _composeWithTracker2.default)(composer());
 };
 //# sourceMappingURL=with_list_documents.js.map

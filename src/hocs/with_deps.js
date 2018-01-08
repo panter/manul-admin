@@ -1,4 +1,4 @@
-import { useDeps } from 'mantra-core';
+import { useDeps } from '@storybook/mantra-core';
 
 export const depsMapper = (context, actions) => ({
   context: () => context,

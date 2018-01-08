@@ -1,4 +1,4 @@
-import { composeAll } from 'mantra-core';
+import { composeAll } from '@storybook/mantra-core';
 import React from 'react';
 
 import List from './list';

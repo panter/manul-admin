@@ -33,13 +33,20 @@ export default (context, config) => {
         .validator({ clean: true }),
         run({ _id, ...doc }) {
           // console.log('updating', collectionName, _id, doc);
-          if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed', 'You are not allowed');
-          }
+          if (Meteor.isServer) {
+            if (!isAllowed(collectionName, this.userId)) {
+              throw new Meteor.Error('not allowed', 'You are not allowed');
+            }
 
-          const updated = collection.update(_id, { $set: doc });
-          if (updated === 0) {
-            throw new Meteor.Error('not found', 'Entry not found');
+            // Whole-doc update is not supported by simpl-schema,
+            // as workaround we use bypassCollection2: true
+            // https://github.com/aldeed/meteor-simple-schema/issues/175
+            const updated = collection.update(
+              _id, { $set: doc }, { bypassCollection2: true },
+            );
+            if (updated === 0) {
+              throw new Meteor.Error('not found', 'Entry not found');
+            }
           }
         },
       }),

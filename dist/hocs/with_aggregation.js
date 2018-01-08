@@ -17,7 +17,9 @@ var _get2 = require('lodash/fp/get');
 
 var _get3 = _interopRequireDefault(_get2);
 
-var _mantraCore = require('mantra-core');
+var _composeWithTracker = require('../utils/composeWithTracker');
+
+var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56,6 +58,6 @@ var composer = function composer() {
 exports.composer = composer;
 
 exports.default = function (type) {
-  return (0, _mantraCore.composeWithTracker)(composer(type));
+  return (0, _composeWithTracker2.default)(composer(type));
 };
 //# sourceMappingURL=with_aggregation.js.map
