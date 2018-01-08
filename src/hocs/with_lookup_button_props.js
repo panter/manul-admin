@@ -1,5 +1,5 @@
 
-import { composeAll } from 'manul-mantra-core';
+import { composeAll } from '@storybook/mantra-core';
 import { withState } from 'recompose';
 import composeWithTracker from '../utils/composeWithTracker';
 

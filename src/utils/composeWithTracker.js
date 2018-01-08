@@ -1,4 +1,4 @@
-import { compose } from 'manul-react-komposer';
+import { compose } from '@storybook/react-komposer';
 
 export default function composeWithTracker(reactiveFn, L, E, options) {
   const onPropsChange = (props, onData, context) => {
