@@ -1,19 +1,23 @@
-import { compose } from '@storybook/react-komposer';
+import { setDefaults } from '@storybook/react-komposer';
+
+const myCompose = setDefaults({ withRef: false });
 
 export default function composeWithTracker(reactiveFn, L, E, options) {
   const onPropsChange = (props, onData, context) => {
     let trackerCleanup;
-    const handler = Tracker.nonreactive(() => Tracker.autorun(() => {
-      trackerCleanup = reactiveFn(props, onData, context);
-    }));
+    const handler = Tracker.nonreactive(() =>
+      Tracker.autorun(() => {
+        trackerCleanup = reactiveFn(props, onData, context);
+      })
+    );
 
     return () => {
-      if (typeof (trackerCleanup) === 'function') {
+      if (typeof trackerCleanup === 'function') {
         trackerCleanup();
       }
       return handler.stop();
     };
   };
 
-  return compose(onPropsChange, L, E, options);
+  return myCompose(onPropsChange, L, E, options);
 }

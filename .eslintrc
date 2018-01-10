@@ -20,7 +20,8 @@
   "extends": [
     "airbnb",
     "plugin:meteor/recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "prettier"
   ],
   "rules": {
     "arrow-body-style": [1, "as-needed"],

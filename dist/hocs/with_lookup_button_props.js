@@ -9,7 +9,7 @@ var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProp
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
-var _manulMantraCore = require('manul-mantra-core');
+var _mantraCore = require('@storybook/mantra-core');
 
 var _recompose = require('recompose');
 
@@ -38,6 +38,6 @@ var composer = function composer() {
 exports.composer = composer;
 
 exports.default = function () {
-  return (0, _manulMantraCore.composeAll)((0, _recompose.withState)('showLookupModal', 'setShowLookupModal'), (0, _composeWithTracker2.default)(composer()));
+  return (0, _mantraCore.composeAll)((0, _recompose.withState)('showLookupModal', 'setShowLookupModal'), (0, _composeWithTracker2.default)(composer()));
 };
 //# sourceMappingURL=with_lookup_button_props.js.map

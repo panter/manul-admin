@@ -155,19 +155,25 @@ exports.default = {
       var LocalState = _ref9.LocalState;
 
       var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
-      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, { currentPage: currentPage }));
+      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, {
+        currentPage: currentPage
+      }));
     },
     listGotoNextPage: function listGotoNextPage(_ref10, collectionName) {
       var LocalState = _ref10.LocalState;
 
       var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
-      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, { currentPage: pageProperties.currentPage + 1 }));
+      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, {
+        currentPage: pageProperties.currentPage + 1
+      }));
     },
     listGotoPreviousPage: function listGotoPreviousPage(_ref11, collectionName) {
       var LocalState = _ref11.LocalState;
 
       var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
-      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, { currentPage: pageProperties.currentPage - 1 }));
+      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, {
+        currentPage: pageProperties.currentPage - 1
+      }));
     },
     update: function update(_ref12, collectionName, doc) {
       var _ref12$adminContext = _ref12.adminContext,

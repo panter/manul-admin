@@ -9,7 +9,7 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _manulMantraCore = require('manul-mantra-core');
+var _mantraCore = require('@storybook/mantra-core');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,6 +22,6 @@ var depsMapper = exports.depsMapper = function depsMapper(_context, actions) {
 };
 
 exports.default = function () {
-  return (0, _manulMantraCore.useDeps)(depsMapper);
+  return (0, _mantraCore.useDeps)(depsMapper);
 };
 //# sourceMappingURL=with_deps.js.map

@@ -12,7 +12,7 @@ var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProp
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
-var _manulMantraCore = require('manul-mantra-core');
+var _mantraCore = require('@storybook/mantra-core');
 
 var _react = require('react');
 
@@ -32,7 +32,7 @@ var _with_lookup_button_props2 = _interopRequireDefault(_with_lookup_button_prop
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _manulMantraCore.composeAll)((0, _with_lookup_button_props2.default)(), (0, _with_deps2.default)())(function (_ref) {
+exports.default = (0, _mantraCore.composeAll)((0, _with_lookup_button_props2.default)(), (0, _with_deps2.default)())(function (_ref) {
   var LookupButton = _ref.LookupButton,
       Modal = _ref.Modal,
       showLookupModal = _ref.showLookupModal,

@@ -11,7 +11,11 @@ export default (injectDeps, { adminContext }) => {
 
   const createRoute = (type, collectionName, aggregationName = null) => {
     const Container = containers[upperFirst(type)];
-    const { path, name } = routeUtils.getRoute(type, collectionName, aggregationName);
+    const { path, name } = routeUtils.getRoute(
+      type,
+      collectionName,
+      aggregationName
+    );
     adminRoutes.route(path, {
       name,
       action(params) {
@@ -23,18 +27,18 @@ export default (injectDeps, { adminContext }) => {
               type={type}
               params={params}
             />
-            ),
+          )
         });
-      },
+      }
     });
   };
-  Object.keys(config.collections).forEach((collectionName) => {
-    ['create', 'list', 'edit'].forEach((type) => {
+  Object.keys(config.collections).forEach(collectionName => {
+    ['create', 'list', 'edit'].forEach(type => {
       createRoute(type, collectionName);
     });
     const { aggregations } = config.collections[collectionName];
     if (!isEmpty(aggregations)) {
-      Object.keys(aggregations).forEach((aggregationName) => {
+      Object.keys(aggregations).forEach(aggregationName => {
         createRoute('listAggregation', collectionName, aggregationName);
       });
     }

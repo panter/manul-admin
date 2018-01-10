@@ -5,7 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = composeWithTracker;
 
-var _manulReactKomposer = require('manul-react-komposer');
+var _reactKomposer = require('@storybook/react-komposer');
+
+var myCompose = (0, _reactKomposer.setDefaults)({ withRef: false });
 
 function composeWithTracker(reactiveFn, L, E, options) {
   var onPropsChange = function onPropsChange(props, onData, context) {
@@ -24,6 +26,6 @@ function composeWithTracker(reactiveFn, L, E, options) {
     };
   };
 
-  return (0, _manulReactKomposer.compose)(onPropsChange, L, E, options);
+  return myCompose(onPropsChange, L, E, options);
 }
 //# sourceMappingURL=composeWithTracker.js.map
