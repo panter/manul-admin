@@ -24,7 +24,9 @@
     "prettier"
   ],
   "rules": {
+    "global-require": 0,
     "arrow-body-style": [1, "as-needed"],
+    "no-unused-vars": 1,
     "no-underscore-dangle": 0,
     "react/prop-types": 0,
     "react/jsx-filename-extension": 0,

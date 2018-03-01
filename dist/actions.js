@@ -144,6 +144,11 @@ exports.default = {
     listSetSearchTerm: function listSetSearchTerm(_ref7, collectionName, searchTerm) {
       var LocalState = _ref7.LocalState;
 
+      // reset pagination if changed
+      var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
+      LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), (0, _extends3.default)({}, pageProperties, {
+        currentPage: 1
+      }));
       LocalState.set((0, _local_state_utils.stateListSearch)(collectionName), searchTerm);
     },
     listSetPageProperties: function listSetPageProperties(_ref8, collectionName, pageProperties) {
@@ -237,10 +242,14 @@ exports.default = {
         }));
       }
     },
-    exportCsv: function exportCsv(_ref17, docs) {
+    exportCsv: function exportCsv(_ref17, _ref18) {
       var methods = _ref17.adminContext.methods,
           _ref17$Alerts = _ref17.Alerts,
           Alerts = _ref17$Alerts === undefined ? _fallback_alerts2.default : _ref17$Alerts;
+      var collectionName = _ref18.collectionName,
+          filter = _ref18.filter,
+          searchTerm = _ref18.searchTerm,
+          sortProperties = _ref18.sortProperties;
 
       var _ref16 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -248,7 +257,9 @@ exports.default = {
           filename = _ref16$filename === undefined ? 'export.csv' : _ref16$filename,
           _ref16$fieldsToExport = _ref16.fieldsToExport,
           fieldsToExport = _ref16$fieldsToExport === undefined ? [] : _ref16$fieldsToExport,
-          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename', 'fieldsToExport']);
+          onProgress = _ref16.onProgress,
+          onCompleted = _ref16.onCompleted,
+          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename', 'fieldsToExport', 'onProgress', 'onCompleted']);
 
       var isEmptyObject = function isEmptyObject(field) {
         return (0, _isObject3.default)(field) && !(0, _isDate3.default)(field) && (0, _isEmpty3.default)(field);
@@ -263,35 +274,70 @@ exports.default = {
         return fieldsToExport.length > 0 && (0, _pickBy3.default)(doc, isFieldToExport);
       };
       var transform = (0, _flow3.default)((0, _map3.default)(_flat2.default), (0, _map3.default)(pickFieldsToExport), (0, _map3.default)(removeEmptyObjects));
-      var data = transform(docs);
-      var keysSet = new _set2.default();
-      data.forEach(function (entry) {
-        return (0, _keys3.default)(entry).forEach(function (key) {
-          return keysSet.add(key);
-        });
-      });
-      var keys = [].concat((0, _toConsumableArray3.default)(keysSet.values()));
+      var methodProps = {
+        filter: filter,
+        searchTerm: searchTerm,
+        sortProperties: sortProperties
+      };
+      methods[collectionName].listCount.call(methodProps, function (countError, totalCount) {
+        var allDocs = [];
+        var currentPage = 1;
+        var pageSize = 50;
+        var _onExportCompleted = function _onExportCompleted() {
+          var data = transform(allDocs);
+          var keysSet = new _set2.default();
+          data.forEach(function (entry) {
+            return (0, _keys3.default)(entry).forEach(function (key) {
+              return keysSet.add(key);
+            });
+          });
+          var keys = [].concat((0, _toConsumableArray3.default)(keysSet.values()));
 
-      _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
+          _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
+          if (onCompleted) onCompleted();
+        };
+        var _fetchChunk = function _fetchChunk() {
+          var pageProperties = {
+            currentPage: currentPage,
+            pageSize: pageSize
+          };
+          methods[collectionName].list.call((0, _extends3.default)({}, methodProps, {
+            pageProperties: pageProperties
+          }), function (listError, result) {
+            allDocs = [].concat((0, _toConsumableArray3.default)(allDocs), (0, _toConsumableArray3.default)(result.docs));
+            var progress = allDocs.length / totalCount;
+            if (onProgress) {
+              onProgress(progress);
+            }
+            if (result.docs.length === 0 || allDocs.length >= totalCount) {
+              _onExportCompleted();
+            } else {
+              currentPage += 1;
+              _fetchChunk();
+            }
+          });
+        };
+        _fetchChunk();
+      });
     },
-    importCsv: function importCsv(_ref18, _ref19) {
-      var methods = _ref18.adminContext.methods;
-      var collectionName = _ref19.collectionName,
-          file = _ref19.file,
-          _ref19$onInsert = _ref19.onInsert,
-          onInsert = _ref19$onInsert === undefined ? _noop3.default : _ref19$onInsert,
-          _ref19$onUpdate = _ref19.onUpdate,
-          onUpdate = _ref19$onUpdate === undefined ? _noop3.default : _ref19$onUpdate,
-          _ref19$onComplete = _ref19.onComplete,
-          onComplete = _ref19$onComplete === undefined ? _noop3.default : _ref19$onComplete;
+    importCsv: function importCsv(_ref19, _ref20) {
+      var methods = _ref19.adminContext.methods;
+      var collectionName = _ref20.collectionName,
+          file = _ref20.file,
+          _ref20$onInsert = _ref20.onInsert,
+          onInsert = _ref20$onInsert === undefined ? _noop3.default : _ref20$onInsert,
+          _ref20$onUpdate = _ref20.onUpdate,
+          onUpdate = _ref20$onUpdate === undefined ? _noop3.default : _ref20$onUpdate,
+          _ref20$onComplete = _ref20.onComplete,
+          onComplete = _ref20$onComplete === undefined ? _noop3.default : _ref20$onComplete;
 
       var counter = -1;
       var imported = new _set2.default();
       _papaparse2.default.parse(file, {
         header: true,
         dynamicTyping: true,
-        complete: function complete(_ref20) {
-          var data = _ref20.data;
+        complete: function complete(_ref21) {
+          var data = _ref21.data;
 
           data.forEach(function (entryUncleaned) {
             counter += 1;

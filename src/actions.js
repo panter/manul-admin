@@ -49,6 +49,14 @@ export default {
       LocalState.set(stateListFilter(collectionName), filter);
     },
     listSetSearchTerm({ LocalState }, collectionName, searchTerm) {
+      // reset pagination if changed
+      const pageProperties = LocalState.get(
+        statePageProperties(collectionName)
+      );
+      LocalState.set(statePageProperties(collectionName), {
+        ...pageProperties,
+        currentPage: 1
+      });
       LocalState.set(stateListSearch(collectionName), searchTerm);
     },
     listSetPageProperties({ LocalState }, collectionName, pageProperties) {
@@ -154,8 +162,14 @@ export default {
     },
     exportCsv(
       { adminContext: { methods }, Alerts = FallbackAlerts },
-      docs,
-      { filename = 'export.csv', fieldsToExport = [], ...options } = {}
+      { collectionName, filter, searchTerm, sortProperties },
+      {
+        filename = 'export.csv',
+        fieldsToExport = [],
+        onProgress,
+        onCompleted,
+        ...options
+      } = {}
     ) {
       const isEmptyObject = field =>
         _.isObject(field) && !_.isDate(field) && _.isEmpty(field);
@@ -168,12 +182,56 @@ export default {
         map(pickFieldsToExport),
         map(removeEmptyObjects)
       );
-      const data = transform(docs);
-      const keysSet = new Set();
-      data.forEach(entry => _.keys(entry).forEach(key => keysSet.add(key)));
-      const keys = [...keysSet.values()];
+      const methodProps = {
+        filter,
+        searchTerm,
+        sortProperties
+      };
+      methods[collectionName].listCount.call(
+        methodProps,
+        (countError, totalCount) => {
+          let allDocs = [];
+          let currentPage = 1;
+          const pageSize = 50;
+          const _onExportCompleted = () => {
+            const data = transform(allDocs);
+            const keysSet = new Set();
+            data.forEach(entry =>
+              _.keys(entry).forEach(key => keysSet.add(key))
+            );
+            const keys = [...keysSet.values()];
 
-      csv.exportAsCsv({ filename, data, keys, ...options });
+            csv.exportAsCsv({ filename, data, keys, ...options });
+            if (onCompleted) onCompleted();
+          };
+          const _fetchChunk = () => {
+            const pageProperties = {
+              currentPage,
+              pageSize
+            };
+            methods[collectionName].list.call(
+              {
+                ...methodProps,
+                pageProperties
+              },
+              (listError, result) => {
+                allDocs = [...allDocs, ...result.docs];
+                const progress = allDocs.length / totalCount;
+                if (onProgress) {
+                  onProgress(progress);
+                }
+                if (result.docs.length === 0 || allDocs.length >= totalCount) {
+                  _onExportCompleted();
+                } else {
+                  currentPage += 1;
+                  _fetchChunk();
+                }
+              }
+            );
+          };
+          _fetchChunk();
+        }
+      );
     },
     importCsv(
       { adminContext: { methods } },

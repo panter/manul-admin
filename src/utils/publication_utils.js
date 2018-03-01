@@ -1,21 +1,9 @@
-const getEditPublicationName = name =>
-   `admin.${name}.edit`
-;
-
-const getListPublicationName = name =>
-   `admin.${name}.list`
-;
-
-const getMatchingResultsCountName = name =>
-   `admin.${name}.counts`
-;
+const getEditPublicationName = name => `admin.${name}.edit`;
 
 const getPublications = name => ({
-  list: getListPublicationName(name),
-  edit: getEditPublicationName(name),
-  counts: getMatchingResultsCountName(name),
+  edit: getEditPublicationName(name)
 });
 
 export default {
-  getPublications, getEditPublicationName, getListPublicationName, getMatchingResultsCountName,
+  getPublications
 };
