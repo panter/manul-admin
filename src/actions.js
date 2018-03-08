@@ -176,7 +176,8 @@ export default {
       const isFieldToExport = (val, key) => _.indexOf(fieldsToExport, key) >= 0;
       const removeEmptyObjects = doc => _.omitBy(doc, isEmptyObject);
       const pickFieldsToExport = doc =>
-        fieldsToExport.length > 0 && _.pickBy(doc, isFieldToExport);
+        fieldsToExport.length > 0 ? _.pickBy(doc, isFieldToExport) : doc;
+
       const transform = flow(
         map(flat),
         map(pickFieldsToExport),
@@ -195,6 +196,7 @@ export default {
           const pageSize = 50;
           const _onExportCompleted = () => {
             const data = transform(allDocs);
+
             const keysSet = new Set();
             data.forEach(entry =>
               _.keys(entry).forEach(key => keysSet.add(key))

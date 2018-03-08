@@ -271,8 +271,9 @@ exports.default = {
         return (0, _omitBy3.default)(doc, isEmptyObject);
       };
       var pickFieldsToExport = function pickFieldsToExport(doc) {
-        return fieldsToExport.length > 0 && (0, _pickBy3.default)(doc, isFieldToExport);
+        return fieldsToExport.length > 0 ? (0, _pickBy3.default)(doc, isFieldToExport) : doc;
       };
+
       var transform = (0, _flow3.default)((0, _map3.default)(_flat2.default), (0, _map3.default)(pickFieldsToExport), (0, _map3.default)(removeEmptyObjects));
       var methodProps = {
         filter: filter,
@@ -285,6 +286,7 @@ exports.default = {
         var pageSize = 50;
         var _onExportCompleted = function _onExportCompleted() {
           var data = transform(allDocs);
+
           var keysSet = new _set2.default();
           data.forEach(function (entry) {
             return (0, _keys3.default)(entry).forEach(function (key) {
