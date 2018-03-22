@@ -193,7 +193,7 @@ export default {
         (countError, totalCount) => {
           let allDocs = [];
           let currentPage = 1;
-          const pageSize = 50;
+          const pageSize = 1000;
           const _onExportCompleted = () => {
             const data = transform(allDocs);
 

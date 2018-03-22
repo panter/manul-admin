@@ -283,7 +283,7 @@ exports.default = {
       methods[collectionName].listCount.call(methodProps, function (countError, totalCount) {
         var allDocs = [];
         var currentPage = 1;
-        var pageSize = 50;
+        var pageSize = 1000;
         var _onExportCompleted = function _onExportCompleted() {
           var data = transform(allDocs);
 
