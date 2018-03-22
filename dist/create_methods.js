@@ -12,11 +12,19 @@ var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProp
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _query_utils = require('./utils/query_utils');
+
 var _is_allowed = require('./is_allowed');
 
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var DEBUG = false;
 
 exports.default = function (context, config) {
   var Meteor = context.Meteor,
@@ -33,6 +41,31 @@ exports.default = function (context, config) {
   if (!SimpleSchema) {
     throw new Error('please provide SimpleSchema by npm or in context (version 1)');
   }
+  var ListSchema = new SimpleSchema({
+    filter: {
+      type: Object,
+      optional: true,
+      blackbox: true
+    },
+    searchTerm: {
+      type: String,
+      optional: true
+    },
+    sortProperties: {
+      type: Array,
+      optional: true
+    },
+    'sortProperties.$': {
+      type: Object,
+      optional: true,
+      blackbox: true
+    },
+    pageProperties: {
+      type: Object,
+      optional: true,
+      blackbox: true
+    }
+  });
   var extendSimpleSchema = function extendSimpleSchema(schema, otherSchema) {
     if (SimpleSchema.version === 2) {
       return schema.extend(otherSchema);
@@ -40,18 +73,45 @@ exports.default = function (context, config) {
     return new SimpleSchema([schema, otherSchema]);
   };
   var isAllowed = (0, _is_allowed2.default)(config);
+
   var createFor = function createFor(collectionName) {
     var _config$collections$c = config.collections[collectionName],
         collection = _config$collections$c.collection,
-        allowInsertWithId = _config$collections$c.allowInsertWithId;
+        allowInsertWithId = _config$collections$c.allowInsertWithId,
+        searchFields = _config$collections$c.searchFields,
+        transformFilter = _config$collections$c.transformFilter;
+
+
+    var getListQueryAndOptions = function getListQueryAndOptions(_ref) {
+      var filter = _ref.filter,
+          _ref$searchTerm = _ref.searchTerm,
+          searchTerm = _ref$searchTerm === undefined ? null : _ref$searchTerm,
+          sortProperties = _ref.sortProperties,
+          pageProperties = _ref.pageProperties;
+
+      var query = (0, _query_utils.filterToQuery)(filter, searchTerm && { searchFields: searchFields, searchTerm: searchTerm }, transformFilter);
+
+      var queryOptions = (0, _query_utils.gridOptionsToQueryOptions)({
+        sortProperties: sortProperties,
+        pageProperties: pageProperties
+      });
+      if (DEBUG) console.log((0, _stringify2.default)({ query: query, queryOptions: queryOptions }));
+
+      return {
+        query: query,
+        queryOptions: queryOptions
+      };
+    };
 
     return {
       update: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.update',
-        validate: extendSimpleSchema(collection.simpleSchema(), { _id: { type: String } }).validator({ clean: true }),
-        run: function run(_ref) {
-          var _id = _ref._id,
-              doc = (0, _objectWithoutProperties3.default)(_ref, ['_id']);
+        validate: extendSimpleSchema(collection.simpleSchema(), {
+          _id: { type: String }
+        }).validator({ clean: true }),
+        run: function run(_ref2) {
+          var _id = _ref2._id,
+              doc = (0, _objectWithoutProperties3.default)(_ref2, ['_id']);
 
           // console.log('updating', collectionName, _id, doc);
           if (Meteor.isServer) {
@@ -71,7 +131,9 @@ exports.default = function (context, config) {
       }),
       create: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.create',
-        validate: (allowInsertWithId ? extendSimpleSchema(collection.simpleSchema(), { _id: { type: String, optional: true } }) : collection.simpleSchema()).validator({ clean: true }),
+        validate: (allowInsertWithId ? extendSimpleSchema(collection.simpleSchema(), {
+          _id: { type: String, optional: true }
+        }) : collection.simpleSchema()).validator({ clean: true }),
         run: function run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -82,9 +144,11 @@ exports.default = function (context, config) {
       }),
       destroy: new ValidatedMethod({
         name: 'manulAdmin.' + collectionName + '.destroy',
-        validate: new SimpleSchema({ _id: { type: String } }).validator({ clean: true }),
-        run: function run(_ref2) {
-          var _id = _ref2._id;
+        validate: new SimpleSchema({ _id: { type: String } }).validator({
+          clean: true
+        }),
+        run: function run(_ref3) {
+          var _id = _ref3._id;
 
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
@@ -92,8 +156,39 @@ exports.default = function (context, config) {
           }
           return collection.remove(_id);
         }
-      })
+      }),
+      list: new ValidatedMethod({
+        name: 'manulAdmin.' + collectionName + '.list',
+        validate: ListSchema.validator({ clean: false }),
+        run: function run(options) {
+          if (!isAllowed(collectionName, this.userId)) {
+            throw new Meteor.Error('not allowed', 'You are not allowed');
+          }
 
+          var _getListQueryAndOptio = getListQueryAndOptions(options),
+              query = _getListQueryAndOptio.query,
+              queryOptions = _getListQueryAndOptio.queryOptions;
+
+          return {
+            docs: collection.find(query, queryOptions).fetch(),
+            count: collection.find(query).count()
+          };
+        }
+      }),
+      listCount: new ValidatedMethod({
+        name: 'manulAdmin.' + collectionName + '.listCount',
+        validate: ListSchema.validator({ clean: false }),
+        run: function run(options) {
+          if (!isAllowed(collectionName, this.userId)) {
+            throw new Meteor.Error('not allowed', 'You are not allowed');
+          }
+
+          var _getListQueryAndOptio2 = getListQueryAndOptions(options),
+              query = _getListQueryAndOptio2.query;
+
+          return collection.find(query).count();
+        }
+      })
     };
   };
 

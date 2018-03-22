@@ -57,19 +57,23 @@ export const sortPropsToMongoSort = flow(
 );
 
 const pagePropertiesToLimitAndSkip = (
-  { currentPage, pageSize } = { currentPage: 1, pageSize: 10 }
+  { currentPage, pageSize } = { currentPage: 1, pageSize: 50 }
 ) => ({
   limit: pageSize,
   skip: (currentPage - 1) * pageSize
 });
+
 export const gridOptionsToQueryOptions = ({
   sortProperties,
-  pageProperties
+  pageProperties = null
 }) => {
   // console.log('got sortProperties', sortProperties);
   const sort = sortPropsToMongoSort(sortProperties);
   // console.log('mongo sort', sort);
-  const limitAndSkip = pagePropertiesToLimitAndSkip(pageProperties);
+
+  const limitAndSkip = pageProperties
+    ? pagePropertiesToLimitAndSkip(pageProperties)
+    : null;
   return {
     sort,
     ...limitAndSkip

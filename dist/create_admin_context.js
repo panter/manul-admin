@@ -49,7 +49,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = function (_ref) {
   var Meteor = _ref.Meteor,
       ValidatedMethod = _ref.ValidatedMethod,
-      Counts = _ref.Counts,
       LocalState = _ref.LocalState,
       SimpleSchema = _ref.SimpleSchema,
       config = _ref.config,
@@ -62,11 +61,11 @@ exports.default = function (_ref) {
 
   (0, _defaultsDeep3.default)(components, _default_components2.default);
 
-  var neededMeteorPackages = { Meteor: Meteor, ValidatedMethod: ValidatedMethod, Counts: Counts, LocalState: LocalState };
+  var neededMeteorPackages = { Meteor: Meteor, ValidatedMethod: ValidatedMethod, LocalState: LocalState };
   if ((0, _some3.default)(neededMeteorPackages, _isNil3.default)) {
     throw new Error('please provide all of the following meteor-packages: ' + (0, _keys3.default)(neededMeteorPackages).join(', '));
   }
-  var methods = (0, _create_methods2.default)({ Meteor: Meteor, SimpleSchema: SimpleSchema, ValidatedMethod: ValidatedMethod, Counts: Counts }, config);
+  var methods = (0, _create_methods2.default)({ Meteor: Meteor, SimpleSchema: SimpleSchema, ValidatedMethod: ValidatedMethod }, config);
   var getComponent = function getComponent(_ref2) {
     var collectionName = _ref2.collectionName,
         type = _ref2.type;
@@ -86,7 +85,6 @@ exports.default = function (_ref) {
     Meteor: Meteor,
     LocalState: LocalState,
     SimpleSchema: SimpleSchema,
-    Counts: Counts,
     methods: methods,
     getComponent: getComponent,
     config: config,

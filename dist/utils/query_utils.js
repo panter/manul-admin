@@ -108,7 +108,7 @@ var sortPropsToMongoSort = exports.sortPropsToMongoSort = (0, _flow3.default)((0
 }));
 
 var pagePropertiesToLimitAndSkip = function pagePropertiesToLimitAndSkip() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { currentPage: 1, pageSize: 10 },
+  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { currentPage: 1, pageSize: 50 },
       currentPage = _ref3.currentPage,
       pageSize = _ref3.pageSize;
 
@@ -117,14 +117,17 @@ var pagePropertiesToLimitAndSkip = function pagePropertiesToLimitAndSkip() {
     skip: (currentPage - 1) * pageSize
   };
 };
+
 var gridOptionsToQueryOptions = exports.gridOptionsToQueryOptions = function gridOptionsToQueryOptions(_ref4) {
   var sortProperties = _ref4.sortProperties,
-      pageProperties = _ref4.pageProperties;
+      _ref4$pageProperties = _ref4.pageProperties,
+      pageProperties = _ref4$pageProperties === undefined ? null : _ref4$pageProperties;
 
   // console.log('got sortProperties', sortProperties);
   var sort = sortPropsToMongoSort(sortProperties);
   // console.log('mongo sort', sort);
-  var limitAndSkip = pagePropertiesToLimitAndSkip(pageProperties);
+
+  var limitAndSkip = pageProperties ? pagePropertiesToLimitAndSkip(pageProperties) : null;
   return (0, _extends3.default)({
     sort: sort
   }, limitAndSkip);

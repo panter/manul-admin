@@ -9,7 +9,7 @@ export default ({
   // needed meteor dependencies
   Meteor,
   ValidatedMethod,
-  Counts,
+
   LocalState,
   SimpleSchema,
 
@@ -24,7 +24,7 @@ export default ({
 }) => {
   _.defaultsDeep(components, defaultComponents);
 
-  const neededMeteorPackages = { Meteor, ValidatedMethod, Counts, LocalState };
+  const neededMeteorPackages = { Meteor, ValidatedMethod, LocalState };
   if (_.some(neededMeteorPackages, _.isNil)) {
     throw new Error(
       `please provide all of the following meteor-packages: ${_.keys(
@@ -33,7 +33,7 @@ export default ({
     );
   }
   const methods = createMethods(
-    { Meteor, SimpleSchema, ValidatedMethod, Counts },
+    { Meteor, SimpleSchema, ValidatedMethod },
     config
   );
   const getComponent = ({ collectionName, type }) => {
@@ -52,7 +52,6 @@ export default ({
     Meteor,
     LocalState,
     SimpleSchema,
-    Counts,
     methods,
     getComponent,
     config,
