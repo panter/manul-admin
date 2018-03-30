@@ -57,103 +57,105 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var DEBUG = false;
 /* eslint react/display-name: 0*/
-var withMethodCall = function withMethodCall(C) {
-  return function (_React$Component) {
-    (0, _inherits3.default)(_class2, _React$Component);
+var withMethodCall = function withMethodCall() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  return function (C) {
+    return function (_React$Component) {
+      (0, _inherits3.default)(_class2, _React$Component);
 
-    function _class2() {
-      var _ref;
+      function _class2() {
+        var _ref;
 
-      var _temp, _this, _ret;
+        var _temp, _this, _ret;
 
-      (0, _classCallCheck3.default)(this, _class2);
+        (0, _classCallCheck3.default)(this, _class2);
 
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
 
-      return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = _class2.__proto__ || (0, _getPrototypeOf2.default)(_class2)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-        callId: undefined,
-        isLoading: true,
-        docs: [],
-        recordCount: 0
-      }, _this.loadDataDebounced = (0, _debounce3.default)(_this.loadData, 300), _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
-    }
-
-    (0, _createClass3.default)(_class2, [{
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        this.loadDataDebounced();
-      }
-    }, {
-      key: 'loadData',
-      value: function loadData() {
-        var _this2 = this;
-
-        var _props = this.props,
-            context = _props.context,
-            collectionName = _props.collectionName,
-            filter = _props.filter,
-            searchTerm = _props.searchTerm,
-            sortProperties = _props.sortProperties,
-            pageProperties = _props.pageProperties;
-
-        var _context = context(),
-            methods = _context.adminContext.methods;
-
-        if (DEBUG) console.log('calling method', {
-          filter: filter,
-          searchTerm: searchTerm,
-          sortProperties: sortProperties,
-          pageProperties: pageProperties
-        });
-        var callId = Math.random();
-        this.setState({
+        return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = _class2.__proto__ || (0, _getPrototypeOf2.default)(_class2)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+          callId: undefined,
           isLoading: true,
-          callId: callId
-        });
-        methods[collectionName].list.call({
-          filter: filter,
-          searchTerm: searchTerm,
-          sortProperties: sortProperties,
-          pageProperties: pageProperties
-        }, function (error, result) {
-          if (error) {
-            console.error(error);
-          } else {
-            if (DEBUG) console.log('got result', error, result);
-            if (_this2.state.callId === callId) {
-              _this2.setState({
-                isLoading: false,
-                docs: result.docs,
-                recordCount: result.count
-              });
-            } else if (DEBUG) console.log('ignore', searchTerm, callId, _this2.state.callId);
-          }
-        });
+          docs: [],
+          recordCount: 0
+        }, _this.loadDataDebounced = (0, _debounce3.default)(_this.loadData, 300), _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
       }
-    }, {
-      key: 'componentWillUpdate',
-      value: function componentWillUpdate(nextProps) {
-        if (!(0, _isEqual3.default)(nextProps, this.props)) {
+
+      (0, _createClass3.default)(_class2, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
           this.loadDataDebounced();
         }
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        return _react2.default.createElement(C, (0, _extends3.default)({}, this.props, this.state));
-      }
-    }]);
-    return _class2;
-  }(_react2.default.Component);
+      }, {
+        key: 'loadData',
+        value: function loadData() {
+          var _this2 = this;
+
+          var _props = this.props,
+              context = _props.context,
+              collectionName = _props.collectionName,
+              filter = _props.filter,
+              searchTerm = _props.searchTerm,
+              sortProperties = _props.sortProperties,
+              pageProperties = _props.pageProperties;
+
+          var _context = context(),
+              methods = _context.adminContext.methods;
+
+          var methodArgs = {
+            filter: filter,
+            searchTerm: searchTerm,
+            sortProperties: sortProperties,
+            pageProperties: !options.localMode ? pageProperties : null
+          };
+          if (DEBUG) console.log('calling method', methodArgs);
+          var callId = Math.random();
+          this.setState({
+            isLoading: true,
+            callId: callId
+          });
+          methods[collectionName].list.call(methodArgs, function (error, result) {
+            if (error) {
+              console.error(error);
+            } else {
+              if (DEBUG) console.log('got result', error, result);
+              if (_this2.state.callId === callId) {
+                _this2.setState({
+                  isLoading: false,
+                  docs: result.docs,
+                  recordCount: result.count
+                });
+              } else if (DEBUG) console.log('ignore', searchTerm, callId, _this2.state.callId);
+            }
+          });
+        }
+      }, {
+        key: 'componentWillUpdate',
+        value: function componentWillUpdate(nextProps) {
+          if (!(0, _isEqual3.default)(nextProps, this.props)) {
+            this.loadDataDebounced();
+          }
+        }
+      }, {
+        key: 'render',
+        value: function render() {
+          return _react2.default.createElement(C, (0, _extends3.default)({}, this.props, this.state));
+        }
+      }]);
+      return _class2;
+    }(_react2.default.Component);
+  };
 };
 
 var composer = exports.composer = function composer() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return function (_ref2, onData) {
     var context = _ref2.context,
         collectionName = _ref2.collectionName,
         filterBase = _ref2.filter;
+    var _options$localMode = options.localMode,
+        localMode = _options$localMode === undefined ? false : _options$localMode;
 
     var _context2 = context(),
         LocalState = _context2.adminContext.LocalState;
@@ -165,6 +167,7 @@ var composer = exports.composer = function composer() {
     var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
 
     onData(null, {
+      griddleLocal: localMode,
       filter: filter,
       searchTerm: searchTerm,
       sortProperties: sortProperties,
@@ -173,7 +176,7 @@ var composer = exports.composer = function composer() {
   };
 };
 
-exports.default = function () {
+exports.default = function (options) {
   return (0, _reactKomposer.composeAll)((0, _withHandlers3.default)({
     exportCurrentSearchAsCsv: function exportCurrentSearchAsCsv(_ref3) {
       var exportCsv = _ref3.exportCsv,
@@ -189,6 +192,6 @@ exports.default = function () {
         exportCsv.apply(undefined, [{ collectionName: collectionName, filter: filter, searchTerm: searchTerm, sortProperties: sortProperties }].concat(exportArgs));
       };
     }
-  }), withMethodCall, (0, _composeWithTracker2.default)(composer()));
+  }), withMethodCall(options), (0, _composeWithTracker2.default)(composer(options)));
 };
 //# sourceMappingURL=with_list_documents.js.map

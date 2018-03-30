@@ -1,11 +1,10 @@
+import { composeAll } from '@storybook/react-komposer';
+import { get } from 'lodash/fp';
+import { withHandlers } from 'recompose';
 
 import composeWithTracker from '../utils/composeWithTracker';
 
-import { get } from 'lodash/fp';
-
-export const composer = () => (
-  props, onData,
-) => {
+export const composer = () => (props, onData) => {
   const { aggregationName, aggregations } = props;
   const aggregation = get(aggregationName)(aggregations);
   if (!aggregation) {
@@ -14,15 +13,18 @@ export const composer = () => (
     const { aggregate, aggregateComposer, ...aggregationProps } = aggregation;
     const allAggregationProps = {
       ...aggregationProps,
-      isAggregation: true,
+      griddleLocal: true,
+      isAggregation: true
     };
     if (aggregateComposer) {
-      aggregateComposer(props, (e, p) => onData(e, { ...allAggregationProps, ...p }));
+      aggregateComposer(props, (e, p) =>
+        onData(e, { ...allAggregationProps, ...p })
+      );
     } else if (aggregate) {
       const docsAggregated = aggregate(props.docs, props);
       onData(null, {
         docs: docsAggregated,
-        ...allAggregationProps,
+        ...allAggregationProps
       });
     } else {
       onData(new Error('specify either aggregate or aggregateComposer'));
@@ -30,5 +32,15 @@ export const composer = () => (
   }
 };
 
-
-export default type => composeWithTracker(composer(type));
+export default type =>
+  composeAll(
+    withHandlers({
+      // overwrite
+      exportCurrentSearchAsCsv: ({ docs, exportCsvFromLocalDocs }) => (
+        ...exportArgs
+      ) => {
+        exportCsvFromLocalDocs(docs, ...exportArgs);
+      }
+    }),
+    composeWithTracker(composer(type))
+  );

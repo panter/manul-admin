@@ -4,13 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
 var _set = require('babel-runtime/core-js/set');
 
 var _set2 = _interopRequireDefault(_set);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
 var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
@@ -20,53 +20,21 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _map2 = require('lodash/fp/map');
+var _omitBy2 = require('lodash/omitBy');
 
-var _map3 = _interopRequireDefault(_map2);
-
-var _find2 = require('lodash/fp/find');
-
-var _find3 = _interopRequireDefault(_find2);
-
-var _flow2 = require('lodash/fp/flow');
-
-var _flow3 = _interopRequireDefault(_flow2);
+var _omitBy3 = _interopRequireDefault(_omitBy2);
 
 var _noop2 = require('lodash/noop');
 
 var _noop3 = _interopRequireDefault(_noop2);
 
-var _keys2 = require('lodash/keys');
-
-var _keys3 = _interopRequireDefault(_keys2);
-
-var _pickBy2 = require('lodash/pickBy');
-
-var _pickBy3 = _interopRequireDefault(_pickBy2);
-
-var _omitBy2 = require('lodash/omitBy');
-
-var _omitBy3 = _interopRequireDefault(_omitBy2);
-
-var _indexOf2 = require('lodash/indexOf');
-
-var _indexOf3 = _interopRequireDefault(_indexOf2);
-
-var _isEmpty2 = require('lodash/isEmpty');
-
-var _isEmpty3 = _interopRequireDefault(_isEmpty2);
-
-var _isDate2 = require('lodash/isDate');
-
-var _isDate3 = _interopRequireDefault(_isDate2);
-
-var _isObject2 = require('lodash/isObject');
-
-var _isObject3 = _interopRequireDefault(_isObject2);
-
 var _without2 = require('lodash/without');
 
 var _without3 = _interopRequireDefault(_without2);
+
+var _find2 = require('lodash/fp/find');
+
+var _find3 = _interopRequireDefault(_find2);
 
 var _papaparse = require('papaparse');
 
@@ -75,6 +43,10 @@ var _papaparse2 = _interopRequireDefault(_papaparse);
 var _flat = require('flat');
 
 var _flat2 = _interopRequireDefault(_flat);
+
+var _export_utils = require('./utils/export_utils');
+
+var _local_state_utils = require('./utils/local_state_utils');
 
 var _fallback_alerts = require('./fallback_alerts');
 
@@ -87,8 +59,6 @@ var _csv2 = _interopRequireDefault(_csv);
 var _route_utils = require('./utils/route_utils');
 
 var _route_utils2 = _interopRequireDefault(_route_utils);
-
-var _local_state_utils = require('./utils/local_state_utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -242,14 +212,10 @@ exports.default = {
         }));
       }
     },
-    exportCsv: function exportCsv(_ref17, _ref18) {
+    exportCsvFromLocalDocs: function exportCsvFromLocalDocs(_ref17, docs) {
       var methods = _ref17.adminContext.methods,
           _ref17$Alerts = _ref17.Alerts,
           Alerts = _ref17$Alerts === undefined ? _fallback_alerts2.default : _ref17$Alerts;
-      var collectionName = _ref18.collectionName,
-          filter = _ref18.filter,
-          searchTerm = _ref18.searchTerm,
-          sortProperties = _ref18.sortProperties;
 
       var _ref16 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -257,24 +223,35 @@ exports.default = {
           filename = _ref16$filename === undefined ? 'export.csv' : _ref16$filename,
           _ref16$fieldsToExport = _ref16.fieldsToExport,
           fieldsToExport = _ref16$fieldsToExport === undefined ? [] : _ref16$fieldsToExport,
-          onProgress = _ref16.onProgress,
           onCompleted = _ref16.onCompleted,
-          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename', 'fieldsToExport', 'onProgress', 'onCompleted']);
+          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename', 'fieldsToExport', 'onCompleted']);
 
-      var isEmptyObject = function isEmptyObject(field) {
-        return (0, _isObject3.default)(field) && !(0, _isDate3.default)(field) && (0, _isEmpty3.default)(field);
-      };
-      var isFieldToExport = function isFieldToExport(val, key) {
-        return (0, _indexOf3.default)(fieldsToExport, key) >= 0;
-      };
-      var removeEmptyObjects = function removeEmptyObjects(doc) {
-        return (0, _omitBy3.default)(doc, isEmptyObject);
-      };
-      var pickFieldsToExport = function pickFieldsToExport(doc) {
-        return fieldsToExport.length > 0 ? (0, _pickBy3.default)(doc, isFieldToExport) : doc;
-      };
+      var _getExportSet = (0, _export_utils.getExportSet)(docs, { fieldsToExport: fieldsToExport }),
+          data = _getExportSet.data,
+          keys = _getExportSet.keys;
 
-      var transform = (0, _flow3.default)((0, _map3.default)(_flat2.default), (0, _map3.default)(pickFieldsToExport), (0, _map3.default)(removeEmptyObjects));
+      _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
+      if (onCompleted) onCompleted();
+    },
+    exportCsv: function exportCsv(_ref19, _ref20) {
+      var methods = _ref19.adminContext.methods,
+          _ref19$Alerts = _ref19.Alerts,
+          Alerts = _ref19$Alerts === undefined ? _fallback_alerts2.default : _ref19$Alerts;
+      var collectionName = _ref20.collectionName,
+          filter = _ref20.filter,
+          searchTerm = _ref20.searchTerm,
+          sortProperties = _ref20.sortProperties;
+
+      var _ref18 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var _ref18$filename = _ref18.filename,
+          filename = _ref18$filename === undefined ? 'export.csv' : _ref18$filename,
+          _ref18$fieldsToExport = _ref18.fieldsToExport,
+          fieldsToExport = _ref18$fieldsToExport === undefined ? [] : _ref18$fieldsToExport,
+          onProgress = _ref18.onProgress,
+          onCompleted = _ref18.onCompleted,
+          options = (0, _objectWithoutProperties3.default)(_ref18, ['filename', 'fieldsToExport', 'onProgress', 'onCompleted']);
+
       var methodProps = {
         filter: filter,
         searchTerm: searchTerm,
@@ -285,15 +262,9 @@ exports.default = {
         var currentPage = 1;
         var pageSize = 1000;
         var _onExportCompleted = function _onExportCompleted() {
-          var data = transform(allDocs);
-
-          var keysSet = new _set2.default();
-          data.forEach(function (entry) {
-            return (0, _keys3.default)(entry).forEach(function (key) {
-              return keysSet.add(key);
-            });
-          });
-          var keys = [].concat((0, _toConsumableArray3.default)(keysSet.values()));
+          var _getExportSet2 = (0, _export_utils.getExportSet)(allDocs, { fieldsToExport: fieldsToExport }),
+              data = _getExportSet2.data,
+              keys = _getExportSet2.keys;
 
           _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
           if (onCompleted) onCompleted();
@@ -322,24 +293,24 @@ exports.default = {
         _fetchChunk();
       });
     },
-    importCsv: function importCsv(_ref19, _ref20) {
-      var methods = _ref19.adminContext.methods;
-      var collectionName = _ref20.collectionName,
-          file = _ref20.file,
-          _ref20$onInsert = _ref20.onInsert,
-          onInsert = _ref20$onInsert === undefined ? _noop3.default : _ref20$onInsert,
-          _ref20$onUpdate = _ref20.onUpdate,
-          onUpdate = _ref20$onUpdate === undefined ? _noop3.default : _ref20$onUpdate,
-          _ref20$onComplete = _ref20.onComplete,
-          onComplete = _ref20$onComplete === undefined ? _noop3.default : _ref20$onComplete;
+    importCsv: function importCsv(_ref21, _ref22) {
+      var methods = _ref21.adminContext.methods;
+      var collectionName = _ref22.collectionName,
+          file = _ref22.file,
+          _ref22$onInsert = _ref22.onInsert,
+          onInsert = _ref22$onInsert === undefined ? _noop3.default : _ref22$onInsert,
+          _ref22$onUpdate = _ref22.onUpdate,
+          onUpdate = _ref22$onUpdate === undefined ? _noop3.default : _ref22$onUpdate,
+          _ref22$onComplete = _ref22.onComplete,
+          onComplete = _ref22$onComplete === undefined ? _noop3.default : _ref22$onComplete;
 
       var counter = -1;
       var imported = new _set2.default();
       _papaparse2.default.parse(file, {
         header: true,
         dynamicTyping: true,
-        complete: function complete(_ref21) {
-          var data = _ref21.data;
+        complete: function complete(_ref23) {
+          var data = _ref23.data;
 
           data.forEach(function (entryUncleaned) {
             counter += 1;

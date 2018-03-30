@@ -1,13 +1,17 @@
-
 import composeWithTracker from '../utils/composeWithTracker';
 import _ from 'lodash';
 
-
-export const composer = type => ({ context, collectionName, ...props }, onData) => {
+export const composer = type => (
+  { context, collectionName, ...props },
+  onData
+) => {
   const {
     adminContext: {
-      SimpleSchema: SimpleSchema1, getComponent, publicationUtils, config,
-    },
+      SimpleSchema: SimpleSchema1,
+      getComponent,
+      publicationUtils,
+      config
+    }
   } = context();
   let SimpleSchema;
   try {
@@ -18,13 +22,15 @@ export const composer = type => ({ context, collectionName, ...props }, onData) 
     SimpleSchema = SimpleSchema1;
   }
   if (!SimpleSchema) {
-    onData(new Error('please provide SimpleSchema by npm or in context (version 1)'));
+    onData(
+      new Error('please provide SimpleSchema by npm or in context (version 1)')
+    );
   } else {
     const searchSchema = new SimpleSchema({
       searchTerm: {
         type: String,
-        optional: true,
-      },
+        optional: true
+      }
     });
 
     const { collections } = config;
@@ -38,10 +44,9 @@ export const composer = type => ({ context, collectionName, ...props }, onData) 
       searchSchema,
       publications,
       ...colConfig,
-      ...props, // allow override
+      ...props // allow override
     });
   }
 };
-
 
 export default type => composeWithTracker(composer(type));

@@ -13,7 +13,7 @@ import composeWithTracker from '../utils/composeWithTracker';
 
 const DEBUG = false;
 /* eslint react/display-name: 0*/
-const withMethodCall = C =>
+const withMethodCall = (options = {}) => C =>
   class extends React.Component {
     state = {
       callId: undefined,
@@ -35,41 +35,33 @@ const withMethodCall = C =>
         pageProperties
       } = this.props;
       const { adminContext: { methods } } = context();
-      if (DEBUG)
-        console.log('calling method', {
-          filter,
-          searchTerm,
-          sortProperties,
-          pageProperties
-        });
+      const methodArgs = {
+        filter,
+        searchTerm,
+        sortProperties,
+        pageProperties: !options.localMode ? pageProperties : null
+      };
+      if (DEBUG) console.log('calling method', methodArgs);
       const callId = Math.random();
       this.setState({
         isLoading: true,
         callId
       });
-      methods[collectionName].list.call(
-        {
-          filter,
-          searchTerm,
-          sortProperties,
-          pageProperties
-        },
-        (error, result) => {
-          if (error) {
-            console.error(error);
-          } else {
-            if (DEBUG) console.log('got result', error, result);
-            if (this.state.callId === callId) {
-              this.setState({
-                isLoading: false,
-                docs: result.docs,
-                recordCount: result.count
-              });
-            } else if (DEBUG)
-              console.log('ignore', searchTerm, callId, this.state.callId);
-          }
+      methods[collectionName].list.call(methodArgs, (error, result) => {
+        if (error) {
+          console.error(error);
+        } else {
+          if (DEBUG) console.log('got result', error, result);
+          if (this.state.callId === callId) {
+            this.setState({
+              isLoading: false,
+              docs: result.docs,
+              recordCount: result.count
+            });
+          } else if (DEBUG)
+            console.log('ignore', searchTerm, callId, this.state.callId);
         }
-      );
+      });
     }
     componentWillUpdate(nextProps) {
       if (!isEqual(nextProps, this.props)) {
@@ -81,10 +73,11 @@ const withMethodCall = C =>
     }
   };
 
-export const composer = () => (
+export const composer = (options = {}) => (
   { context, collectionName, filter: filterBase },
   onData
 ) => {
+  const { localMode = false } = options;
   const { adminContext: { LocalState } } = context();
   const filterLocal = LocalState.get(stateListFilter(collectionName));
   const filter = {
@@ -96,6 +89,7 @@ export const composer = () => (
   const pageProperties = LocalState.get(statePageProperties(collectionName));
 
   onData(null, {
+    griddleLocal: localMode,
     filter,
     searchTerm,
     sortProperties,
@@ -103,7 +97,7 @@ export const composer = () => (
   });
 };
 
-export default () =>
+export default options =>
   composeAll(
     withHandlers({
       exportCurrentSearchAsCsv: ({
@@ -119,6 +113,6 @@ export default () =>
         );
       }
     }),
-    withMethodCall,
-    composeWithTracker(composer())
+    withMethodCall(options),
+    composeWithTracker(composer(options))
   );

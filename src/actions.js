@@ -1,16 +1,18 @@
+import { find } from 'lodash/fp';
 import Papa from 'papaparse';
 import _ from 'lodash';
 import flat from 'flat';
-import { flow, find, map } from 'lodash/fp';
-import FallbackAlerts from './fallback_alerts';
-import csv from './utils/csv';
-import routeUtils from './utils/route_utils';
+
+import { getExportSet } from './utils/export_utils';
 import {
   stateListFilter,
   stateListSort,
   statePageProperties,
   stateListSearch
 } from './utils/local_state_utils';
+import FallbackAlerts from './fallback_alerts';
+import csv from './utils/csv';
+import routeUtils from './utils/route_utils';
 
 export default {
   manulAdmin: {
@@ -160,6 +162,20 @@ export default {
         );
       }
     },
+    exportCsvFromLocalDocs(
+      { adminContext: { methods }, Alerts = FallbackAlerts },
+      docs,
+      {
+        filename = 'export.csv',
+        fieldsToExport = [],
+        onCompleted,
+        ...options
+      } = {}
+    ) {
+      const { data, keys } = getExportSet(docs, { fieldsToExport });
+      csv.exportAsCsv({ filename, data, keys, ...options });
+      if (onCompleted) onCompleted();
+    },
     exportCsv(
       { adminContext: { methods }, Alerts = FallbackAlerts },
       { collectionName, filter, searchTerm, sortProperties },
@@ -171,18 +187,6 @@ export default {
         ...options
       } = {}
     ) {
-      const isEmptyObject = field =>
-        _.isObject(field) && !_.isDate(field) && _.isEmpty(field);
-      const isFieldToExport = (val, key) => _.indexOf(fieldsToExport, key) >= 0;
-      const removeEmptyObjects = doc => _.omitBy(doc, isEmptyObject);
-      const pickFieldsToExport = doc =>
-        fieldsToExport.length > 0 ? _.pickBy(doc, isFieldToExport) : doc;
-
-      const transform = flow(
-        map(flat),
-        map(pickFieldsToExport),
-        map(removeEmptyObjects)
-      );
       const methodProps = {
         filter,
         searchTerm,
@@ -195,13 +199,7 @@ export default {
           let currentPage = 1;
           const pageSize = 1000;
           const _onExportCompleted = () => {
-            const data = transform(allDocs);
-
-            const keysSet = new Set();
-            data.forEach(entry =>
-              _.keys(entry).forEach(key => keysSet.add(key))
-            );
-            const keys = [...keysSet.values()];
+            const { data, keys } = getExportSet(allDocs, { fieldsToExport });
 
             csv.exportAsCsv({ filename, data, keys, ...options });
             if (onCompleted) onCompleted();

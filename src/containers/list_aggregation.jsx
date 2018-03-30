@@ -7,9 +7,8 @@ import withDeps from '../hocs/with_deps';
 
 export default composeAll(
   withAggregation(),
-  withListDocuments(),
+  withListDocuments({ localMode: true }),
+
   withCollectionProps('listAggregation'),
-  withDeps(),
-)(({ Component, ...props }) =>
-  <Component {...props} />,
-);
+  withDeps()
+)(({ Component, ...props }) => <Component {...props} />);

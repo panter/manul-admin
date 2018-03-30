@@ -13,9 +13,15 @@ var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProp
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
+var _withHandlers2 = require('recompose/withHandlers');
+
+var _withHandlers3 = _interopRequireDefault(_withHandlers2);
+
 var _get2 = require('lodash/fp/get');
 
 var _get3 = _interopRequireDefault(_get2);
+
+var _reactKomposer = require('@storybook/react-komposer');
 
 var _composeWithTracker = require('../utils/composeWithTracker');
 
@@ -37,6 +43,7 @@ var composer = function composer() {
           aggregationProps = (0, _objectWithoutProperties3.default)(aggregation, ['aggregate', 'aggregateComposer']);
 
       var allAggregationProps = (0, _extends3.default)({}, aggregationProps, {
+        griddleLocal: true,
         isAggregation: true
       });
       if (aggregateComposer) {
@@ -58,6 +65,19 @@ var composer = function composer() {
 exports.composer = composer;
 
 exports.default = function (type) {
-  return (0, _composeWithTracker2.default)(composer(type));
+  return (0, _reactKomposer.composeAll)((0, _withHandlers3.default)({
+    // overwrite
+    exportCurrentSearchAsCsv: function exportCurrentSearchAsCsv(_ref) {
+      var docs = _ref.docs,
+          exportCsvFromLocalDocs = _ref.exportCsvFromLocalDocs;
+      return function () {
+        for (var _len = arguments.length, exportArgs = Array(_len), _key = 0; _key < _len; _key++) {
+          exportArgs[_key] = arguments[_key];
+        }
+
+        exportCsvFromLocalDocs.apply(undefined, [docs].concat(exportArgs));
+      };
+    }
+  }), (0, _composeWithTracker2.default)(composer(type)));
 };
 //# sourceMappingURL=with_aggregation.js.map
