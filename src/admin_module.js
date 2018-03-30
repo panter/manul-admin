@@ -10,7 +10,11 @@ const load = ({ LocalState, adminContext }) => {
   }
   // set initial values
   Object.keys(adminContext.config.collections).forEach(collectionName => {
-    LocalState.set(stateListSort(collectionName), []);
+    const config = adminContext.config.collections[collectionName];
+    LocalState.set(
+      stateListSort(collectionName),
+      config.defaultSortProperties || []
+    );
     LocalState.set(statePageProperties(collectionName), {
       currentPage: 1,
       pageSize: 20

@@ -29,7 +29,8 @@ var load = function load(_ref) {
   }
   // set initial values
   (0, _keys2.default)(adminContext.config.collections).forEach(function (collectionName) {
-    LocalState.set((0, _local_state_utils.stateListSort)(collectionName), []);
+    var config = adminContext.config.collections[collectionName];
+    LocalState.set((0, _local_state_utils.stateListSort)(collectionName), config.defaultSortProperties || []);
     LocalState.set((0, _local_state_utils.statePageProperties)(collectionName), {
       currentPage: 1,
       pageSize: 20
