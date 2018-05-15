@@ -1,6 +1,5 @@
 import {
   identity,
-  capitalize,
   omitBy,
   map,
   isObject,
@@ -8,51 +7,79 @@ import {
   keyBy,
   isEmpty,
   flow,
-  split,
   trim
-} from 'lodash/fp';
+} from "lodash/fp";
 
 const removeEmptyObjects = omitBy(o => isObject(o) && isEmpty(o));
 
-const queryListFromTerm = (term, transform) =>
+const queryListFromTerm = term =>
   flow(
     map(field => ({
-      [field]: new RegExp(`^${transform(term)}`)
+      [field]: {
+        $regex: term,
+        $options: "i"
+      }
     }))
   );
 // using case-insensitive regex makes it slow, so we do a little hack
 const queryForTerm = term => fields => ({
-  $or: [
-    ...queryListFromTerm(term, identity)(fields),
-    ...queryListFromTerm(term, capitalize)(fields)
-  ]
+  $or: queryListFromTerm(term, identity)(fields)
 });
-const termToTermList = term =>
-  term
-    .match(/\w+|"(?:\\"|[^"])+"/g)
-    .map(k => k.replace(/"/g, ''))
-    .map(trim);
-export const createSearchQuery = (fields, terms) => ({
-  $and: map(term => queryForTerm(term)(fields))(terms)
-});
-/* eslint import/prefer-default-export: 0 */
-export const filterToQuery = (filter, search, transformFilter = f => f) => {
-  // console.log('got filter', filter);
-  // console.log('got search', search);
+const termToTermList = term => term.split(" ").map(trim);
 
+const createSearchQuery = (fields, terms, useTextIndex) =>
+  /*
+  two strategies: text search (if availble) or regex search
+  - in text search, if multiple terms are separated with space, every one should occure
+  */
+  ({
+    $or: [
+      // text search
+      ...(useTextIndex
+        ? [
+            {
+              $text: {
+                // quote terms, so that its an AND search
+                // see https://stackoverflow.com/a/16906099/1463534
+                $search: terms.map(t => `"${t}"`).join(" ")
+              }
+            }
+          ]
+        : []),
+      // regex search
+      // every
+      {
+        $and: map(term => queryForTerm(term)(fields))(terms)
+      }
+    ]
+  });
+/* eslint import/prefer-default-export: 0 */
+export const filterToQuery = (
+  filter,
+  search,
+  transformFilter = f => f,
+  useTextIndex
+) => {
+  // console.log("got filter", filter);
+  // console.log("got search", search);
+  // console.log("usingtext :", useTextIndex ? "yes" : "no");
   // remove empty objects on filter
   const query = {
     ...(!isEmpty(filter) && removeEmptyObjects(transformFilter(filter))),
     ...(!isEmpty(search) &&
       !isEmpty(search.searchFields) &&
       !isEmpty(search.searchTerm) &&
-      createSearchQuery(search.searchFields, termToTermList(search.searchTerm)))
+      createSearchQuery(
+        search.searchFields,
+        termToTermList(search.searchTerm),
+        useTextIndex
+      ))
   };
   return query;
 };
 
 export const sortPropsToMongoSort = flow(
-  keyBy('id'),
+  keyBy("id"),
   mapValues(({ sortAscending }) => (sortAscending ? 1 : -1))
 );
 

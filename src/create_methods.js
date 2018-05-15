@@ -1,21 +1,30 @@
-import { filterToQuery, gridOptionsToQueryOptions } from './utils/query_utils';
-import IsAllowed from './is_allowed';
+import { filterToQuery, gridOptionsToQueryOptions } from "./utils/query_utils";
+import IsAllowed from "./is_allowed";
 
 const DEBUG = false;
+
+const logObject = obj => {
+  function replacer(key, value) {
+    if (value instanceof RegExp) return `__REGEXP ${value.toString()}`;
+    return value;
+  }
+
+  console.log(JSON.stringify(obj, replacer, 2));
+};
 
 export default (context, config) => {
   const { Meteor, ValidatedMethod } = context;
   let SimpleSchema;
   try {
     /* eslint global-require: 0 */
-    SimpleSchema = require('simpl-schema').default;
+    SimpleSchema = require("simpl-schema").default;
   } catch (error) {
     // try to get from context
     SimpleSchema = context.SimpleSchema;
   }
   if (!SimpleSchema) {
     throw new Error(
-      'please provide SimpleSchema by npm or in context (version 1)'
+      "please provide SimpleSchema by npm or in context (version 1)"
     );
   }
   const ListSchema = new SimpleSchema({
@@ -32,7 +41,7 @@ export default (context, config) => {
       type: Array,
       optional: true
     },
-    'sortProperties.$': {
+    "sortProperties.$": {
       type: Object,
       optional: true,
       blackbox: true
@@ -56,8 +65,10 @@ export default (context, config) => {
       collection,
       allowInsertWithId,
       searchFields,
-      transformFilter
+      transformFilter,
+      textIndex
     } = config.collections[collectionName];
+    const hasTextIndex = Meteor.isServer && Boolean(textIndex);
 
     const getListQueryAndOptions = ({
       filter,
@@ -68,14 +79,15 @@ export default (context, config) => {
       const query = filterToQuery(
         filter,
         searchTerm && { searchFields, searchTerm },
-        transformFilter
+        transformFilter,
+        hasTextIndex
       );
 
       const queryOptions = gridOptionsToQueryOptions({
         sortProperties,
         pageProperties
       });
-      if (DEBUG) console.log(JSON.stringify({ query, queryOptions }));
+      if (DEBUG) logObject({ searchTerm, query, queryOptions });
 
       return {
         query,
@@ -93,7 +105,7 @@ export default (context, config) => {
           // console.log('updating', collectionName, _id, doc);
           if (Meteor.isServer) {
             if (!isAllowed(collectionName, this.userId)) {
-              throw new Meteor.Error('not allowed', 'You are not allowed');
+              throw new Meteor.Error("not allowed", "You are not allowed");
             }
 
             // Whole-doc update is not supported by simpl-schema,
@@ -105,7 +117,7 @@ export default (context, config) => {
               { bypassCollection2: true }
             );
             if (updated === 0) {
-              throw new Meteor.Error('not found', 'Entry not found');
+              throw new Meteor.Error("not found", "Entry not found");
             }
           }
         }
@@ -121,7 +133,7 @@ export default (context, config) => {
         run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed', 'You are not allowed');
+            throw new Meteor.Error("not allowed", "You are not allowed");
           }
           return collection.insert(doc);
         }
@@ -134,7 +146,7 @@ export default (context, config) => {
         run({ _id }) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed', 'You are not allowed');
+            throw new Meteor.Error("not allowed", "You are not allowed");
           }
           return collection.remove(_id);
         }
@@ -144,8 +156,9 @@ export default (context, config) => {
         validate: ListSchema.validator({ clean: false }),
         run(options) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed', 'You are not allowed');
+            throw new Meteor.Error("not allowed", "You are not allowed");
           }
+          this.unblock();
           const { query, queryOptions } = getListQueryAndOptions(options);
 
           return {
@@ -159,8 +172,9 @@ export default (context, config) => {
         validate: ListSchema.validator({ clean: false }),
         run(options) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error('not allowed', 'You are not allowed');
+            throw new Meteor.Error("not allowed", "You are not allowed");
           }
+          this.unblock();
           const { query } = getListQueryAndOptions(options);
           return collection.find(query).count();
         }
