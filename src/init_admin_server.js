@@ -1,16 +1,36 @@
-import IsAllowed from './is_allowed';
-import createMethods from './create_methods';
-import publicationUtils from './utils/publication_utils';
+import { keyBy, mapValues } from "lodash";
+import IsAllowed from "./is_allowed";
+import createMethods from "./create_methods";
+import publicationUtils from "./utils/publication_utils";
 
 // SimpleSchema needs only to be passed, if its not in npm (version 2)
 
 /**
 update: we no longer publish list, because we use a method call for that
 */
+
 export default ({ Meteor, ValidatedMethod, SimpleSchema = null }, config) => {
   const isAllowed = IsAllowed(config);
   const { collections } = config;
+  const createTextIndex = name => {
+    const { collection, textIndex } = collections[name];
+    if (textIndex) {
+      const indexDef = mapValues(keyBy(textIndex), () => "text");
 
+      try {
+        collection._ensureIndex(indexDef, {
+          background: true,
+          name: `manul-admin-text_${name}`
+        });
+      } catch (e) {
+        console.error("can't set index", e);
+      }
+    }
+  };
+  const initTextIndex = () => {
+    Object.keys(collections).forEach(createTextIndex);
+  };
+  initTextIndex();
   const createPublication = name => {
     const { edit } = publicationUtils.getPublications(name);
     const { collection } = collections[name];
