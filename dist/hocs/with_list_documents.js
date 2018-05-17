@@ -1,55 +1,55 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.composer = undefined;
 
-var _extends2 = require('babel-runtime/helpers/extends');
+var _extends2 = require("babel-runtime/helpers/extends");
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _getPrototypeOf = require("babel-runtime/core-js/object/get-prototype-of");
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _possibleConstructorReturn2 = require("babel-runtime/helpers/possibleConstructorReturn");
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+var _inherits2 = require("babel-runtime/helpers/inherits");
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _withHandlers2 = require('recompose/withHandlers');
+var _withHandlers2 = require("recompose/withHandlers");
 
 var _withHandlers3 = _interopRequireDefault(_withHandlers2);
 
-var _debounce2 = require('lodash/debounce');
+var _debounce2 = require("lodash/debounce");
 
 var _debounce3 = _interopRequireDefault(_debounce2);
 
-var _isEqual2 = require('lodash/isEqual');
+var _isEqual2 = require("lodash/isEqual");
 
 var _isEqual3 = _interopRequireDefault(_isEqual2);
 
-var _reactKomposer = require('@storybook/react-komposer');
+var _reactKomposer = require("@storybook/react-komposer");
 
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _local_state_utils = require('../utils/local_state_utils');
+var _local_state_utils = require("../utils/local_state_utils");
 
-var _composeWithTracker = require('../utils/composeWithTracker');
+var _composeWithTracker = require("../utils/composeWithTracker");
 
 var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
 
@@ -83,12 +83,12 @@ var withMethodCall = function withMethodCall() {
       }
 
       (0, _createClass3.default)(_class2, [{
-        key: 'componentDidMount',
+        key: "componentDidMount",
         value: function componentDidMount() {
           this.loadDataDebounced();
         }
       }, {
-        key: 'loadData',
+        key: "loadData",
         value: function loadData() {
           var _this2 = this;
 
@@ -109,7 +109,7 @@ var withMethodCall = function withMethodCall() {
             sortProperties: sortProperties,
             pageProperties: !options.localMode ? pageProperties : null
           };
-          if (DEBUG) console.log('calling method', methodArgs);
+          if (DEBUG) console.log("calling method", methodArgs);
           var callId = Math.random();
           this.setState({
             isLoading: true,
@@ -119,28 +119,34 @@ var withMethodCall = function withMethodCall() {
             if (error) {
               console.error(error);
             } else {
-              if (DEBUG) console.log('got result', error, result);
+              if (DEBUG) console.log("got result", error, result);
               if (_this2.state.callId === callId) {
                 _this2.setState({
                   isLoading: false,
                   docs: result.docs,
                   recordCount: result.count
                 });
-              } else if (DEBUG) console.log('ignore', searchTerm, callId, _this2.state.callId);
+              } else if (DEBUG) console.log("ignore", searchTerm, callId, _this2.state.callId);
             }
           });
         }
       }, {
-        key: 'componentWillUpdate',
+        key: "componentWillUpdate",
         value: function componentWillUpdate(nextProps) {
           if (!(0, _isEqual3.default)(nextProps, this.props)) {
             this.loadDataDebounced();
           }
         }
       }, {
-        key: 'render',
+        key: "render",
         value: function render() {
-          return _react2.default.createElement(C, (0, _extends3.default)({}, this.props, this.state));
+          var _this3 = this;
+
+          return _react2.default.createElement(C, (0, _extends3.default)({}, this.props, this.state, {
+            refresh: function refresh() {
+              _this3.loadData();
+            }
+          }));
         }
       }]);
       return _class2;
