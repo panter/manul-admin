@@ -24,7 +24,7 @@ var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DEBUG = true;
+var DEBUG = false;
 
 var logObject = function logObject(obj) {
   function replacer(key, value) {
@@ -181,12 +181,12 @@ exports.default = function (context, config) {
               query = _getListQueryAndOptio.query,
               queryOptions = _getListQueryAndOptio.queryOptions;
 
-          console.time('docs');
+          if (DEBUG) console.time('docs');
           var docs = collection.find(query, queryOptions).fetch();
-          console.timeEnd('docs');
-          console.time('count');
+          if (DEBUG) console.timeEnd('docs');
+          if (DEBUG) console.time('count');
           var count = collection.find(query).count();
-          console.timeEnd('count');
+          if (DEBUG) console.timeEnd('count');
           return {
             docs: docs,
             count: count

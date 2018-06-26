@@ -1,7 +1,7 @@
 import { filterToQuery, gridOptionsToQueryOptions } from './utils/query_utils';
 import IsAllowed from './is_allowed';
 
-const DEBUG = true;
+const DEBUG = false;
 
 const logObject = obj => {
   function replacer(key, value) {
@@ -160,12 +160,13 @@ export default (context, config) => {
           }
           this.unblock();
           const { query, queryOptions } = getListQueryAndOptions(options);
-          console.time('docs');
+
+          if (DEBUG) console.time('docs');
           const docs = collection.find(query, queryOptions).fetch();
-          console.timeEnd('docs');
-          console.time('count');
+          if (DEBUG) console.timeEnd('docs');
+          if (DEBUG) console.time('count');
           const count = collection.find(query).count();
-          console.timeEnd('count');
+          if (DEBUG) console.timeEnd('count');
           return {
             docs,
             count
