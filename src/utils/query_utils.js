@@ -7,8 +7,9 @@ import {
   keyBy,
   isEmpty,
   flow,
-  trim
-} from "lodash/fp";
+  trim,
+  isFunction
+} from 'lodash/fp';
 
 const removeEmptyObjects = omitBy(o => isObject(o) && isEmpty(o));
 
@@ -17,17 +18,19 @@ const queryListFromTerm = term =>
     map(field => ({
       [field]: {
         $regex: term,
-        $options: "i"
+        $options: 'i'
       }
     }))
   );
 // using case-insensitive regex makes it slow, so we do a little hack
-const queryForTerm = term => fields => ({
-  $or: queryListFromTerm(term, identity)(fields)
+const queryForTerm = term => searchFields => ({
+  $or: queryListFromTerm(term, identity)(
+    isFunction(searchFields) ? searchFields(term) : searchFields
+  )
 });
-const termToTermList = term => term.split(" ").map(trim);
+const termToTermList = term => term.split(' ').map(trim);
 
-const createSearchQuery = (fields, terms, useTextIndex) =>
+const createSearchQuery = (searchFields, terms, useTextIndex) =>
   /*
   two strategies: text search (if availble) or regex search
   - in text search, if multiple terms are separated with space, every one should occure
@@ -41,7 +44,7 @@ const createSearchQuery = (fields, terms, useTextIndex) =>
               $text: {
                 // quote terms, so that its an AND search
                 // see https://stackoverflow.com/a/16906099/1463534
-                $search: terms.map(t => `"${t}"`).join(" ")
+                $search: terms.map(t => `"${t}"`).join(' ')
               }
             }
           ]
@@ -49,7 +52,7 @@ const createSearchQuery = (fields, terms, useTextIndex) =>
       // regex search
       // every
       {
-        $and: map(term => queryForTerm(term)(fields))(terms)
+        $and: map(term => queryForTerm(term)(searchFields))(terms)
       }
     ]
   });
@@ -67,7 +70,7 @@ export const filterToQuery = (
   const query = {
     ...(!isEmpty(filter) && removeEmptyObjects(transformFilter(filter))),
     ...(!isEmpty(search) &&
-      !isEmpty(search.searchFields) &&
+      (isFunction(search.searchFields) || !isEmpty(search.searchFields)) &&
       !isEmpty(search.searchTerm) &&
       createSearchQuery(
         search.searchFields,
@@ -79,7 +82,7 @@ export const filterToQuery = (
 };
 
 export const sortPropsToMongoSort = flow(
-  keyBy("id"),
+  keyBy('id'),
   mapValues(({ sortAscending }) => (sortAscending ? 1 : -1))
 );
 

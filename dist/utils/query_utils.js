@@ -1,55 +1,59 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.gridOptionsToQueryOptions = exports.sortPropsToMongoSort = exports.filterToQuery = undefined;
 
-var _extends2 = require("babel-runtime/helpers/extends");
+var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _toConsumableArray2 = require("babel-runtime/helpers/toConsumableArray");
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-var _defineProperty2 = require("babel-runtime/helpers/defineProperty");
+var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
-var _trim2 = require("lodash/fp/trim");
+var _isFunction2 = require('lodash/fp/isFunction');
+
+var _isFunction3 = _interopRequireDefault(_isFunction2);
+
+var _trim2 = require('lodash/fp/trim');
 
 var _trim3 = _interopRequireDefault(_trim2);
 
-var _flow2 = require("lodash/fp/flow");
+var _flow2 = require('lodash/fp/flow');
 
 var _flow3 = _interopRequireDefault(_flow2);
 
-var _isEmpty2 = require("lodash/fp/isEmpty");
+var _isEmpty2 = require('lodash/fp/isEmpty');
 
 var _isEmpty3 = _interopRequireDefault(_isEmpty2);
 
-var _keyBy2 = require("lodash/fp/keyBy");
+var _keyBy2 = require('lodash/fp/keyBy');
 
 var _keyBy3 = _interopRequireDefault(_keyBy2);
 
-var _mapValues2 = require("lodash/fp/mapValues");
+var _mapValues2 = require('lodash/fp/mapValues');
 
 var _mapValues3 = _interopRequireDefault(_mapValues2);
 
-var _isObject2 = require("lodash/fp/isObject");
+var _isObject2 = require('lodash/fp/isObject');
 
 var _isObject3 = _interopRequireDefault(_isObject2);
 
-var _map2 = require("lodash/fp/map");
+var _map2 = require('lodash/fp/map');
 
 var _map3 = _interopRequireDefault(_map2);
 
-var _omitBy2 = require("lodash/fp/omitBy");
+var _omitBy2 = require('lodash/fp/omitBy');
 
 var _omitBy3 = _interopRequireDefault(_omitBy2);
 
-var _identity2 = require("lodash/fp/identity");
+var _identity2 = require('lodash/fp/identity');
 
 var _identity3 = _interopRequireDefault(_identity2);
 
@@ -63,23 +67,23 @@ var queryListFromTerm = function queryListFromTerm(term) {
   return (0, _flow3.default)((0, _map3.default)(function (field) {
     return (0, _defineProperty3.default)({}, field, {
       $regex: term,
-      $options: "i"
+      $options: 'i'
     });
   }));
 };
 // using case-insensitive regex makes it slow, so we do a little hack
 var queryForTerm = function queryForTerm(term) {
-  return function (fields) {
+  return function (searchFields) {
     return {
-      $or: queryListFromTerm(term, _identity3.default)(fields)
+      $or: queryListFromTerm(term, _identity3.default)((0, _isFunction3.default)(searchFields) ? searchFields(term) : searchFields)
     };
   };
 };
 var termToTermList = function termToTermList(term) {
-  return term.split(" ").map(_trim3.default);
+  return term.split(' ').map(_trim3.default);
 };
 
-var createSearchQuery = function createSearchQuery(fields, terms, useTextIndex) {
+var createSearchQuery = function createSearchQuery(searchFields, terms, useTextIndex) {
   return (
     /*
     two strategies: text search (if availble) or regex search
@@ -91,15 +95,15 @@ var createSearchQuery = function createSearchQuery(fields, terms, useTextIndex) 
           // quote terms, so that its an AND search
           // see https://stackoverflow.com/a/16906099/1463534
           $search: terms.map(function (t) {
-            return "\"" + t + "\"";
-          }).join(" ")
+            return '"' + t + '"';
+          }).join(' ')
         }
       }] : []), [
       // regex search
       // every
       {
         $and: (0, _map3.default)(function (term) {
-          return queryForTerm(term)(fields);
+          return queryForTerm(term)(searchFields);
         })(terms)
       }])
     }
@@ -116,11 +120,11 @@ var filterToQuery = exports.filterToQuery = function filterToQuery(filter, searc
   // console.log("got search", search);
   // console.log("usingtext :", useTextIndex ? "yes" : "no");
   // remove empty objects on filter
-  var query = (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) && removeEmptyObjects(transformFilter(filter)), !(0, _isEmpty3.default)(search) && !(0, _isEmpty3.default)(search.searchFields) && !(0, _isEmpty3.default)(search.searchTerm) && createSearchQuery(search.searchFields, termToTermList(search.searchTerm), useTextIndex));
+  var query = (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) && removeEmptyObjects(transformFilter(filter)), !(0, _isEmpty3.default)(search) && ((0, _isFunction3.default)(search.searchFields) || !(0, _isEmpty3.default)(search.searchFields)) && !(0, _isEmpty3.default)(search.searchTerm) && createSearchQuery(search.searchFields, termToTermList(search.searchTerm), useTextIndex));
   return query;
 };
 
-var sortPropsToMongoSort = exports.sortPropsToMongoSort = (0, _flow3.default)((0, _keyBy3.default)("id"), (0, _mapValues3.default)(function (_ref2) {
+var sortPropsToMongoSort = exports.sortPropsToMongoSort = (0, _flow3.default)((0, _keyBy3.default)('id'), (0, _mapValues3.default)(function (_ref2) {
   var sortAscending = _ref2.sortAscending;
   return sortAscending ? 1 : -1;
 }));

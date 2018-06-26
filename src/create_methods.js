@@ -1,7 +1,7 @@
-import { filterToQuery, gridOptionsToQueryOptions } from "./utils/query_utils";
-import IsAllowed from "./is_allowed";
+import { filterToQuery, gridOptionsToQueryOptions } from './utils/query_utils';
+import IsAllowed from './is_allowed';
 
-const DEBUG = false;
+const DEBUG = true;
 
 const logObject = obj => {
   function replacer(key, value) {
@@ -17,14 +17,14 @@ export default (context, config) => {
   let SimpleSchema;
   try {
     /* eslint global-require: 0 */
-    SimpleSchema = require("simpl-schema").default;
+    SimpleSchema = require('simpl-schema').default;
   } catch (error) {
     // try to get from context
     SimpleSchema = context.SimpleSchema;
   }
   if (!SimpleSchema) {
     throw new Error(
-      "please provide SimpleSchema by npm or in context (version 1)"
+      'please provide SimpleSchema by npm or in context (version 1)'
     );
   }
   const ListSchema = new SimpleSchema({
@@ -41,7 +41,7 @@ export default (context, config) => {
       type: Array,
       optional: true
     },
-    "sortProperties.$": {
+    'sortProperties.$': {
       type: Object,
       optional: true,
       blackbox: true
@@ -105,7 +105,7 @@ export default (context, config) => {
           // console.log('updating', collectionName, _id, doc);
           if (Meteor.isServer) {
             if (!isAllowed(collectionName, this.userId)) {
-              throw new Meteor.Error("not allowed", "You are not allowed");
+              throw new Meteor.Error('not allowed', 'You are not allowed');
             }
 
             // Whole-doc update is not supported by simpl-schema,
@@ -117,7 +117,7 @@ export default (context, config) => {
               { bypassCollection2: true }
             );
             if (updated === 0) {
-              throw new Meteor.Error("not found", "Entry not found");
+              throw new Meteor.Error('not found', 'Entry not found');
             }
           }
         }
@@ -133,7 +133,7 @@ export default (context, config) => {
         run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           return collection.insert(doc);
         }
@@ -146,7 +146,7 @@ export default (context, config) => {
         run({ _id }) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           return collection.remove(_id);
         }
@@ -156,14 +156,19 @@ export default (context, config) => {
         validate: ListSchema.validator({ clean: false }),
         run(options) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           this.unblock();
           const { query, queryOptions } = getListQueryAndOptions(options);
-
+          console.time('docs');
+          const docs = collection.find(query, queryOptions).fetch();
+          console.timeEnd('docs');
+          console.time('count');
+          const count = collection.find(query).count();
+          console.timeEnd('count');
           return {
-            docs: collection.find(query, queryOptions).fetch(),
-            count: collection.find(query).count()
+            docs,
+            count
           };
         }
       }),
@@ -172,7 +177,7 @@ export default (context, config) => {
         validate: ListSchema.validator({ clean: false }),
         run(options) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           this.unblock();
           const { query } = getListQueryAndOptions(options);

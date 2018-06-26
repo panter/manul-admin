@@ -1,15 +1,15 @@
-import { composeAll } from "@storybook/react-komposer";
-import { isEqual, debounce } from "lodash";
-import { withHandlers } from "recompose";
-import React from "react";
+import { composeAll } from '@storybook/react-komposer';
+import { isEqual, debounce } from 'lodash';
+import { withHandlers } from 'recompose';
+import React from 'react';
 
 import {
   stateListFilter,
   stateListSort,
   statePageProperties,
   stateListSearch
-} from "../utils/local_state_utils";
-import composeWithTracker from "../utils/composeWithTracker";
+} from '../utils/local_state_utils';
+import composeWithTracker from '../utils/composeWithTracker';
 
 const DEBUG = false;
 /* eslint react/display-name: 0*/
@@ -43,7 +43,7 @@ const withMethodCall = (options = {}) => C =>
         sortProperties,
         pageProperties: !options.localMode ? pageProperties : null
       };
-      if (DEBUG) console.log("calling method", methodArgs);
+      if (DEBUG) console.log('calling method', methodArgs);
       const callId = Math.random();
       this.setState({
         isLoading: true,
@@ -53,7 +53,7 @@ const withMethodCall = (options = {}) => C =>
         if (error) {
           console.error(error);
         } else {
-          if (DEBUG) console.log("got result", error, result);
+          if (DEBUG) console.log('got result', error, result);
           if (this.state.callId === callId) {
             this.setState({
               isLoading: false,
@@ -61,7 +61,7 @@ const withMethodCall = (options = {}) => C =>
               recordCount: result.count
             });
           } else if (DEBUG)
-            console.log("ignore", searchTerm, callId, this.state.callId);
+            console.log('ignore', searchTerm, callId, this.state.callId);
         }
       });
     }

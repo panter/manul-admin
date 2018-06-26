@@ -1,34 +1,34 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys = require("babel-runtime/core-js/object/keys");
+var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _objectWithoutProperties2 = require("babel-runtime/helpers/objectWithoutProperties");
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
-var _stringify = require("babel-runtime/core-js/json/stringify");
+var _stringify = require('babel-runtime/core-js/json/stringify');
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
-var _query_utils = require("./utils/query_utils");
+var _query_utils = require('./utils/query_utils');
 
-var _is_allowed = require("./is_allowed");
+var _is_allowed = require('./is_allowed');
 
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DEBUG = false;
+var DEBUG = true;
 
 var logObject = function logObject(obj) {
   function replacer(key, value) {
-    if (value instanceof RegExp) return "__REGEXP " + value.toString();
+    if (value instanceof RegExp) return '__REGEXP ' + value.toString();
     return value;
   }
 
@@ -42,13 +42,13 @@ exports.default = function (context, config) {
   var SimpleSchema = void 0;
   try {
     /* eslint global-require: 0 */
-    SimpleSchema = require("simpl-schema").default;
+    SimpleSchema = require('simpl-schema').default;
   } catch (error) {
     // try to get from context
     SimpleSchema = context.SimpleSchema;
   }
   if (!SimpleSchema) {
-    throw new Error("please provide SimpleSchema by npm or in context (version 1)");
+    throw new Error('please provide SimpleSchema by npm or in context (version 1)');
   }
   var ListSchema = new SimpleSchema({
     filter: {
@@ -64,7 +64,7 @@ exports.default = function (context, config) {
       type: Array,
       optional: true
     },
-    "sortProperties.$": {
+    'sortProperties.$': {
       type: Object,
       optional: true,
       blackbox: true
@@ -116,18 +116,18 @@ exports.default = function (context, config) {
 
     return {
       update: new ValidatedMethod({
-        name: "manulAdmin." + collectionName + ".update",
+        name: 'manulAdmin.' + collectionName + '.update',
         validate: extendSimpleSchema(collection.simpleSchema(), {
           _id: { type: String }
         }).validator({ clean: true }),
         run: function run(_ref2) {
           var _id = _ref2._id,
-              doc = (0, _objectWithoutProperties3.default)(_ref2, ["_id"]);
+              doc = (0, _objectWithoutProperties3.default)(_ref2, ['_id']);
 
           // console.log('updating', collectionName, _id, doc);
           if (Meteor.isServer) {
             if (!isAllowed(collectionName, this.userId)) {
-              throw new Meteor.Error("not allowed", "You are not allowed");
+              throw new Meteor.Error('not allowed', 'You are not allowed');
             }
 
             // Whole-doc update is not supported by simpl-schema,
@@ -135,26 +135,26 @@ exports.default = function (context, config) {
             // https://github.com/aldeed/meteor-simple-schema/issues/175
             var updated = collection.update(_id, { $set: doc }, { bypassCollection2: true });
             if (updated === 0) {
-              throw new Meteor.Error("not found", "Entry not found");
+              throw new Meteor.Error('not found', 'Entry not found');
             }
           }
         }
       }),
       create: new ValidatedMethod({
-        name: "manulAdmin." + collectionName + ".create",
+        name: 'manulAdmin.' + collectionName + '.create',
         validate: (allowInsertWithId ? extendSimpleSchema(collection.simpleSchema(), {
           _id: { type: String, optional: true }
         }) : collection.simpleSchema()).validator({ clean: true }),
         run: function run(doc) {
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           return collection.insert(doc);
         }
       }),
       destroy: new ValidatedMethod({
-        name: "manulAdmin." + collectionName + ".destroy",
+        name: 'manulAdmin.' + collectionName + '.destroy',
         validate: new SimpleSchema({ _id: { type: String } }).validator({
           clean: true
         }),
@@ -163,17 +163,17 @@ exports.default = function (context, config) {
 
           // console.log('inserting', doc);
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           return collection.remove(_id);
         }
       }),
       list: new ValidatedMethod({
-        name: "manulAdmin." + collectionName + ".list",
+        name: 'manulAdmin.' + collectionName + '.list',
         validate: ListSchema.validator({ clean: false }),
         run: function run(options) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           this.unblock();
 
@@ -181,18 +181,24 @@ exports.default = function (context, config) {
               query = _getListQueryAndOptio.query,
               queryOptions = _getListQueryAndOptio.queryOptions;
 
+          console.time('docs');
+          var docs = collection.find(query, queryOptions).fetch();
+          console.timeEnd('docs');
+          console.time('count');
+          var count = collection.find(query).count();
+          console.timeEnd('count');
           return {
-            docs: collection.find(query, queryOptions).fetch(),
-            count: collection.find(query).count()
+            docs: docs,
+            count: count
           };
         }
       }),
       listCount: new ValidatedMethod({
-        name: "manulAdmin." + collectionName + ".listCount",
+        name: 'manulAdmin.' + collectionName + '.listCount',
         validate: ListSchema.validator({ clean: false }),
         run: function run(options) {
           if (!isAllowed(collectionName, this.userId)) {
-            throw new Meteor.Error("not allowed", "You are not allowed");
+            throw new Meteor.Error('not allowed', 'You are not allowed');
           }
           this.unblock();
 
