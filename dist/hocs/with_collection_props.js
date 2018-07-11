@@ -69,7 +69,8 @@ var composer = function composer(type) {
         schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
         searchSchema: searchSchema,
         publications: publications
-      }, colConfig, props));
+      }, colConfig, props) // allow override
+      );
     }
   };
 };

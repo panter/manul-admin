@@ -28,9 +28,9 @@ var _defaultsDeep2 = require('lodash/defaultsDeep');
 
 var _defaultsDeep3 = _interopRequireDefault(_defaultsDeep2);
 
-var _create_methods = require('./create_methods');
+var _initMethods = require('./initMethods');
 
-var _create_methods2 = _interopRequireDefault(_create_methods);
+var _initMethods2 = _interopRequireDefault(_initMethods);
 
 var _default_components = require('./default_components');
 
@@ -50,7 +50,6 @@ exports.default = function (_ref) {
   var Meteor = _ref.Meteor,
       ValidatedMethod = _ref.ValidatedMethod,
       LocalState = _ref.LocalState,
-      SimpleSchema = _ref.SimpleSchema,
       config = _ref.config,
       adminRoutes = _ref.adminRoutes,
       components = _ref.components,
@@ -63,9 +62,14 @@ exports.default = function (_ref) {
 
   var neededMeteorPackages = { Meteor: Meteor, ValidatedMethod: ValidatedMethod, LocalState: LocalState };
   if ((0, _some3.default)(neededMeteorPackages, _isNil3.default)) {
-    throw new Error('please provide all of the following meteor-packages: ' + (0, _keys3.default)(neededMeteorPackages).join(', '));
+    throw new Error('please provide all of \n      the following meteor-packages: ' + (0, _keys3.default)(neededMeteorPackages).join(', '));
   }
-  var methods = (0, _create_methods2.default)({ Meteor: Meteor, SimpleSchema: SimpleSchema, ValidatedMethod: ValidatedMethod }, config);
+
+  var methods = (0, _initMethods2.default)({
+    Meteor: Meteor,
+    ValidatedMethod: ValidatedMethod,
+    config: config
+  });
   var getComponent = function getComponent(_ref2) {
     var collectionName = _ref2.collectionName,
         type = _ref2.type;
@@ -84,7 +88,6 @@ exports.default = function (_ref) {
   return {
     Meteor: Meteor,
     LocalState: LocalState,
-    SimpleSchema: SimpleSchema,
     methods: methods,
     getComponent: getComponent,
     config: config,

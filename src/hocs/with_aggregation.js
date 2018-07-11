@@ -3,7 +3,9 @@ import { get } from 'lodash/fp';
 import { withHandlers } from 'recompose';
 
 import composeWithTracker from '../utils/composeWithTracker';
-
+/**
+ * this does a "soft" aggregation on the client
+ */
 export const composer = () => (props, onData) => {
   const { aggregationName, aggregations } = props;
   const aggregation = get(aggregationName)(aggregations);

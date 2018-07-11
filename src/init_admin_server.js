@@ -1,21 +1,26 @@
-import { keyBy, mapValues } from "lodash";
-import IsAllowed from "./is_allowed";
-import createMethods from "./create_methods";
-import publicationUtils from "./utils/publication_utils";
+// @flow
 
-// SimpleSchema needs only to be passed, if its not in npm (version 2)
+import { keyBy, mapValues } from 'lodash';
+import IsAllowed from './is_allowed';
+import initMethods from './initMethods';
+import publicationUtils from './utils/publication_utils';
+
+import type { ServerContextT, AdminConfigT } from './types';
 
 /**
 update: we no longer publish list, because we use a method call for that
 */
 
-export default ({ Meteor, ValidatedMethod, SimpleSchema = null }, config) => {
+export default (
+  { Meteor, ValidatedMethod }: ServerContextT,
+  config: AdminConfigT
+) => {
   const isAllowed = IsAllowed(config);
   const { collections } = config;
   const createTextIndex = name => {
     const { collection, textIndex } = collections[name];
     if (textIndex) {
-      const indexDef = mapValues(keyBy(textIndex), () => "text");
+      const indexDef = mapValues(keyBy(textIndex), () => 'text');
 
       try {
         collection._ensureIndex(indexDef, {
@@ -46,5 +51,5 @@ export default ({ Meteor, ValidatedMethod, SimpleSchema = null }, config) => {
     Object.keys(collections).forEach(createPublication);
   };
   createPublications();
-  createMethods({ Meteor, ValidatedMethod, SimpleSchema }, config);
+  initMethods({ Meteor, ValidatedMethod, config });
 };
