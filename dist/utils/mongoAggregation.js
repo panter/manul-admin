@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 
 exports.default = function (_ref, collection, pipeline, options) {
   var Meteor = _ref.Meteor;
-  return Meteor.wrapAsync(collection.rawCollection().bind(collection))(pipeline, options);
+
+  var coll = collection.rawCollection();
+  return Meteor.wrapAsync(coll.aggregate.bind(coll))(pipeline, options);
 };
 //# sourceMappingURL=mongoAggregation.js.map

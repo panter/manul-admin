@@ -1,4 +1,4 @@
-
+// @flow
 
 import adminModule from './admin_module';
 import initAdminServer from './init_admin_server';
@@ -10,7 +10,6 @@ import Preview from './containers/preview';
 import Create from './containers/create';
 import LookupButton from './containers/lookup_button';
 
-
 export {
   adminModule,
   initAdminServer,
@@ -20,5 +19,5 @@ export {
   ListAggregation,
   Preview,
   Create,
-  LookupButton,
+  LookupButton
 };

@@ -8,8 +8,6 @@ var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _query_utils = require('../utils/query_utils');
-
 var _update = require('./update');
 
 var _update2 = _interopRequireDefault(_update);

@@ -14,29 +14,28 @@ var _utils = require('./utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DEBUG = false;
-
 exports.default = function (context, collectionName, collectionConfig) {
   return new context.ValidatedMethod({
     name: 'manulAdmin.' + collectionName + '.list',
     validate: _schemas.ListSchema.validator({ clean: false }),
-    run: function run(options) {
+    run: function run(listOptions) {
       if (!(0, _is_allowed2.default)(collectionName, this.userId)) {
         throw new context.Meteor.Error('not allowed', 'You are not allowed');
       }
+      if (context.Meteor.isClient) {
+        return { docs: [], count: 0 };
+      }
       this.unblock();
 
-      var _getListQueryAndOptio = (0, _utils.getListQueryAndOptions)(context, collectionName, collectionConfig, options),
-          query = _getListQueryAndOptio.query,
-          queryOptions = _getListQueryAndOptio.queryOptions;
+      var _getListResult = (0, _utils.getListResult)({
+        context: context,
+        collectionConfig: collectionConfig,
+        collectionName: collectionName,
+        listOptions: listOptions
+      }),
+          docs = _getListResult.docs,
+          count = _getListResult.count;
 
-      if (DEBUG) console.time('docs');
-
-      var docs = collectionConfig.collection.find(query, queryOptions).fetch();
-      if (DEBUG) console.timeEnd('docs');
-      if (DEBUG) console.time('count');
-      var count = collectionConfig.collection.find(query).count();
-      if (DEBUG) console.timeEnd('count');
       return {
         docs: docs,
         count: count

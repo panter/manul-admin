@@ -1,5 +1,4 @@
 // @flow
-import { filterToQuery, gridOptionsToQueryOptions } from '../utils/query_utils';
 
 import update from './update';
 import create from './create';

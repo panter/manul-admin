@@ -9,7 +9,7 @@ import type {
 } from '../types';
 import { ListSchema } from '../schemas';
 
-import { getListQueryAndOptions } from './utils';
+import { getListResult } from './utils';
 
 export default (
   context: MethodsContextT,
@@ -19,17 +19,21 @@ export default (
   new context.ValidatedMethod({
     name: `manulAdmin.${collectionName}.listCount`,
     validate: ListSchema.validator({ clean: false }),
-    run(options) {
+    run(listOptions) {
       if (!isAllowed(collectionName, this.userId)) {
         throw new context.Meteor.Error('not allowed', 'You are not allowed');
       }
+      if (context.Meteor.isClient) {
+        return { docs: [], count: 0 };
+      }
       this.unblock();
-      const { query } = getListQueryAndOptions(
+      const { count } = getListResult({
         context,
-        collectionName,
         collectionConfig,
-        options
-      );
-      return collectionConfig.collection.find(query).count();
+        collectionName,
+        listOptions,
+        getDocuments: false
+      });
+      return count;
     }
   });

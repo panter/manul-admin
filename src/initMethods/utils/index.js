@@ -1,16 +1,13 @@
 // @flow
-
+import isEmpty from 'lodash/isEmpty';
+import isFunction from 'lodash/isFunction';
 import type {
   MethodsContextT,
-  CollectionNameT,
   CollectionConfigT,
-  ListArgumentsT
+  ListOptionsT
 } from '../../types';
-
-import {
-  filterToQuery,
-  gridOptionsToQueryOptions
-} from '../../utils/query_utils';
+import mongoAggregation from '../../utils/mongoAggregation';
+import { createQuery, createQueryOptions } from '../../utils/query_utils';
 
 const DEBUG = true;
 
@@ -22,32 +19,121 @@ const logObject = obj => {
   console.log(JSON.stringify(obj, replacer, 2));
 };
 
-/* eslint import/prefer-default-export: 0*/
-export const getListQueryAndOptions = (
+const getPipeline = ({
+  context,
+  collectionConfig,
+  listOptions,
+  countOnly = false
+}: {
   context: MethodsContextT,
-  collectionName: CollectionNameT,
   collectionConfig: CollectionConfigT,
-  listArguments: ListArgumentsT
-) => {
+  listOptions: ListOptionsT,
+  countOnly?: boolean
+}) => {
   const { Meteor } = context;
-  const { filter, searchTerm, sortProperties, pageProperties } = listArguments;
-  const { searchFields, transformFilter, textIndex } = collectionConfig;
-  const hasTextIndex = Meteor.isServer && Boolean(textIndex);
-  const query = filterToQuery(
+  const { filter, searchTerm, sortProperties, pageProperties } = listOptions;
+  const {
+    searchFields,
+    filterToBaseQuery,
+    textIndex,
+    aggregation
+  } = collectionConfig;
+  const useTextIndex = Meteor.isServer && Boolean(textIndex);
+  const baseQuery = createQuery({
     filter,
-    searchTerm && { searchFields, searchTerm },
-    transformFilter,
-    hasTextIndex
-  );
+    searchFields,
+    searchTerm,
+    filterToBaseQuery,
+    useTextIndex
+  });
 
-  const queryOptions = gridOptionsToQueryOptions({
+  const queryOptions = createQueryOptions({
     sortProperties,
     pageProperties
   });
-  if (DEBUG) logObject({ searchTerm, query, queryOptions });
+  if (DEBUG) logObject({ searchTerm, baseQuery, queryOptions });
+  /* eslint no-nested-ternary: 0*/
 
-  return {
-    query,
-    queryOptions
-  };
+  const aggregationOptions =
+    aggregation && isFunction(aggregation)
+      ? aggregation({ collectionConfig, listOptions, countOnly })
+      : aggregation;
+
+  const basePipeline = [{ $match: baseQuery }];
+
+  if (countOnly) {
+    return [...basePipeline, { $count: 'count' }];
+  }
+  const sortPipeline = [
+    ...(!isEmpty(queryOptions.sort) ? [{ $sort: queryOptions.sort }] : []),
+    { $limit: queryOptions.limit + queryOptions.skip },
+    { $skip: queryOptions.skip }
+  ];
+
+  return [
+    ...basePipeline,
+    ...(aggregationOptions && !aggregationOptions.postSort ? sortPipeline : []),
+    ...(aggregationOptions ? aggregationOptions.stages : []),
+    ...(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : [])
+  ];
+};
+
+/* eslint import/prefer-default-export: 0 */
+export const getListResult = ({
+  context,
+  collectionConfig,
+  listOptions,
+  getCount = true,
+  getDocuments = true
+}: {
+  context: MethodsContextT,
+
+  collectionConfig: CollectionConfigT,
+  listOptions: ListOptionsT,
+  getCount?: boolean,
+  getDocuments?: boolean
+}) => {
+  if (DEBUG) console.time('docs aggregation');
+  const pipeline = getPipeline({
+    context,
+    collectionConfig,
+    listOptions
+  });
+  if (DEBUG) console.log('pipeline', pipeline);
+
+  const docsAggregation = getDocuments
+    ? mongoAggregation(context, collectionConfig.collection, pipeline)
+    : undefined;
+  if (DEBUG) console.timeEnd('docs aggregation');
+  /*
+  if (DEBUG) console.time('docs');
+  const docs = getDocuments
+    ? collectionConfig.collection.find(query, queryOptions).fetch()
+    : undefined;
+  if (DEBUG) console.timeEnd('docs');
+  
+
+  if (DEBUG) console.time('count');
+  const count = getCount
+    ? collectionConfig.collection.find(query).count()
+    : undefined;
+  if (DEBUG) console.timeEnd('count');
+
+    */
+  if (DEBUG) console.time('countAggregation');
+  const [{ count } = {}] = getCount
+    ? mongoAggregation(
+        context,
+        collectionConfig.collection,
+        getPipeline({
+          context,
+          collectionConfig,
+          listOptions,
+          countOnly: true
+        })
+      )
+    : [{ count: 0 }];
+  if (DEBUG) console.timeEnd('countAggregation');
+  console.log('countAggregation', count);
+  return { docs: docsAggregation, count };
 };
