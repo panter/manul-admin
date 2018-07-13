@@ -9,7 +9,7 @@ import type {
 } from '../types';
 import { ListSchema } from '../schemas';
 
-import { getListResult } from './utils';
+import getListResult from './getListResult';
 
 export default (
   context: MethodsContextT,

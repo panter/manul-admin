@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getListResult = undefined;
 
 var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
@@ -94,7 +93,8 @@ var getPipeline = function getPipeline(_ref) {
 };
 
 /* eslint import/prefer-default-export: 0 */
-var getListResult = exports.getListResult = function getListResult(_ref2) {
+
+exports.default = function (_ref2) {
   var context = _ref2.context,
       collectionConfig = _ref2.collectionConfig,
       listOptions = _ref2.listOptions,

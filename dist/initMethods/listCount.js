@@ -10,7 +10,9 @@ var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
 var _schemas = require('../schemas');
 
-var _utils = require('./utils');
+var _getListResult2 = require('./getListResult');
+
+var _getListResult3 = _interopRequireDefault(_getListResult2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27,7 +29,7 @@ exports.default = function (context, collectionName, collectionConfig) {
       }
       this.unblock();
 
-      var _getListResult = (0, _utils.getListResult)({
+      var _getListResult = (0, _getListResult3.default)({
         context: context,
         collectionConfig: collectionConfig,
         collectionName: collectionName,

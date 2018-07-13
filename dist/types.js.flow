@@ -16,13 +16,12 @@ export type ListOptionsT = {|
   searchTerm?: SearchTermT
 |};
 
-export type AggregationStagesT = Array<any>;
-export type AggregationArgsT = {|
+type AggregationStagesT = Array<any>;
+
+type AggregationArgsT = {|
   collectionConfig: *,
   listOptions: ListOptionsT,
-  countOnly?: boolean,
-  filter?: FilterT,
-  searchTerm?: SearchTermT
+  countOnly?: boolean
 |};
 export type CollectionAggregationT = {|
   stages: AggregationStagesT, // additional stages after base query

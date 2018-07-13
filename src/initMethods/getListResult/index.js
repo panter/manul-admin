@@ -56,7 +56,13 @@ const getPipeline = ({
 
   const aggregationOptions =
     aggregation && isFunction(aggregation)
-      ? aggregation({ collectionConfig, listOptions, countOnly })
+      ? aggregation({
+          searchTerm,
+          filter,
+          collectionConfig,
+          listOptions,
+          countOnly
+        })
       : aggregation;
 
   const basePipeline = [{ $match: baseQuery }];
@@ -66,8 +72,10 @@ const getPipeline = ({
   }
   const sortPipeline = [
     ...(!isEmpty(queryOptions.sort) ? [{ $sort: queryOptions.sort }] : []),
-    { $limit: queryOptions.limit + queryOptions.skip },
-    { $skip: queryOptions.skip }
+    ...(queryOptions.limit
+      ? [{ $limit: queryOptions.limit + (queryOptions.skip || 0) }]
+      : []),
+    { $skip: queryOptions.skip || 0 }
   ];
 
   return [
@@ -79,7 +87,7 @@ const getPipeline = ({
 };
 
 /* eslint import/prefer-default-export: 0 */
-export const getListResult = ({
+export default ({
   context,
   collectionConfig,
   listOptions,
@@ -99,7 +107,7 @@ export const getListResult = ({
     collectionConfig,
     listOptions
   });
-  if (DEBUG) console.log('pipeline', pipeline);
+  if (DEBUG) logObject(pipeline);
 
   const docsAggregation = getDocuments
     ? mongoAggregation(context, collectionConfig.collection, pipeline)
