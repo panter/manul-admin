@@ -41,7 +41,7 @@ const withMethodCall = (options = {}) => C =>
         filter,
         searchTerm,
         sortProperties,
-        pageProperties: !options.localMode ? pageProperties : null
+        pageProperties
       };
       if (DEBUG) console.log('calling method', methodArgs);
       const callId = Math.random();
@@ -83,11 +83,10 @@ const withMethodCall = (options = {}) => C =>
     }
   };
 
-export const composer = (options = {}) => (
+export const composer = () => (
   { context, collectionName, filter: filterBase },
   onData
 ) => {
-  const { localMode = false } = options;
   const {
     adminContext: { LocalState, config }
   } = context();
@@ -115,7 +114,6 @@ export const composer = (options = {}) => (
   const pageProperties = LocalState.get(statePageProperties(collectionName));
 
   onData(null, {
-    griddleLocal: localMode,
     filter,
     searchTerm,
     sortProperties,

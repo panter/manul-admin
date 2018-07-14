@@ -36,7 +36,7 @@ var _query_utils = require('../../utils/query_utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DEBUG = true;
+var DEBUG = false;
 
 
 var logObject = function logObject(obj) {
@@ -168,7 +168,7 @@ exports.default = function (_ref2) {
   }
 
   if (DEBUG) console.timeEnd('countAggregation');
-  console.log('countAggregation', count);
+  if (DEBUG) console.log('countAggregation result: ', count);
   return { docs: docs, count: count };
 };
 //# sourceMappingURL=index.js.map

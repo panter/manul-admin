@@ -12,10 +12,6 @@ var _upperFirst2 = require('lodash/fp/upperFirst');
 
 var _upperFirst3 = _interopRequireDefault(_upperFirst2);
 
-var _isEmpty2 = require('lodash/fp/isEmpty');
-
-var _isEmpty3 = _interopRequireDefault(_isEmpty2);
-
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -71,13 +67,6 @@ exports.default = function (injectDeps, _ref) {
     ['create', 'list', 'edit'].forEach(function (type) {
       createRoute(type, collectionName);
     });
-    var aggregations = config.collections[collectionName].aggregations;
-
-    if (!(0, _isEmpty3.default)(aggregations)) {
-      (0, _keys2.default)(aggregations).forEach(function (aggregationName) {
-        createRoute('listAggregation', collectionName, aggregationName);
-      });
-    }
   });
 };
 //# sourceMappingURL=routes.js.map

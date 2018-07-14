@@ -20,16 +20,8 @@ import type {
   SearchTermT
 } from '../types';
 
-const removeEmptyObjects = selector => {
-  const cleaned = omitBy(o => isUndefined(o) || (isObject(o) && isEmpty(o)))(
-    selector
-  );
-  console.log('!!!!!!!!!');
-  console.log('uncleaned', selector);
-  console.log('cleaned', cleaned);
-
-  return cleaned;
-};
+const removeEmptyObjects = selector =>
+  omitBy(o => isUndefined(o) || (isObject(o) && isEmpty(o)))(selector);
 
 const queryListFromTerm = (term: SearchTermT) =>
   flow(

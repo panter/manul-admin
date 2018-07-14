@@ -10,7 +10,7 @@ import type {
 import mongoAggregation from '../../utils/mongoAggregation';
 import { createQuery, createQueryOptions } from '../../utils/query_utils';
 
-const DEBUG = true;
+const DEBUG = false;
 
 const logObject = obj => {
   function replacer(key, value) {
@@ -174,6 +174,6 @@ export default ({
   }
 
   if (DEBUG) console.timeEnd('countAggregation');
-  console.log('countAggregation', count);
+  if (DEBUG) console.log('countAggregation result: ', count);
   return { docs, count };
 };

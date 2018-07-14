@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LookupButton = exports.Create = exports.Preview = exports.ListAggregation = exports.List = exports.Edit = exports.createAdminContext = exports.initAdminServer = exports.adminModule = undefined;
+exports.LookupButton = exports.Create = exports.Preview = exports.List = exports.Edit = exports.createAdminContext = exports.initAdminServer = exports.adminModule = undefined;
 
 var _admin_module = require('./admin_module');
 
@@ -25,10 +25,6 @@ var _list = require('./containers/list');
 
 var _list2 = _interopRequireDefault(_list);
 
-var _list_aggregation = require('./containers/list_aggregation');
-
-var _list_aggregation2 = _interopRequireDefault(_list_aggregation);
-
 var _preview = require('./containers/preview');
 
 var _preview2 = _interopRequireDefault(_preview);
@@ -48,7 +44,6 @@ exports.initAdminServer = _init_admin_server2.default;
 exports.createAdminContext = _create_admin_context2.default;
 exports.Edit = _edit2.default;
 exports.List = _list2.default;
-exports.ListAggregation = _list_aggregation2.default;
 exports.Preview = _preview2.default;
 exports.Create = _create2.default;
 exports.LookupButton = _lookup_button2.default;

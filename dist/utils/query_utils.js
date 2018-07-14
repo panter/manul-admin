@@ -60,14 +60,9 @@ var _omitBy3 = _interopRequireDefault(_omitBy2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var removeEmptyObjects = function removeEmptyObjects(selector) {
-  var cleaned = (0, _omitBy3.default)(function (o) {
+  return (0, _omitBy3.default)(function (o) {
     return (0, _isUndefined3.default)(o) || (0, _isObject3.default)(o) && (0, _isEmpty3.default)(o);
   })(selector);
-  console.log('!!!!!!!!!');
-  console.log('uncleaned', selector);
-  console.log('cleaned', cleaned);
-
-  return cleaned;
 };
 
 var queryListFromTerm = function queryListFromTerm(term) {

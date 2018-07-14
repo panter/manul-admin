@@ -9,12 +9,7 @@ var getListRoute = function getListRoute(name) {
     path: '/' + name
   };
 };
-var getListAggregationRoute = function getListAggregationRoute(collectionName, aggregationName) {
-  return {
-    name: 'admin.' + collectionName + '.listAggregation.' + aggregationName,
-    path: '/' + collectionName + '/aggregations/' + aggregationName
-  };
-};
+
 var getEditRoute = function getEditRoute(name) {
   return {
     name: 'admin.' + name + '.edit',
@@ -36,8 +31,6 @@ var getRoute = function getRoute(type) {
   switch (type) {
     case 'list':
       return getListRoute.apply(undefined, args);
-    case 'listAggregation':
-      return getListAggregationRoute.apply(undefined, args);
     case 'edit':
       return getEditRoute.apply(undefined, args);
     case 'create':

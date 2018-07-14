@@ -107,7 +107,7 @@ var withMethodCall = function withMethodCall() {
             filter: filter,
             searchTerm: searchTerm,
             sortProperties: sortProperties,
-            pageProperties: !options.localMode ? pageProperties : null
+            pageProperties: pageProperties
           };
           if (DEBUG) console.log('calling method', methodArgs);
           var callId = Math.random();
@@ -155,13 +155,10 @@ var withMethodCall = function withMethodCall() {
 };
 
 var composer = exports.composer = function composer() {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return function (_ref2, onData) {
     var context = _ref2.context,
         collectionName = _ref2.collectionName,
         filterBase = _ref2.filter;
-    var _options$localMode = options.localMode,
-        localMode = _options$localMode === undefined ? false : _options$localMode;
 
     var _context2 = context(),
         _context2$adminContex = _context2.adminContext,
@@ -185,7 +182,6 @@ var composer = exports.composer = function composer() {
     var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));
 
     onData(null, {
-      griddleLocal: localMode,
       filter: filter,
       searchTerm: searchTerm,
       sortProperties: sortProperties,
