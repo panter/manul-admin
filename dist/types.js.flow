@@ -1,0 +1,76 @@
+// @flow
+type ObjOrFunc<T, A> = A => T | T;
+
+export type CollectionNameT = string;
+export type MeteorCollectionT = *;
+
+export type SearchTermT = string;
+export type SearchFieldsT = ObjOrFunc<Array<String>, SearchTermT>;
+export type SortPropertiesT = *;
+export type PagePropertiesT = *;
+export type FilterT = *;
+export type ListOptionsT = {|
+  sortProperties: SortPropertiesT,
+  pageProperties: PagePropertiesT,
+  filter?: FilterT,
+  searchTerm?: SearchTermT
+|};
+
+type AggregationStagesT = Array<any>;
+
+type AggregationArgsT = {|
+  collectionConfig: *,
+  listOptions: ListOptionsT,
+  countOnly?: boolean
+|};
+export type CollectionAggregationT = {|
+  stages: AggregationStagesT, // additional stages after base query
+  postSort?: boolean // whether to sort after aggregation stages (is slower, but sorting is wrong when sorted by computed properties unless this flag is set)
+  // filterToPostQuery ?: any => any, // create another match stage after the aggregation stages
+|};
+
+export type CollectionConfigT = {|
+  collection: MeteorCollectionT,
+  allowInsertWithId?: boolean,
+  searchFields?: SearchFieldsT,
+  filterToBaseQuery?: any => any,
+  textIndex?: Array<String>,
+  aggregation?: ObjOrFunc<CollectionAggregationT, AggregationArgsT>
+|};
+
+export type ListArgumentsT = {|
+  filter: *,
+  searchTerm?: string,
+  sortProperties: *,
+  pageProperties: *
+|};
+export type AdminConfigT = {
+  collections: { [CollectionNameT]: CollectionConfigT }
+};
+
+export type MethodsContextT = {|
+  config: AdminConfigT,
+  ValidatedMethod: *,
+  Meteor: *
+|};
+
+export type ServerContextT = {|
+  ValidatedMethod: *,
+  Meteor: *
+|};
+export type ContextT = MethodsContextT & {|
+  LocalState: *,
+  components: *,
+  adminRoutes: *,
+  gotoRoute: string => any
+|};
+
+export type ComponentTypeT = *;
+
+export type CreateQueryArgsT = {|
+  filter?: FilterT,
+  searchTerm?: SearchTermT,
+  searchFields?: SearchFieldsT,
+  filterToBaseQuery?: any => any,
+  useTextIndex?: boolean
+|};

@@ -41,7 +41,8 @@ const withMethodCall = (options = {}) => C =>
         filter,
         searchTerm,
         sortProperties,
-        pageProperties: !options.localMode ? pageProperties : null
+        pageProperties,
+        listType: 'ui'
       };
       if (DEBUG) console.log('calling method', methodArgs);
       const callId = Math.random();
@@ -83,25 +84,37 @@ const withMethodCall = (options = {}) => C =>
     }
   };
 
-export const composer = (options = {}) => (
+export const composer = () => (
   { context, collectionName, filter: filterBase },
   onData
 ) => {
-  const { localMode = false } = options;
   const {
-    adminContext: { LocalState }
+    adminContext: { LocalState, config }
   } = context();
-  const filterLocal = LocalState.get(stateListFilter(collectionName));
+  const collectionConfig = config.collections[collectionName];
+
+  const { listFilterSchema, defaultFilters } = collectionConfig;
+
+  const filterLocalConfigured =
+    LocalState.get(stateListFilter(collectionName)) || {};
+
+  const filterLocal = {
+    ...defaultFilters,
+    ...(listFilterSchema
+      ? listFilterSchema.clean(filterLocalConfigured)
+      : filterLocalConfigured)
+  };
+
   const filter = {
     ...filterLocal,
     ...filterBase
   };
+  if (DEBUG) console.log('full filter', filter);
   const sortProperties = LocalState.get(stateListSort(collectionName));
   const searchTerm = LocalState.get(stateListSearch(collectionName));
   const pageProperties = LocalState.get(statePageProperties(collectionName));
 
   onData(null, {
-    griddleLocal: localMode,
     filter,
     searchTerm,
     sortProperties,

@@ -1,36 +1,34 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys = require("babel-runtime/core-js/object/keys");
+var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _mapValues2 = require("lodash/mapValues");
+var _mapValues2 = require('lodash/mapValues');
 
 var _mapValues3 = _interopRequireDefault(_mapValues2);
 
-var _keyBy2 = require("lodash/keyBy");
+var _keyBy2 = require('lodash/keyBy');
 
 var _keyBy3 = _interopRequireDefault(_keyBy2);
 
-var _is_allowed = require("./is_allowed");
+var _is_allowed = require('./is_allowed');
 
 var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
-var _create_methods = require("./create_methods");
+var _initMethods = require('./initMethods');
 
-var _create_methods2 = _interopRequireDefault(_create_methods);
+var _initMethods2 = _interopRequireDefault(_initMethods);
 
-var _publication_utils = require("./utils/publication_utils");
+var _publication_utils = require('./utils/publication_utils');
 
 var _publication_utils2 = _interopRequireDefault(_publication_utils);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// SimpleSchema needs only to be passed, if its not in npm (version 2)
 
 /**
 update: we no longer publish list, because we use a method call for that
@@ -38,9 +36,7 @@ update: we no longer publish list, because we use a method call for that
 
 exports.default = function (_ref, config) {
   var Meteor = _ref.Meteor,
-      ValidatedMethod = _ref.ValidatedMethod,
-      _ref$SimpleSchema = _ref.SimpleSchema,
-      SimpleSchema = _ref$SimpleSchema === undefined ? null : _ref$SimpleSchema;
+      ValidatedMethod = _ref.ValidatedMethod;
 
   var isAllowed = (0, _is_allowed2.default)(config);
   var collections = config.collections;
@@ -52,13 +48,13 @@ exports.default = function (_ref, config) {
 
     if (textIndex) {
       var indexDef = (0, _mapValues3.default)((0, _keyBy3.default)(textIndex), function () {
-        return "text";
+        return 'text';
       });
 
       try {
         collection._ensureIndex(indexDef, {
           background: true,
-          name: "manul-admin-text_" + name
+          name: 'manul-admin-text_' + name
         });
       } catch (e) {
         console.error("can't set index", e);
@@ -87,6 +83,6 @@ exports.default = function (_ref, config) {
     (0, _keys2.default)(collections).forEach(createPublication);
   };
   createPublications();
-  (0, _create_methods2.default)({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, SimpleSchema: SimpleSchema }, config);
+  (0, _initMethods2.default)({ Meteor: Meteor, ValidatedMethod: ValidatedMethod, config: config });
 };
 //# sourceMappingURL=init_admin_server.js.map

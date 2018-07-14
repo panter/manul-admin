@@ -29,6 +29,9 @@ var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * this does a "soft" aggregation on the client
+ */
 var composer = function composer() {
   return function (props, onData) {
     var aggregationName = props.aggregationName,

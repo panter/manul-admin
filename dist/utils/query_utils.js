@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.gridOptionsToQueryOptions = exports.sortPropsToMongoSort = exports.filterToQuery = undefined;
+exports.createQueryOptions = exports.sortPropsToMongoSort = exports.createQuery = undefined;
 
 var _extends2 = require('babel-runtime/helpers/extends');
 
@@ -16,6 +16,10 @@ var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _isUndefined2 = require('lodash/fp/isUndefined');
+
+var _isUndefined3 = _interopRequireDefault(_isUndefined2);
 
 var _isFunction2 = require('lodash/fp/isFunction');
 
@@ -53,15 +57,13 @@ var _omitBy2 = require('lodash/fp/omitBy');
 
 var _omitBy3 = _interopRequireDefault(_omitBy2);
 
-var _identity2 = require('lodash/fp/identity');
-
-var _identity3 = _interopRequireDefault(_identity2);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var removeEmptyObjects = (0, _omitBy3.default)(function (o) {
-  return (0, _isObject3.default)(o) && (0, _isEmpty3.default)(o);
-});
+var removeEmptyObjects = function removeEmptyObjects(selector) {
+  return (0, _omitBy3.default)(function (o) {
+    return (0, _isUndefined3.default)(o) || (0, _isObject3.default)(o) && (0, _isEmpty3.default)(o);
+  })(selector);
+};
 
 var queryListFromTerm = function queryListFromTerm(term) {
   return (0, _flow3.default)((0, _map3.default)(function (field) {
@@ -75,15 +77,15 @@ var queryListFromTerm = function queryListFromTerm(term) {
 var queryForTerm = function queryForTerm(term) {
   return function (searchFields) {
     return {
-      $or: queryListFromTerm(term, _identity3.default)((0, _isFunction3.default)(searchFields) ? searchFields(term) : searchFields)
+      $or: queryListFromTerm(term)((0, _isFunction3.default)(searchFields) ? searchFields(term) : searchFields)
     };
   };
 };
 var termToTermList = function termToTermList(term) {
-  return term.split(' ').map(_trim3.default);
+  return term ? term.split(' ').map(_trim3.default) : [];
 };
 
-var createSearchQuery = function createSearchQuery(searchFields, terms, useTextIndex) {
+var createFieldSearchQuery = function createFieldSearchQuery(searchFields, terms, useTextIndex) {
   return (
     /*
     two strategies: text search (if availble) or regex search
@@ -98,41 +100,36 @@ var createSearchQuery = function createSearchQuery(searchFields, terms, useTextI
             return '"' + t + '"';
           }).join(' ')
         }
-      }] : []), [
-      // regex search
-      // every
-      {
+      }] : []), (0, _toConsumableArray3.default)(searchFields ? [{
         $and: (0, _map3.default)(function (term) {
           return queryForTerm(term)(searchFields);
         })(terms)
-      }])
+      }] : []))
     }
   );
 };
 /* eslint import/prefer-default-export: 0 */
-var filterToQuery = exports.filterToQuery = function filterToQuery(filter, search) {
-  var transformFilter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (f) {
+var createQuery = exports.createQuery = function createQuery(_ref2) {
+  var filter = _ref2.filter,
+      searchTerm = _ref2.searchTerm,
+      searchFields = _ref2.searchFields,
+      _ref2$filterToBaseQue = _ref2.filterToBaseQuery,
+      filterToBaseQuery = _ref2$filterToBaseQue === undefined ? function (f) {
     return f;
-  };
-  var useTextIndex = arguments[3];
-
-  // console.log("got filter", filter);
-  // console.log("got search", search);
-  // console.log("usingtext :", useTextIndex ? "yes" : "no");
-  // remove empty objects on filter
-  var query = (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) && removeEmptyObjects(transformFilter(filter)), !(0, _isEmpty3.default)(search) && ((0, _isFunction3.default)(search.searchFields) || !(0, _isEmpty3.default)(search.searchFields)) && !(0, _isEmpty3.default)(search.searchTerm) && createSearchQuery(search.searchFields, termToTermList(search.searchTerm), useTextIndex));
-  return query;
+  } : _ref2$filterToBaseQue,
+      useTextIndex = _ref2.useTextIndex;
+  return (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) ? removeEmptyObjects(filterToBaseQuery(filter)) : {}, !(0, _isEmpty3.default)(searchTerm) && ((0, _isFunction3.default)(searchFields) || !(0, _isEmpty3.default)(searchFields)) ? createFieldSearchQuery(searchFields, termToTermList(searchTerm), useTextIndex) : {});
 };
 
-var sortPropsToMongoSort = exports.sortPropsToMongoSort = (0, _flow3.default)((0, _keyBy3.default)('id'), (0, _mapValues3.default)(function (_ref2) {
-  var sortAscending = _ref2.sortAscending;
+var sortPropsToMongoSort = exports.sortPropsToMongoSort = (0, _flow3.default)((0, _keyBy3.default)('id'), (0, _mapValues3.default)(function (_ref3) {
+  var sortAscending = _ref3.sortAscending;
   return sortAscending ? 1 : -1;
 }));
 
 var pagePropertiesToLimitAndSkip = function pagePropertiesToLimitAndSkip() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { currentPage: 1, pageSize: 50 },
-      currentPage = _ref3.currentPage,
-      pageSize = _ref3.pageSize;
+  var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { currentPage: 1, pageSize: 50 },
+      currentPage = _ref4.currentPage,
+      pageSize = _ref4.pageSize;
 
   return {
     limit: pageSize,
@@ -140,14 +137,12 @@ var pagePropertiesToLimitAndSkip = function pagePropertiesToLimitAndSkip() {
   };
 };
 
-var gridOptionsToQueryOptions = exports.gridOptionsToQueryOptions = function gridOptionsToQueryOptions(_ref4) {
-  var sortProperties = _ref4.sortProperties,
-      _ref4$pageProperties = _ref4.pageProperties,
-      pageProperties = _ref4$pageProperties === undefined ? null : _ref4$pageProperties;
+var createQueryOptions = exports.createQueryOptions = function createQueryOptions(_ref5) {
+  var sortProperties = _ref5.sortProperties,
+      _ref5$pageProperties = _ref5.pageProperties,
+      pageProperties = _ref5$pageProperties === undefined ? null : _ref5$pageProperties;
 
-  // console.log('got sortProperties', sortProperties);
   var sort = sortPropsToMongoSort(sortProperties);
-  // console.log('mongo sort', sort);
 
   var limitAndSkip = pageProperties ? pagePropertiesToLimitAndSkip(pageProperties) : null;
   return (0, _extends3.default)({

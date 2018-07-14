@@ -16,13 +16,29 @@ import routeUtils from './utils/route_utils';
 
 export default {
   manulAdmin: {
-    gotoCreate({ adminContext: { gotoRoute } }, collectionName) {
+    gotoCreate(
+      {
+        adminContext: { gotoRoute }
+      },
+      collectionName
+    ) {
       gotoRoute(routeUtils.getCreateRoute(collectionName).name);
     },
-    gotoEdit({ adminContext: { gotoRoute } }, collectionName, _id) {
+    gotoEdit(
+      {
+        adminContext: { gotoRoute }
+      },
+      collectionName,
+      _id
+    ) {
       gotoRoute(routeUtils.getEditRoute(collectionName).name, { _id });
     },
-    gotoList({ adminContext: { gotoRoute } }, collectionName) {
+    gotoList(
+      {
+        adminContext: { gotoRoute }
+      },
+      collectionName
+    ) {
       gotoRoute(routeUtils.getListRoute(collectionName).name);
     },
     // sortProperty is according to react-griddle
@@ -92,7 +108,10 @@ export default {
       });
     },
     update(
-      { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
+      {
+        adminContext: { methods, gotoRoute },
+        Alerts = FallbackAlerts
+      },
       collectionName,
       doc,
       onSuccess = () => gotoRoute(routeUtils.getListRoute(collectionName).name)
@@ -114,7 +133,10 @@ export default {
       );
     },
     create(
-      { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
+      {
+        adminContext: { methods, gotoRoute },
+        Alerts = FallbackAlerts
+      },
       collectionName,
       doc,
       onSuccess = ({ _id }) =>
@@ -137,7 +159,10 @@ export default {
       );
     },
     destroy(
-      { adminContext: { methods, gotoRoute }, Alerts = FallbackAlerts },
+      {
+        adminContext: { methods, gotoRoute },
+        Alerts = FallbackAlerts
+      },
       collectionName,
       _id,
       onSuccess = () => gotoRoute(routeUtils.getListRoute(collectionName).name)
@@ -162,30 +187,13 @@ export default {
         );
       }
     },
-    exportCsvFromLocalDocs(
-      { adminContext: { methods }, Alerts = FallbackAlerts },
-      docs,
-      {
-        filename = 'export.csv',
-        fieldsToExport = [],
-        onCompleted,
-        ...options
-      } = {}
-    ) {
-      const { data, keys } = getExportSet(docs, { fieldsToExport });
-      csv.exportAsCsv({ filename, data, keys, ...options });
-      if (onCompleted) onCompleted();
-    },
     exportCsv(
-      { adminContext: { methods }, Alerts = FallbackAlerts },
-      { collectionName, filter, searchTerm, sortProperties },
       {
-        filename = 'export.csv',
-        fieldsToExport = [],
-        onProgress,
-        onCompleted,
-        ...options
-      } = {}
+        adminContext: { methods },
+        Alerts = FallbackAlerts
+      },
+      { collectionName, filter, searchTerm, sortProperties },
+      { filename = 'export.csv', onProgress, onCompleted, ...options } = {}
     ) {
       const methodProps = {
         filter,
@@ -196,10 +204,14 @@ export default {
         methodProps,
         (countError, totalCount) => {
           let allDocs = [];
+          if (countError) {
+            console.error(countError);
+          }
+
           let currentPage = 1;
           const pageSize = 1000;
           const _onExportCompleted = () => {
-            const { data, keys } = getExportSet(allDocs, { fieldsToExport });
+            const { data, keys } = getExportSet(allDocs);
 
             csv.exportAsCsv({ filename, data, keys, ...options });
             if (onCompleted) onCompleted();
@@ -212,7 +224,8 @@ export default {
             methods[collectionName].list.call(
               {
                 ...methodProps,
-                pageProperties
+                pageProperties,
+                listType: 'export'
               },
               (listError, result) => {
                 allDocs = [...allDocs, ...result.docs];
@@ -234,7 +247,9 @@ export default {
       );
     },
     importCsv(
-      { adminContext: { methods } },
+      {
+        adminContext: { methods }
+      },
       {
         collectionName,
         file,

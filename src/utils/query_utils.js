@@ -1,5 +1,6 @@
+// @flow
+
 import {
-  identity,
   omitBy,
   map,
   isObject,
@@ -8,12 +9,21 @@ import {
   isEmpty,
   flow,
   trim,
-  isFunction
+  isFunction,
+  isUndefined
 } from 'lodash/fp';
 
-const removeEmptyObjects = omitBy(o => isObject(o) && isEmpty(o));
+import type {
+  SortPropertiesT,
+  PagePropertiesT,
+  CreateQueryArgsT,
+  SearchTermT
+} from '../types';
 
-const queryListFromTerm = term =>
+const removeEmptyObjects = selector =>
+  omitBy(o => isUndefined(o) || (isObject(o) && isEmpty(o)))(selector);
+
+const queryListFromTerm = (term: SearchTermT) =>
   flow(
     map(field => ({
       [field]: {
@@ -24,13 +34,13 @@ const queryListFromTerm = term =>
   );
 // using case-insensitive regex makes it slow, so we do a little hack
 const queryForTerm = term => searchFields => ({
-  $or: queryListFromTerm(term, identity)(
+  $or: queryListFromTerm(term)(
     isFunction(searchFields) ? searchFields(term) : searchFields
   )
 });
-const termToTermList = term => term.split(' ').map(trim);
+const termToTermList = term => (term ? term.split(' ').map(trim) : []);
 
-const createSearchQuery = (searchFields, terms, useTextIndex) =>
+const createFieldSearchQuery = (searchFields, terms, useTextIndex) =>
   /*
   two strategies: text search (if availble) or regex search
   - in text search, if multiple terms are separated with space, every one should occure
@@ -51,35 +61,33 @@ const createSearchQuery = (searchFields, terms, useTextIndex) =>
         : []),
       // regex search
       // every
-      {
-        $and: map(term => queryForTerm(term)(searchFields))(terms)
-      }
+      ...(searchFields
+        ? [
+            {
+              $and: map(term => queryForTerm(term)(searchFields))(terms)
+            }
+          ]
+        : [])
     ]
   });
 /* eslint import/prefer-default-export: 0 */
-export const filterToQuery = (
+export const createQuery = ({
   filter,
-  search,
-  transformFilter = f => f,
+  searchTerm,
+  searchFields,
+  filterToBaseQuery = f => f,
   useTextIndex
-) => {
-  // console.log("got filter", filter);
-  // console.log("got search", search);
-  // console.log("usingtext :", useTextIndex ? "yes" : "no");
-  // remove empty objects on filter
-  const query = {
-    ...(!isEmpty(filter) && removeEmptyObjects(transformFilter(filter))),
-    ...(!isEmpty(search) &&
-      (isFunction(search.searchFields) || !isEmpty(search.searchFields)) &&
-      !isEmpty(search.searchTerm) &&
-      createSearchQuery(
-        search.searchFields,
-        termToTermList(search.searchTerm),
+}: CreateQueryArgsT) => ({
+  ...(!isEmpty(filter) ? removeEmptyObjects(filterToBaseQuery(filter)) : {}),
+  ...(!isEmpty(searchTerm) &&
+  (isFunction(searchFields) || !isEmpty(searchFields))
+    ? createFieldSearchQuery(
+        searchFields,
+        termToTermList(searchTerm),
         useTextIndex
-      ))
-  };
-  return query;
-};
+      )
+    : {})
+});
 
 export const sortPropsToMongoSort = flow(
   keyBy('id'),
@@ -93,13 +101,14 @@ const pagePropertiesToLimitAndSkip = (
   skip: (currentPage - 1) * pageSize
 });
 
-export const gridOptionsToQueryOptions = ({
+export const createQueryOptions = ({
   sortProperties,
   pageProperties = null
+}: {
+  sortProperties: SortPropertiesT,
+  pageProperties: PagePropertiesT
 }) => {
-  // console.log('got sortProperties', sortProperties);
   const sort = sortPropsToMongoSort(sortProperties);
-  // console.log('mongo sort', sort);
 
   const limitAndSkip = pageProperties
     ? pagePropertiesToLimitAndSkip(pageProperties)

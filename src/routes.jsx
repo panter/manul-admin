@@ -36,11 +36,5 @@ export default (injectDeps, { adminContext }) => {
     ['create', 'list', 'edit'].forEach(type => {
       createRoute(type, collectionName);
     });
-    const { aggregations } = config.collections[collectionName];
-    if (!isEmpty(aggregations)) {
-      Object.keys(aggregations).forEach(aggregationName => {
-        createRoute('listAggregation', collectionName, aggregationName);
-      });
-    }
   });
 };
