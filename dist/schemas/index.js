@@ -36,6 +36,11 @@ var ListSchema = exports.ListSchema = new _simplSchema2.default({
     type: Object,
     optional: true,
     blackbox: true
+  },
+  listType: {
+    type: String,
+    allowedValues: ['export', 'ui'],
+    optional: true
   }
 });
 //# sourceMappingURL=index.js.map

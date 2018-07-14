@@ -9,11 +9,22 @@ export type SearchFieldsT = ObjOrFunc<Array<String>, SearchTermT>;
 export type SortPropertiesT = *;
 export type PagePropertiesT = *;
 export type FilterT = *;
+
+export type ListTypeT = 'ui' | 'export';
+export type ColumnDefT =
+  | string
+  | {
+      id: string,
+      include?: { [ListTypeT]: boolean }
+    };
+export type ColumnsT = Array<ColumnDefT>;
+
 export type ListOptionsT = {|
   sortProperties: SortPropertiesT,
   pageProperties: PagePropertiesT,
   filter?: FilterT,
-  searchTerm?: SearchTermT
+  searchTerm?: SearchTermT,
+  listType: ListTypeT
 |};
 
 export type AggregationStagesT = Array<any>;
@@ -36,7 +47,8 @@ export type CollectionConfigT = {|
   searchFields?: SearchFieldsT,
   filterToBaseQuery?: any => any,
   textIndex?: Array<String>,
-  aggregation?: ObjOrFunc<CollectionAggregationT, AggregationArgsT>
+  aggregation?: ObjOrFunc<CollectionAggregationT, AggregationArgsT>,
+  columns: ColumnsT
 |};
 
 export type ListArgumentsT = {|

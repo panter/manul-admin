@@ -1,6 +1,11 @@
 import composeWithTracker from '../utils/composeWithTracker';
 import _ from 'lodash';
+import { isString } from 'util';
 
+const filterColumns = (columns, type) =>
+  columns.filter(
+    column => isString(column) || !column.include || column.include[type]
+  );
 export const composer = type => (
   { context, collectionName, ...props },
   onData
@@ -35,7 +40,9 @@ export const composer = type => (
 
     const { collections } = config;
     const publications = publicationUtils.getPublications(collectionName);
-    const { collection, schema, ...colConfig } = collections[collectionName];
+    const { collection, schema, columns, ...colConfig } = collections[
+      collectionName
+    ];
     const Component = getComponent({ collectionName, type });
     onData(null, {
       Component,
@@ -43,6 +50,7 @@ export const composer = type => (
       schema: schema || _.result(collection, 'simpleSchema'),
       searchSchema,
       publications,
+      columns: filterColumns(columns, 'ui'),
       ...colConfig,
       ...props // allow override
     });

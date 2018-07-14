@@ -21,8 +21,15 @@ var _composeWithTracker = require('../utils/composeWithTracker');
 
 var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
 
+var _util = require('util');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var filterColumns = function filterColumns(columns, type) {
+  return columns.filter(function (column) {
+    return (0, _util.isString)(column) || !column.include || column.include[type];
+  });
+};
 var composer = function composer(type) {
   return function (_ref, onData) {
     var context = _ref.context,
@@ -60,7 +67,8 @@ var composer = function composer(type) {
       var _collections$collecti = collections[collectionName],
           collection = _collections$collecti.collection,
           schema = _collections$collecti.schema,
-          colConfig = (0, _objectWithoutProperties3.default)(_collections$collecti, ['collection', 'schema']);
+          columns = _collections$collecti.columns,
+          colConfig = (0, _objectWithoutProperties3.default)(_collections$collecti, ['collection', 'schema', 'columns']);
 
       var Component = getComponent({ collectionName: collectionName, type: type });
       onData(null, (0, _extends3.default)({
@@ -68,7 +76,8 @@ var composer = function composer(type) {
         collection: collection,
         schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
         searchSchema: searchSchema,
-        publications: publications
+        publications: publications,
+        columns: filterColumns(columns, 'ui')
       }, colConfig, props) // allow override
       );
     }

@@ -212,45 +212,22 @@ exports.default = {
         }));
       }
     },
-    exportCsvFromLocalDocs: function exportCsvFromLocalDocs(_ref17, docs) {
+    exportCsv: function exportCsv(_ref17, _ref18) {
       var methods = _ref17.adminContext.methods,
           _ref17$Alerts = _ref17.Alerts,
           Alerts = _ref17$Alerts === undefined ? _fallback_alerts2.default : _ref17$Alerts;
+      var collectionName = _ref18.collectionName,
+          filter = _ref18.filter,
+          searchTerm = _ref18.searchTerm,
+          sortProperties = _ref18.sortProperties;
 
       var _ref16 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       var _ref16$filename = _ref16.filename,
           filename = _ref16$filename === undefined ? 'export.csv' : _ref16$filename,
-          _ref16$fieldsToExport = _ref16.fieldsToExport,
-          fieldsToExport = _ref16$fieldsToExport === undefined ? [] : _ref16$fieldsToExport,
+          onProgress = _ref16.onProgress,
           onCompleted = _ref16.onCompleted,
-          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename', 'fieldsToExport', 'onCompleted']);
-
-      var _getExportSet = (0, _export_utils.getExportSet)(docs, { fieldsToExport: fieldsToExport }),
-          data = _getExportSet.data,
-          keys = _getExportSet.keys;
-
-      _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
-      if (onCompleted) onCompleted();
-    },
-    exportCsv: function exportCsv(_ref19, _ref20) {
-      var methods = _ref19.adminContext.methods,
-          _ref19$Alerts = _ref19.Alerts,
-          Alerts = _ref19$Alerts === undefined ? _fallback_alerts2.default : _ref19$Alerts;
-      var collectionName = _ref20.collectionName,
-          filter = _ref20.filter,
-          searchTerm = _ref20.searchTerm,
-          sortProperties = _ref20.sortProperties;
-
-      var _ref18 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      var _ref18$filename = _ref18.filename,
-          filename = _ref18$filename === undefined ? 'export.csv' : _ref18$filename,
-          _ref18$fieldsToExport = _ref18.fieldsToExport,
-          fieldsToExport = _ref18$fieldsToExport === undefined ? [] : _ref18$fieldsToExport,
-          onProgress = _ref18.onProgress,
-          onCompleted = _ref18.onCompleted,
-          options = (0, _objectWithoutProperties3.default)(_ref18, ['filename', 'fieldsToExport', 'onProgress', 'onCompleted']);
+          options = (0, _objectWithoutProperties3.default)(_ref16, ['filename', 'onProgress', 'onCompleted']);
 
       var methodProps = {
         filter: filter,
@@ -259,12 +236,16 @@ exports.default = {
       };
       methods[collectionName].listCount.call(methodProps, function (countError, totalCount) {
         var allDocs = [];
+        if (countError) {
+          console.error(countError);
+        }
+
         var currentPage = 1;
         var pageSize = 1000;
         var _onExportCompleted = function _onExportCompleted() {
-          var _getExportSet2 = (0, _export_utils.getExportSet)(allDocs, { fieldsToExport: fieldsToExport }),
-              data = _getExportSet2.data,
-              keys = _getExportSet2.keys;
+          var _getExportSet = (0, _export_utils.getExportSet)(allDocs),
+              data = _getExportSet.data,
+              keys = _getExportSet.keys;
 
           _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
           if (onCompleted) onCompleted();
@@ -275,7 +256,8 @@ exports.default = {
             pageSize: pageSize
           };
           methods[collectionName].list.call((0, _extends3.default)({}, methodProps, {
-            pageProperties: pageProperties
+            pageProperties: pageProperties,
+            listType: 'export'
           }), function (listError, result) {
             allDocs = [].concat((0, _toConsumableArray3.default)(allDocs), (0, _toConsumableArray3.default)(result.docs));
             var progress = allDocs.length / totalCount;
@@ -293,24 +275,24 @@ exports.default = {
         _fetchChunk();
       });
     },
-    importCsv: function importCsv(_ref21, _ref22) {
-      var methods = _ref21.adminContext.methods;
-      var collectionName = _ref22.collectionName,
-          file = _ref22.file,
-          _ref22$onInsert = _ref22.onInsert,
-          onInsert = _ref22$onInsert === undefined ? _noop3.default : _ref22$onInsert,
-          _ref22$onUpdate = _ref22.onUpdate,
-          onUpdate = _ref22$onUpdate === undefined ? _noop3.default : _ref22$onUpdate,
-          _ref22$onComplete = _ref22.onComplete,
-          onComplete = _ref22$onComplete === undefined ? _noop3.default : _ref22$onComplete;
+    importCsv: function importCsv(_ref19, _ref20) {
+      var methods = _ref19.adminContext.methods;
+      var collectionName = _ref20.collectionName,
+          file = _ref20.file,
+          _ref20$onInsert = _ref20.onInsert,
+          onInsert = _ref20$onInsert === undefined ? _noop3.default : _ref20$onInsert,
+          _ref20$onUpdate = _ref20.onUpdate,
+          onUpdate = _ref20$onUpdate === undefined ? _noop3.default : _ref20$onUpdate,
+          _ref20$onComplete = _ref20.onComplete,
+          onComplete = _ref20$onComplete === undefined ? _noop3.default : _ref20$onComplete;
 
       var counter = -1;
       var imported = new _set2.default();
       _papaparse2.default.parse(file, {
         header: true,
         dynamicTyping: true,
-        complete: function complete(_ref23) {
-          var data = _ref23.data;
+        complete: function complete(_ref21) {
+          var data = _ref21.data;
 
           data.forEach(function (entryUncleaned) {
             counter += 1;

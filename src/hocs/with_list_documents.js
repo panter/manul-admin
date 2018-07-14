@@ -41,7 +41,8 @@ const withMethodCall = (options = {}) => C =>
         filter,
         searchTerm,
         sortProperties,
-        pageProperties
+        pageProperties,
+        listType: 'ui'
       };
       if (DEBUG) console.log('calling method', methodArgs);
       const callId = Math.random();

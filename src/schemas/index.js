@@ -25,5 +25,10 @@ export const ListSchema = new SimpleSchema({
     type: Object,
     optional: true,
     blackbox: true
+  },
+  listType: {
+    type: String,
+    allowedValues: ['export', 'ui'],
+    optional: true
   }
 });

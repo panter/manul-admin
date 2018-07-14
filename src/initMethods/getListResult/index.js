@@ -1,8 +1,13 @@
 // @flow
 import isEmpty from 'lodash/isEmpty';
 import isFunction from 'lodash/isFunction';
+import mapValues from 'lodash/mapValues';
+import mapKeys from 'lodash/mapKeys';
+import keyBy from 'lodash/keyBy';
 import findLastIndex from 'lodash/findLastIndex';
 import type {
+  ColumnsT,
+  ListTypeT,
   MethodsContextT,
   CollectionConfigT,
   ListOptionsT
@@ -32,6 +37,25 @@ const addCount = stages => {
   );
   return [...stages.slice(0, lastCountChangingStage + 1), { $count: 'count' }];
 };
+
+/* sort and project by array index (field.<index>.subfield) is not supported as it seems, but it works, when we remove the .<index>. */
+const removeArrayIndex = columnId =>
+  columnId && columnId.replace(/\.[0-9]+\./, '.');
+const cleanArrayIndexInSort = sort =>
+  mapKeys(sort, (value, key) => removeArrayIndex(key));
+const extractColumnsToUse = (columns: ColumnsT, type: ListTypeT = 'ui') =>
+  columns
+    .map(column => {
+      if (typeof column === 'string') {
+        return column;
+      }
+      if (!column.include || column.include[type]) {
+        return column.id;
+      }
+      return null;
+    })
+    .filter(c => !isEmpty(c))
+    .map(removeArrayIndex);
 
 const getPipeline = ({
   context,
@@ -76,6 +100,7 @@ const getPipeline = ({
           filter,
           collectionConfig,
           listOptions,
+
           countOnly
         })
       : aggregation;
@@ -90,18 +115,28 @@ const getPipeline = ({
     ];
   }
   const sortPipeline = [
-    ...(!isEmpty(queryOptions.sort) ? [{ $sort: queryOptions.sort }] : []),
+    ...(!isEmpty(queryOptions.sort)
+      ? [{ $sort: cleanArrayIndexInSort(queryOptions.sort) }]
+      : []),
     ...(queryOptions.limit
       ? [{ $limit: queryOptions.limit + (queryOptions.skip || 0) }]
       : []),
     { $skip: queryOptions.skip || 0 }
   ];
-
+  const filterColumnsStage = {
+    $project: mapValues(
+      keyBy(
+        extractColumnsToUse(collectionConfig.columns, listOptions.listType)
+      ),
+      () => true
+    )
+  };
   return [
     ...basePipeline,
     ...(aggregationOptions && !aggregationOptions.postSort ? sortPipeline : []),
     ...(aggregationOptions ? aggregationOptions.stages : []),
-    ...(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : [])
+    ...(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : []),
+    filterColumnsStage
   ];
 };
 
@@ -110,6 +145,7 @@ export default ({
   context,
   collectionConfig,
   listOptions,
+
   getCount = true,
   getDocuments = true
 }: {
@@ -134,20 +170,7 @@ export default ({
     : undefined;
   if (DEBUG) console.timeEnd('docs aggregation');
   if (DEBUG) console.log('num docs', docs && docs.length);
-  /*
-  if (DEBUG) console.time('docs');
-  const docs = getDocuments
-    ? collectionConfig.collection.find(query, queryOptions).fetch()
-    : undefined;
-  if (DEBUG) console.timeEnd('docs');
 
-  if (DEBUG) console.time('count');
-  const count = getCount
-    ? collectionConfig.collection.find(query).count()
-    : undefined;
-  if (DEBUG) console.timeEnd('count');
-
-    */
   if (DEBUG) console.time('countAggregation');
   let count = 0;
 
@@ -166,6 +189,7 @@ export default ({
           context,
           collectionConfig,
           listOptions,
+
           countOnly: true
         })
       );

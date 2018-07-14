@@ -107,7 +107,8 @@ var withMethodCall = function withMethodCall() {
             filter: filter,
             searchTerm: searchTerm,
             sortProperties: sortProperties,
-            pageProperties: pageProperties
+            pageProperties: pageProperties,
+            listType: 'ui'
           };
           if (DEBUG) console.log('calling method', methodArgs);
           var callId = Math.random();

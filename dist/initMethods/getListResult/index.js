@@ -24,6 +24,18 @@ var _isFunction = require('lodash/isFunction');
 
 var _isFunction2 = _interopRequireDefault(_isFunction);
 
+var _mapValues = require('lodash/mapValues');
+
+var _mapValues2 = _interopRequireDefault(_mapValues);
+
+var _mapKeys = require('lodash/mapKeys');
+
+var _mapKeys2 = _interopRequireDefault(_mapKeys);
+
+var _keyBy = require('lodash/keyBy');
+
+var _keyBy2 = _interopRequireDefault(_keyBy);
+
 var _findLastIndex = require('lodash/findLastIndex');
 
 var _findLastIndex2 = _interopRequireDefault(_findLastIndex);
@@ -37,7 +49,6 @@ var _query_utils = require('../../utils/query_utils');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var DEBUG = false;
-
 
 var logObject = function logObject(obj) {
   function replacer(key, value) {
@@ -60,6 +71,30 @@ var addCount = function addCount(stages) {
     });
   });
   return [].concat((0, _toConsumableArray3.default)(stages.slice(0, lastCountChangingStage + 1)), [{ $count: 'count' }]);
+};
+
+/* sort and project by array index (field.<index>.subfield) is not supported as it seems, but it works, when we remove the .<index>. */
+var removeArrayIndex = function removeArrayIndex(columnId) {
+  return columnId && columnId.replace(/\.[0-9]+\./, '.');
+};
+var cleanArrayIndexInSort = function cleanArrayIndexInSort(sort) {
+  return (0, _mapKeys2.default)(sort, function (value, key) {
+    return removeArrayIndex(key);
+  });
+};
+var extractColumnsToUse = function extractColumnsToUse(columns) {
+  var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'ui';
+  return columns.map(function (column) {
+    if (typeof column === 'string') {
+      return column;
+    }
+    if (!column.include || column.include[type]) {
+      return column.id;
+    }
+    return null;
+  }).filter(function (c) {
+    return !(0, _isEmpty2.default)(c);
+  }).map(removeArrayIndex);
 };
 
 var getPipeline = function getPipeline(_ref) {
@@ -100,6 +135,7 @@ var getPipeline = function getPipeline(_ref) {
     filter: filter,
     collectionConfig: collectionConfig,
     listOptions: listOptions,
+
     countOnly: countOnly
   }) : aggregation;
 
@@ -107,9 +143,13 @@ var getPipeline = function getPipeline(_ref) {
   if (countOnly) {
     return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && aggregationOptions.stages ? addCount(aggregationOptions.stages) : [{ $count: 'count' }]));
   }
-  var sortPipeline = [].concat((0, _toConsumableArray3.default)(!(0, _isEmpty2.default)(queryOptions.sort) ? [{ $sort: queryOptions.sort }] : []), (0, _toConsumableArray3.default)(queryOptions.limit ? [{ $limit: queryOptions.limit + (queryOptions.skip || 0) }] : []), [{ $skip: queryOptions.skip || 0 }]);
-
-  return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && !aggregationOptions.postSort ? sortPipeline : []), (0, _toConsumableArray3.default)(aggregationOptions ? aggregationOptions.stages : []), (0, _toConsumableArray3.default)(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : []));
+  var sortPipeline = [].concat((0, _toConsumableArray3.default)(!(0, _isEmpty2.default)(queryOptions.sort) ? [{ $sort: cleanArrayIndexInSort(queryOptions.sort) }] : []), (0, _toConsumableArray3.default)(queryOptions.limit ? [{ $limit: queryOptions.limit + (queryOptions.skip || 0) }] : []), [{ $skip: queryOptions.skip || 0 }]);
+  var filterColumnsStage = {
+    $project: (0, _mapValues2.default)((0, _keyBy2.default)(extractColumnsToUse(collectionConfig.columns, listOptions.listType)), function () {
+      return true;
+    })
+  };
+  return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && !aggregationOptions.postSort ? sortPipeline : []), (0, _toConsumableArray3.default)(aggregationOptions ? aggregationOptions.stages : []), (0, _toConsumableArray3.default)(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : []), [filterColumnsStage]);
 };
 
 /* eslint import/prefer-default-export: 0 */
@@ -135,18 +175,7 @@ exports.default = function (_ref2) {
   var docs = getDocuments ? (0, _mongoAggregation2.default)(context, collectionConfig.collection, pipeline) : undefined;
   if (DEBUG) console.timeEnd('docs aggregation');
   if (DEBUG) console.log('num docs', docs && docs.length);
-  /*
-  if (DEBUG) console.time('docs');
-  const docs = getDocuments
-    ? collectionConfig.collection.find(query, queryOptions).fetch()
-    : undefined;
-  if (DEBUG) console.timeEnd('docs');
-   if (DEBUG) console.time('count');
-  const count = getCount
-    ? collectionConfig.collection.find(query).count()
-    : undefined;
-  if (DEBUG) console.timeEnd('count');
-     */
+
   if (DEBUG) console.time('countAggregation');
   var count = 0;
 
@@ -161,6 +190,7 @@ exports.default = function (_ref2) {
         context: context,
         collectionConfig: collectionConfig,
         listOptions: listOptions,
+
         countOnly: true
       }));
       count = result[0] ? result[0].count : 0;
