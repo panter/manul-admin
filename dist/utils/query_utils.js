@@ -17,6 +17,10 @@ var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
+var _isUndefined2 = require('lodash/fp/isUndefined');
+
+var _isUndefined3 = _interopRequireDefault(_isUndefined2);
+
 var _isFunction2 = require('lodash/fp/isFunction');
 
 var _isFunction3 = _interopRequireDefault(_isFunction2);
@@ -55,9 +59,16 @@ var _omitBy3 = _interopRequireDefault(_omitBy2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var removeEmptyObjects = (0, _omitBy3.default)(function (o) {
-  return (0, _isObject3.default)(o) && (0, _isEmpty3.default)(o);
-});
+var removeEmptyObjects = function removeEmptyObjects(selector) {
+  var cleaned = (0, _omitBy3.default)(function (o) {
+    return (0, _isUndefined3.default)(o) || (0, _isObject3.default)(o) && (0, _isEmpty3.default)(o);
+  })(selector);
+  console.log('!!!!!!!!!');
+  console.log('uncleaned', selector);
+  console.log('cleaned', cleaned);
+
+  return cleaned;
+};
 
 var queryListFromTerm = function queryListFromTerm(term) {
   return (0, _flow3.default)((0, _map3.default)(function (field) {
@@ -136,9 +147,7 @@ var createQueryOptions = exports.createQueryOptions = function createQueryOption
       _ref5$pageProperties = _ref5.pageProperties,
       pageProperties = _ref5$pageProperties === undefined ? null : _ref5$pageProperties;
 
-  // console.log('got sortProperties', sortProperties);
   var sort = sortPropsToMongoSort(sortProperties);
-  // console.log('mongo sort', sort);
 
   var limitAndSkip = pageProperties ? pagePropertiesToLimitAndSkip(pageProperties) : null;
   return (0, _extends3.default)({

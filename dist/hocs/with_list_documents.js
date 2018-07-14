@@ -164,10 +164,22 @@ var composer = exports.composer = function composer() {
         localMode = _options$localMode === undefined ? false : _options$localMode;
 
     var _context2 = context(),
-        LocalState = _context2.adminContext.LocalState;
+        _context2$adminContex = _context2.adminContext,
+        LocalState = _context2$adminContex.LocalState,
+        config = _context2$adminContex.config;
 
-    var filterLocal = LocalState.get((0, _local_state_utils.stateListFilter)(collectionName));
+    var collectionConfig = config.collections[collectionName];
+
+    var listFilterSchema = collectionConfig.listFilterSchema,
+        defaultFilters = collectionConfig.defaultFilters;
+
+
+    var filterLocalConfigured = LocalState.get((0, _local_state_utils.stateListFilter)(collectionName)) || {};
+
+    var filterLocal = (0, _extends3.default)({}, defaultFilters, listFilterSchema ? listFilterSchema.clean(filterLocalConfigured) : filterLocalConfigured);
+
     var filter = (0, _extends3.default)({}, filterLocal, filterBase);
+    if (DEBUG) console.log('full filter', filter);
     var sortProperties = LocalState.get((0, _local_state_utils.stateListSort)(collectionName));
     var searchTerm = LocalState.get((0, _local_state_utils.stateListSearch)(collectionName));
     var pageProperties = LocalState.get((0, _local_state_utils.statePageProperties)(collectionName));

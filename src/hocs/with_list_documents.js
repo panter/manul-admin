@@ -89,13 +89,27 @@ export const composer = (options = {}) => (
 ) => {
   const { localMode = false } = options;
   const {
-    adminContext: { LocalState }
+    adminContext: { LocalState, config }
   } = context();
-  const filterLocal = LocalState.get(stateListFilter(collectionName));
+  const collectionConfig = config.collections[collectionName];
+
+  const { listFilterSchema, defaultFilters } = collectionConfig;
+
+  const filterLocalConfigured =
+    LocalState.get(stateListFilter(collectionName)) || {};
+
+  const filterLocal = {
+    ...defaultFilters,
+    ...(listFilterSchema
+      ? listFilterSchema.clean(filterLocalConfigured)
+      : filterLocalConfigured)
+  };
+
   const filter = {
     ...filterLocal,
     ...filterBase
   };
+  if (DEBUG) console.log('full filter', filter);
   const sortProperties = LocalState.get(stateListSort(collectionName));
   const searchTerm = LocalState.get(stateListSearch(collectionName));
   const pageProperties = LocalState.get(statePageProperties(collectionName));

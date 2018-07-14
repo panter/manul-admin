@@ -9,7 +9,8 @@ import {
   isEmpty,
   flow,
   trim,
-  isFunction
+  isFunction,
+  isUndefined
 } from 'lodash/fp';
 
 import type {
@@ -19,7 +20,16 @@ import type {
   SearchTermT
 } from '../types';
 
-const removeEmptyObjects = omitBy(o => isObject(o) && isEmpty(o));
+const removeEmptyObjects = selector => {
+  const cleaned = omitBy(o => isUndefined(o) || (isObject(o) && isEmpty(o)))(
+    selector
+  );
+  console.log('!!!!!!!!!');
+  console.log('uncleaned', selector);
+  console.log('cleaned', cleaned);
+
+  return cleaned;
+};
 
 const queryListFromTerm = (term: SearchTermT) =>
   flow(
@@ -106,9 +116,7 @@ export const createQueryOptions = ({
   sortProperties: SortPropertiesT,
   pageProperties: PagePropertiesT
 }) => {
-  // console.log('got sortProperties', sortProperties);
   const sort = sortPropsToMongoSort(sortProperties);
-  // console.log('mongo sort', sort);
 
   const limitAndSkip = pageProperties
     ? pagePropertiesToLimitAndSkip(pageProperties)

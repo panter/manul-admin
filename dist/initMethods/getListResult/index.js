@@ -4,13 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
 var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
 
 var _stringify = require('babel-runtime/core-js/json/stringify');
 
@@ -24,6 +24,10 @@ var _isFunction = require('lodash/isFunction');
 
 var _isFunction2 = _interopRequireDefault(_isFunction);
 
+var _findLastIndex = require('lodash/findLastIndex');
+
+var _findLastIndex2 = _interopRequireDefault(_findLastIndex);
+
 var _mongoAggregation = require('../../utils/mongoAggregation');
 
 var _mongoAggregation2 = _interopRequireDefault(_mongoAggregation);
@@ -34,12 +38,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var DEBUG = true;
 
+
 var logObject = function logObject(obj) {
   function replacer(key, value) {
     if (value instanceof RegExp) return '__REGEXP ' + value.toString();
     return value;
   }
   console.log((0, _stringify2.default)(obj, replacer, 2));
+};
+
+var COUNT_PRESERVING_STAGES = ['$addFields', '$project', '$lookup', '$sort'];
+/**
+ * intelligently add the $count stage after the last stage that influences the count
+ * if no such stage is given, add only the $count stage
+ * @param {Array} stages
+ */
+var addCount = function addCount(stages) {
+  var lastCountChangingStage = (0, _findLastIndex2.default)(stages, function (stage) {
+    return (0, _keys2.default)(stage).find(function (key) {
+      return !COUNT_PRESERVING_STAGES.includes(key);
+    });
+  });
+  return [].concat((0, _toConsumableArray3.default)(stages.slice(0, lastCountChangingStage + 1)), [{ $count: 'count' }]);
 };
 
 var getPipeline = function getPipeline(_ref) {
@@ -71,6 +91,7 @@ var getPipeline = function getPipeline(_ref) {
     sortProperties: sortProperties,
     pageProperties: pageProperties
   });
+
   if (DEBUG) logObject({ searchTerm: searchTerm, baseQuery: baseQuery, queryOptions: queryOptions });
   /* eslint no-nested-ternary: 0*/
 
@@ -83,9 +104,8 @@ var getPipeline = function getPipeline(_ref) {
   }) : aggregation;
 
   var basePipeline = [{ $match: baseQuery }];
-
   if (countOnly) {
-    return [].concat(basePipeline, [{ $count: 'count' }]);
+    return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && aggregationOptions.stages ? addCount(aggregationOptions.stages) : [{ $count: 'count' }]));
   }
   var sortPipeline = [].concat((0, _toConsumableArray3.default)(!(0, _isEmpty2.default)(queryOptions.sort) ? [{ $sort: queryOptions.sort }] : []), (0, _toConsumableArray3.default)(queryOptions.limit ? [{ $limit: queryOptions.limit + (queryOptions.skip || 0) }] : []), [{ $skip: queryOptions.skip || 0 }]);
 
@@ -103,6 +123,7 @@ exports.default = function (_ref2) {
       _ref2$getDocuments = _ref2.getDocuments,
       getDocuments = _ref2$getDocuments === undefined ? true : _ref2$getDocuments;
 
+  if (DEBUG) console.log('listOptions', listOptions);
   if (DEBUG) console.time('docs aggregation');
   var pipeline = getPipeline({
     context: context,
@@ -111,15 +132,15 @@ exports.default = function (_ref2) {
   });
   if (DEBUG) logObject(pipeline);
 
-  var docsAggregation = getDocuments ? (0, _mongoAggregation2.default)(context, collectionConfig.collection, pipeline) : undefined;
+  var docs = getDocuments ? (0, _mongoAggregation2.default)(context, collectionConfig.collection, pipeline) : undefined;
   if (DEBUG) console.timeEnd('docs aggregation');
+  if (DEBUG) console.log('num docs', docs && docs.length);
   /*
   if (DEBUG) console.time('docs');
   const docs = getDocuments
     ? collectionConfig.collection.find(query, queryOptions).fetch()
     : undefined;
   if (DEBUG) console.timeEnd('docs');
-  
    if (DEBUG) console.time('count');
   const count = getCount
     ? collectionConfig.collection.find(query).count()
@@ -127,21 +148,27 @@ exports.default = function (_ref2) {
   if (DEBUG) console.timeEnd('count');
      */
   if (DEBUG) console.time('countAggregation');
+  var count = 0;
 
-  var _ref3 = getCount ? (0, _mongoAggregation2.default)(context, collectionConfig.collection, getPipeline({
-    context: context,
-    collectionConfig: collectionConfig,
-    listOptions: listOptions,
-    countOnly: true
-  })) : [{ count: 0 }],
-      _ref4 = (0, _slicedToArray3.default)(_ref3, 1),
-      _ref4$ = _ref4[0];
+  if (getCount) {
+    var pageProperties = listOptions.pageProperties;
 
-  _ref4$ = _ref4$ === undefined ? {} : _ref4$;
-  var count = _ref4$.count;
+
+    if (docs && pageProperties && docs.length < pageProperties.pageSize) {
+      count = docs.length + (pageProperties.currentPage - 1) * pageProperties.pageSize;
+    } else {
+      var result = (0, _mongoAggregation2.default)(context, collectionConfig.collection, getPipeline({
+        context: context,
+        collectionConfig: collectionConfig,
+        listOptions: listOptions,
+        countOnly: true
+      }));
+      count = result[0] ? result[0].count : 0;
+    }
+  }
 
   if (DEBUG) console.timeEnd('countAggregation');
   console.log('countAggregation', count);
-  return { docs: docsAggregation, count: count };
+  return { docs: docs, count: count };
 };
 //# sourceMappingURL=index.js.map

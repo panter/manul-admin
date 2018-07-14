@@ -1,6 +1,7 @@
 // @flow
 import isEmpty from 'lodash/isEmpty';
 import isFunction from 'lodash/isFunction';
+import findLastIndex from 'lodash/findLastIndex';
 import type {
   MethodsContextT,
   CollectionConfigT,
@@ -17,6 +18,19 @@ const logObject = obj => {
     return value;
   }
   console.log(JSON.stringify(obj, replacer, 2));
+};
+
+const COUNT_PRESERVING_STAGES = ['$addFields', '$project', '$lookup', '$sort'];
+/**
+ * intelligently add the $count stage after the last stage that influences the count
+ * if no such stage is given, add only the $count stage
+ * @param {Array} stages
+ */
+const addCount = stages => {
+  const lastCountChangingStage = findLastIndex(stages, stage =>
+    Object.keys(stage).find(key => !COUNT_PRESERVING_STAGES.includes(key))
+  );
+  return [...stages.slice(0, lastCountChangingStage + 1), { $count: 'count' }];
 };
 
 const getPipeline = ({
@@ -51,6 +65,7 @@ const getPipeline = ({
     sortProperties,
     pageProperties
   });
+
   if (DEBUG) logObject({ searchTerm, baseQuery, queryOptions });
   /* eslint no-nested-ternary: 0*/
 
@@ -66,9 +81,13 @@ const getPipeline = ({
       : aggregation;
 
   const basePipeline = [{ $match: baseQuery }];
-
   if (countOnly) {
-    return [...basePipeline, { $count: 'count' }];
+    return [
+      ...basePipeline,
+      ...(aggregationOptions && aggregationOptions.stages
+        ? addCount(aggregationOptions.stages)
+        : [{ $count: 'count' }])
+    ];
   }
   const sortPipeline = [
     ...(!isEmpty(queryOptions.sort) ? [{ $sort: queryOptions.sort }] : []),
@@ -101,6 +120,7 @@ export default ({
   getCount?: boolean,
   getDocuments?: boolean
 }) => {
+  if (DEBUG) console.log('listOptions', listOptions);
   if (DEBUG) console.time('docs aggregation');
   const pipeline = getPipeline({
     context,
@@ -109,17 +129,17 @@ export default ({
   });
   if (DEBUG) logObject(pipeline);
 
-  const docsAggregation = getDocuments
+  const docs = getDocuments
     ? mongoAggregation(context, collectionConfig.collection, pipeline)
     : undefined;
   if (DEBUG) console.timeEnd('docs aggregation');
+  if (DEBUG) console.log('num docs', docs && docs.length);
   /*
   if (DEBUG) console.time('docs');
   const docs = getDocuments
     ? collectionConfig.collection.find(query, queryOptions).fetch()
     : undefined;
   if (DEBUG) console.timeEnd('docs');
-  
 
   if (DEBUG) console.time('count');
   const count = getCount
@@ -129,8 +149,17 @@ export default ({
 
     */
   if (DEBUG) console.time('countAggregation');
-  const [{ count } = {}] = getCount
-    ? mongoAggregation(
+  let count = 0;
+
+  if (getCount) {
+    const { pageProperties } = listOptions;
+
+    if (docs && pageProperties && docs.length < pageProperties.pageSize) {
+      count =
+        docs.length +
+        (pageProperties.currentPage - 1) * pageProperties.pageSize;
+    } else {
+      const result = mongoAggregation(
         context,
         collectionConfig.collection,
         getPipeline({
@@ -139,9 +168,12 @@ export default ({
           listOptions,
           countOnly: true
         })
-      )
-    : [{ count: 0 }];
+      );
+      count = result[0] ? result[0].count : 0;
+    }
+  }
+
   if (DEBUG) console.timeEnd('countAggregation');
   console.log('countAggregation', count);
-  return { docs: docsAggregation, count };
+  return { docs, count };
 };
