@@ -3,7 +3,6 @@ import Papa from 'papaparse';
 import _ from 'lodash';
 import flat from 'flat';
 
-import { getExportSet } from './utils/export_utils';
 import {
   stateListFilter,
   stateListSort,
@@ -13,6 +12,7 @@ import {
 import FallbackAlerts from './fallback_alerts';
 import csv from './utils/csv';
 import routeUtils from './utils/route_utils';
+import { filterColumns, getColumnTitleI18nKey } from './utils/column_utils';
 
 export default {
   manulAdmin: {
@@ -189,7 +189,8 @@ export default {
     },
     exportCsv(
       {
-        adminContext: { methods },
+        i18n,
+        adminContext: { methods, config },
         Alerts = FallbackAlerts
       },
       { collectionName, filter, searchTerm, sortProperties },
@@ -200,6 +201,8 @@ export default {
         searchTerm,
         sortProperties
       };
+      const collectionConfig = config.collections[collectionName];
+      const columnsExport = filterColumns(collectionConfig.columns, 'export');
       methods[collectionName].listCount.call(
         methodProps,
         (countError, totalCount) => {
@@ -211,9 +214,25 @@ export default {
           let currentPage = 1;
           const pageSize = 1000;
           const _onExportCompleted = () => {
-            const { data, keys } = getExportSet(allDocs);
+            csv.exportAsCsv({
+              filename,
+              data: allDocs,
+              keys: columnsExport.map(
+                column => (typeof column === 'string' ? column : column.id)
+              ),
+              transforms: columnsExport.map(column => column.transform || null),
+              columnTitles: columnsExport
+                .map(column =>
+                  getColumnTitleI18nKey({
+                    collectionName,
+                    collectionConfig,
+                    column
+                  })
+                )
+                .map(k => (i18n ? i18n.t([`${k}.label`, k]) : k)),
 
-            csv.exportAsCsv({ filename, data, keys, ...options });
+              ...options
+            });
             if (onCompleted) onCompleted();
           };
           const _fetchChunk = () => {

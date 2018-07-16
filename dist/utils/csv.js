@@ -12,13 +12,13 @@ var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProp
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
-var _values2 = require('lodash/values');
+var _get = require('lodash/get');
 
-var _values3 = _interopRequireDefault(_values2);
+var _get2 = _interopRequireDefault(_get);
 
-var _zipObject2 = require('lodash/zipObject');
+var _isObject = require('lodash/isObject');
 
-var _zipObject3 = _interopRequireDefault(_zipObject2);
+var _isObject2 = _interopRequireDefault(_isObject);
 
 var _papaparse = require('papaparse');
 
@@ -34,7 +34,7 @@ create a csv-file in the browser from the given data
 data: Array of documents
 keys: all keys of every document that should be included
 filename: the filename of the resulting csv-file
-columnTitles: the column titles on the first row
+columnTitles: the column titles on the first row, need to be in the same order as keys
 useBom: whether to include a UTF-16 byte order mark
 delimiter: the delimiter for the csv
 quotes: whether to add quotes around fields
@@ -45,6 +45,8 @@ var exportAsCsv = function exportAsCsv(_ref) {
       keys = _ref.keys,
       columnTitles = _ref.columnTitles,
       data = _ref.data,
+      _ref$transforms = _ref.transforms,
+      transforms = _ref$transforms === undefined ? null : _ref$transforms,
       _ref$useBom = _ref.useBom,
       useBom = _ref$useBom === undefined ? false : _ref$useBom,
       _ref$delimiter = _ref.delimiter,
@@ -53,17 +55,20 @@ var exportAsCsv = function exportAsCsv(_ref) {
       quotes = _ref$quotes === undefined ? true : _ref$quotes,
       _ref$nullValue = _ref.nullValue,
       nullValue = _ref$nullValue === undefined ? 'NULL' : _ref$nullValue,
-      additionalProps = (0, _objectWithoutProperties3.default)(_ref, ['filename', 'keys', 'columnTitles', 'data', 'useBom', 'delimiter', 'quotes', 'nullValue']);
+      additionalProps = (0, _objectWithoutProperties3.default)(_ref, ['filename', 'keys', 'columnTitles', 'data', 'transforms', 'useBom', 'delimiter', 'quotes', 'nullValue']);
 
   // we encode missing values with "NULL"
   // because CSV has no concept of null/missing values
   // good read: http://www.garretwilson.com/blog/2009/04/23/csvnull.xhtml
-  var defaults = (0, _zipObject3.default)(keys, keys.map(function () {
-    return nullValue;
-  }));
+
   var columns = columnTitles || keys;
   var dataPadded = data.map(function (entry) {
-    return (0, _values3.default)((0, _extends3.default)({}, defaults, entry));
+    return keys.map(function (key, index) {
+      var valueOrDefault = (0, _get2.default)(entry, key, nullValue);
+      /* eslint no-nested-ternary: 0*/
+      var transform = transforms ? (0, _isObject2.default)(transforms) ? (0, _get2.default)(transforms, key) : transforms[index] : null;
+      return transform ? transform(valueOrDefault) : valueOrDefault;
+    });
   });
   var papaOptions = (0, _extends3.default)({ delimiter: delimiter, quotes: quotes }, additionalProps);
   var csv = _papaparse2.default.unparse({ fields: columns, data: dataPadded }, papaOptions);

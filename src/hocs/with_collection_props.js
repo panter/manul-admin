@@ -1,11 +1,8 @@
 import composeWithTracker from '../utils/composeWithTracker';
 import _ from 'lodash';
-import { isString } from 'util';
 
-const filterColumns = (columns, type) =>
-  columns.filter(
-    column => isString(column) || !column.include || column.include[type]
-  );
+import { filterColumns } from '../../dist/utils/column_utils';
+
 export const composer = type => (
   { context, collectionName, ...props },
   onData
@@ -51,6 +48,7 @@ export const composer = type => (
       searchSchema,
       publications,
       columns: filterColumns(columns, 'ui'),
+      columnsExport: filterColumns(columns, 'export'),
       ...colConfig,
       ...props // allow override
     });

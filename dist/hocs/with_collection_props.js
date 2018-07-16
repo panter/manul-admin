@@ -21,15 +21,10 @@ var _composeWithTracker = require('../utils/composeWithTracker');
 
 var _composeWithTracker2 = _interopRequireDefault(_composeWithTracker);
 
-var _util = require('util');
+var _column_utils = require('../../dist/utils/column_utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var filterColumns = function filterColumns(columns, type) {
-  return columns.filter(function (column) {
-    return (0, _util.isString)(column) || !column.include || column.include[type];
-  });
-};
 var composer = function composer(type) {
   return function (_ref, onData) {
     var context = _ref.context,
@@ -77,7 +72,8 @@ var composer = function composer(type) {
         schema: schema || (0, _result3.default)(collection, 'simpleSchema'),
         searchSchema: searchSchema,
         publications: publications,
-        columns: filterColumns(columns, 'ui')
+        columns: (0, _column_utils.filterColumns)(columns, 'ui'),
+        columnsExport: (0, _column_utils.filterColumns)(columns, 'export')
       }, colConfig, props) // allow override
       );
     }

@@ -11,12 +11,19 @@ export type PagePropertiesT = *;
 export type FilterT = *;
 
 export type ListTypeT = 'ui' | 'export';
+export type ColumnValueFormatT = ({
+  value: *,
+  key: string
+}) => any;
 export type ColumnDefT =
   | string
   | {
       id: string,
-      include?: { [ListTypeT]: boolean }
+      include?: { [ListTypeT]: boolean },
+      title: string,
+      format?: ColumnValueFormatT | { [ListTypeT]: ColumnValueFormatT }
     };
+
 export type ColumnsT = Array<ColumnDefT>;
 
 export type ListOptionsT = {|
@@ -48,7 +55,8 @@ export type CollectionConfigT = {|
   filterToBaseQuery?: any => any,
   textIndex?: Array<String>,
   aggregation?: ObjOrFunc<CollectionAggregationT, AggregationArgsT>,
-  columns: ColumnsT
+  columns: ColumnsT,
+  columnsI18n?: string
 |};
 
 export type ListArgumentsT = {|

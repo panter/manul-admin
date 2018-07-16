@@ -46,9 +46,12 @@ var _mongoAggregation2 = _interopRequireDefault(_mongoAggregation);
 
 var _query_utils = require('../../utils/query_utils');
 
+var _column_utils = require('../../utils/column_utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DEBUG = false;
+var DEBUG = true;
+
 
 var logObject = function logObject(obj) {
   function replacer(key, value) {
@@ -199,6 +202,9 @@ exports.default = function (_ref2) {
 
   if (DEBUG) console.timeEnd('countAggregation');
   if (DEBUG) console.log('countAggregation result: ', count);
-  return { docs: docs, count: count };
+  return {
+    docs: docs && (0, _column_utils.formatDocs)(docs, collectionConfig, listOptions.listType),
+    count: count
+  };
 };
 //# sourceMappingURL=index.js.map

@@ -14,8 +14,9 @@ import type {
 } from '../../types';
 import mongoAggregation from '../../utils/mongoAggregation';
 import { createQuery, createQueryOptions } from '../../utils/query_utils';
+import { formatDocs } from '../../utils/column_utils';
 
-const DEBUG = false;
+const DEBUG = true;
 
 const logObject = obj => {
   function replacer(key, value) {
@@ -199,5 +200,8 @@ export default ({
 
   if (DEBUG) console.timeEnd('countAggregation');
   if (DEBUG) console.log('countAggregation result: ', count);
-  return { docs, count };
+  return {
+    docs: docs && formatDocs(docs, collectionConfig, listOptions.listType),
+    count
+  };
 };

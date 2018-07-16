@@ -44,8 +44,6 @@ var _flat = require('flat');
 
 var _flat2 = _interopRequireDefault(_flat);
 
-var _export_utils = require('./utils/export_utils');
-
 var _local_state_utils = require('./utils/local_state_utils');
 
 var _fallback_alerts = require('./fallback_alerts');
@@ -59,6 +57,8 @@ var _csv2 = _interopRequireDefault(_csv);
 var _route_utils = require('./utils/route_utils');
 
 var _route_utils2 = _interopRequireDefault(_route_utils);
+
+var _column_utils = require('./utils/column_utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -213,7 +213,10 @@ exports.default = {
       }
     },
     exportCsv: function exportCsv(_ref17, _ref18) {
-      var methods = _ref17.adminContext.methods,
+      var i18n = _ref17.i18n,
+          _ref17$adminContext = _ref17.adminContext,
+          methods = _ref17$adminContext.methods,
+          config = _ref17$adminContext.config,
           _ref17$Alerts = _ref17.Alerts,
           Alerts = _ref17$Alerts === undefined ? _fallback_alerts2.default : _ref17$Alerts;
       var collectionName = _ref18.collectionName,
@@ -234,6 +237,8 @@ exports.default = {
         searchTerm: searchTerm,
         sortProperties: sortProperties
       };
+      var collectionConfig = config.collections[collectionName];
+      var columnsExport = (0, _column_utils.filterColumns)(collectionConfig.columns, 'export');
       methods[collectionName].listCount.call(methodProps, function (countError, totalCount) {
         var allDocs = [];
         if (countError) {
@@ -243,11 +248,26 @@ exports.default = {
         var currentPage = 1;
         var pageSize = 1000;
         var _onExportCompleted = function _onExportCompleted() {
-          var _getExportSet = (0, _export_utils.getExportSet)(allDocs),
-              data = _getExportSet.data,
-              keys = _getExportSet.keys;
+          _csv2.default.exportAsCsv((0, _extends3.default)({
+            filename: filename,
+            data: allDocs,
+            keys: columnsExport.map(function (column) {
+              return typeof column === 'string' ? column : column.id;
+            }),
+            transforms: columnsExport.map(function (column) {
+              return column.transform || null;
+            }),
+            columnTitles: columnsExport.map(function (column) {
+              return (0, _column_utils.getColumnTitleI18nKey)({
+                collectionName: collectionName,
+                collectionConfig: collectionConfig,
+                column: column
+              });
+            }).map(function (k) {
+              return i18n ? i18n.t([k + '.label', k]) : k;
+            })
 
-          _csv2.default.exportAsCsv((0, _extends3.default)({ filename: filename, data: data, keys: keys }, options));
+          }, options));
           if (onCompleted) onCompleted();
         };
         var _fetchChunk = function _fetchChunk() {
