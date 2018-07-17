@@ -16,7 +16,7 @@ import mongoAggregation from '../../utils/mongoAggregation';
 import { createQuery, createQueryOptions } from '../../utils/query_utils';
 import { formatDocs } from '../../utils/column_utils';
 
-const DEBUG = true;
+const DEBUG = false;
 
 const logObject = obj => {
   function replacer(key, value) {

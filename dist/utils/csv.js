@@ -54,8 +54,10 @@ var exportAsCsv = function exportAsCsv(_ref) {
       _ref$quotes = _ref.quotes,
       quotes = _ref$quotes === undefined ? true : _ref$quotes,
       _ref$nullValue = _ref.nullValue,
-      nullValue = _ref$nullValue === undefined ? 'NULL' : _ref$nullValue,
-      additionalProps = (0, _objectWithoutProperties3.default)(_ref, ['filename', 'keys', 'columnTitles', 'data', 'transforms', 'useBom', 'delimiter', 'quotes', 'nullValue']);
+      defaultNullValue = _ref$nullValue === undefined ? '' : _ref$nullValue,
+      _ref$nullValues = _ref.nullValues,
+      nullValues = _ref$nullValues === undefined ? [] : _ref$nullValues,
+      additionalProps = (0, _objectWithoutProperties3.default)(_ref, ['filename', 'keys', 'columnTitles', 'data', 'transforms', 'useBom', 'delimiter', 'quotes', 'nullValue', 'nullValues']);
 
   // we encode missing values with "NULL"
   // because CSV has no concept of null/missing values
@@ -64,7 +66,7 @@ var exportAsCsv = function exportAsCsv(_ref) {
   var columns = columnTitles || keys;
   var dataPadded = data.map(function (entry) {
     return keys.map(function (key, index) {
-      var valueOrDefault = (0, _get2.default)(entry, key, nullValue);
+      var valueOrDefault = (0, _get2.default)(entry, key, (0, _isObject2.default)(nullValues) ? (0, _get2.default)(nullValues, key, defaultNullValue) : nullValues[index] || defaultNullValue);
       /* eslint no-nested-ternary: 0*/
       var transform = transforms ? (0, _isObject2.default)(transforms) ? (0, _get2.default)(transforms, key) : transforms[index] : null;
       return transform ? transform(valueOrDefault) : valueOrDefault;

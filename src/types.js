@@ -21,6 +21,7 @@ export type ColumnDefT =
       id: string,
       include?: { [ListTypeT]: boolean },
       title: string,
+      nullValue?: string,
       format?: ColumnValueFormatT | { [ListTypeT]: ColumnValueFormatT }
     };
 

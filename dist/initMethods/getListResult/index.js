@@ -50,7 +50,7 @@ var _column_utils = require('../../utils/column_utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DEBUG = true;
+var DEBUG = false;
 
 
 var logObject = function logObject(obj) {

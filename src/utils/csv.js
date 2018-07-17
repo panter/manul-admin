@@ -24,7 +24,8 @@ const exportAsCsv = ({
   useBom = false,
   delimiter = ';',
   quotes = true,
-  nullValue = 'NULL',
+  nullValue: defaultNullValue = '', // deprecated
+  nullValues = [], // can also be object
   ...additionalProps
 }) => {
   // we encode missing values with "NULL"
@@ -34,7 +35,13 @@ const exportAsCsv = ({
   const columns = columnTitles || keys;
   const dataPadded = data.map(entry =>
     keys.map((key, index) => {
-      const valueOrDefault = get(entry, key, nullValue);
+      const valueOrDefault = get(
+        entry,
+        key,
+        isObject(nullValues)
+          ? get(nullValues, key, defaultNullValue)
+          : nullValues[index] || defaultNullValue
+      );
       /* eslint no-nested-ternary: 0*/
       const transform = transforms
         ? isObject(transforms)

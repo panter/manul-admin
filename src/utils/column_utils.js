@@ -57,7 +57,6 @@ export const formatDocs = (
       }
       return value;
     });
-  const formatted = docs.map((doc: {}) => formatObj(doc));
-  console.log('formatted', formatted);
-  return formatted;
+
+  return docs.map((doc: {}) => formatObj(doc));
 };

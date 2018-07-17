@@ -254,6 +254,9 @@ exports.default = {
             keys: columnsExport.map(function (column) {
               return typeof column === 'string' ? column : column.id;
             }),
+            nullValues: columnsExport.map(function (column) {
+              return typeof column === 'string' ? '' : column.nullValue || '';
+            }),
             transforms: columnsExport.map(function (column) {
               return column.transform || null;
             }),

@@ -63,10 +63,9 @@ var formatDocs = exports.formatDocs = function formatDocs(docs, config, listType
       return value;
     });
   };
-  var formatted = docs.map(function (doc) {
+
+  return docs.map(function (doc) {
     return formatObj(doc);
   });
-  console.log('formatted', formatted);
-  return formatted;
 };
 //# sourceMappingURL=column_utils.js.map

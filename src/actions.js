@@ -220,6 +220,10 @@ export default {
               keys: columnsExport.map(
                 column => (typeof column === 'string' ? column : column.id)
               ),
+              nullValues: columnsExport.map(
+                column =>
+                  typeof column === 'string' ? '' : column.nullValue || ''
+              ),
               transforms: columnsExport.map(column => column.transform || null),
               columnTitles: columnsExport
                 .map(column =>
