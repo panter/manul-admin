@@ -33,20 +33,18 @@ const exportAsCsv = ({
   // good read: http://www.garretwilson.com/blog/2009/04/23/csvnull.xhtml
 
   const columns = columnTitles || keys;
+
   const dataPadded = data.map(entry =>
     keys.map((key, index) => {
       const valueOrDefault = get(
         entry,
         key,
-        isObject(nullValues)
-          ? get(nullValues, key, defaultNullValue)
-          : nullValues[index] || defaultNullValue
+        get(nullValues, key, nullValues[index] || defaultNullValue)
       );
+
       /* eslint no-nested-ternary: 0*/
       const transform = transforms
-        ? isObject(transforms)
-          ? get(transforms, key)
-          : transforms[index]
+        ? get(transforms, key, transforms[index])
         : null;
       return transform ? transform(valueOrDefault) : valueOrDefault;
     })

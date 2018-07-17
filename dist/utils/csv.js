@@ -64,11 +64,13 @@ var exportAsCsv = function exportAsCsv(_ref) {
   // good read: http://www.garretwilson.com/blog/2009/04/23/csvnull.xhtml
 
   var columns = columnTitles || keys;
+
   var dataPadded = data.map(function (entry) {
     return keys.map(function (key, index) {
-      var valueOrDefault = (0, _get2.default)(entry, key, (0, _isObject2.default)(nullValues) ? (0, _get2.default)(nullValues, key, defaultNullValue) : nullValues[index] || defaultNullValue);
+      var valueOrDefault = (0, _get2.default)(entry, key, (0, _get2.default)(nullValues, key, nullValues[index] || defaultNullValue));
+
       /* eslint no-nested-ternary: 0*/
-      var transform = transforms ? (0, _isObject2.default)(transforms) ? (0, _get2.default)(transforms, key) : transforms[index] : null;
+      var transform = transforms ? (0, _get2.default)(transforms, key, transforms[index]) : null;
       return transform ? transform(valueOrDefault) : valueOrDefault;
     });
   });
