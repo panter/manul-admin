@@ -175,7 +175,9 @@ exports.default = function (_ref2) {
   });
   if (DEBUG) logObject(pipeline);
 
-  var docs = getDocuments ? (0, _mongoAggregation2.default)(context, collectionConfig.collection, pipeline) : undefined;
+  var docs = getDocuments ? (0, _mongoAggregation2.default)(context, collectionConfig.collection, pipeline, {
+    cursor: {}
+  }) : undefined;
   if (DEBUG) console.timeEnd('docs aggregation');
   if (DEBUG) console.log('num docs', docs && docs.length);
 
@@ -189,21 +191,24 @@ exports.default = function (_ref2) {
     if (docs && pageProperties && docs.length < pageProperties.pageSize) {
       count = docs.length + (pageProperties.currentPage - 1) * pageProperties.pageSize;
     } else {
-      var result = (0, _mongoAggregation2.default)(context, collectionConfig.collection, getPipeline({
+      var result = (0, _mongoAggregation.cursorToArray)(context, (0, _mongoAggregation2.default)(context, collectionConfig.collection, getPipeline({
         context: context,
         collectionConfig: collectionConfig,
         listOptions: listOptions,
 
         countOnly: true
-      }));
+      }), { cursor: {} }));
       count = result[0] ? result[0].count : 0;
     }
   }
 
   if (DEBUG) console.timeEnd('countAggregation');
   if (DEBUG) console.log('countAggregation result: ', count);
+  var docsFormatted = docs && (0, _column_utils.formatDocs)(docs, collectionConfig, listOptions.listType);
+  var allDocs = (0, _mongoAggregation.cursorToArray)(context, docsFormatted);
+
   return {
-    docs: docs && (0, _column_utils.formatDocs)(docs, collectionConfig, listOptions.listType),
+    docs: allDocs,
     count: count
   };
 };

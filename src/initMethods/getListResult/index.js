@@ -12,7 +12,7 @@ import type {
   CollectionConfigT,
   ListOptionsT
 } from '../../types';
-import mongoAggregation from '../../utils/mongoAggregation';
+import mongoAggregation, { cursorToArray } from '../../utils/mongoAggregation';
 import { createQuery, createQueryOptions } from '../../utils/query_utils';
 import { formatDocs } from '../../utils/column_utils';
 
@@ -167,7 +167,9 @@ export default ({
   if (DEBUG) logObject(pipeline);
 
   const docs = getDocuments
-    ? mongoAggregation(context, collectionConfig.collection, pipeline)
+    ? mongoAggregation(context, collectionConfig.collection, pipeline, {
+        cursor: {}
+      })
     : undefined;
   if (DEBUG) console.timeEnd('docs aggregation');
   if (DEBUG) console.log('num docs', docs && docs.length);
@@ -183,7 +185,7 @@ export default ({
         docs.length +
         (pageProperties.currentPage - 1) * pageProperties.pageSize;
     } else {
-      const result = mongoAggregation(
+      const result = cursorToArray(context, mongoAggregation(
         context,
         collectionConfig.collection,
         getPipeline({
@@ -192,16 +194,21 @@ export default ({
           listOptions,
 
           countOnly: true
-        })
-      );
+        }),
+        { cursor: {} }
+      ));
       count = result[0] ? result[0].count : 0;
     }
   }
 
   if (DEBUG) console.timeEnd('countAggregation');
   if (DEBUG) console.log('countAggregation result: ', count);
+  const docsFormatted =
+    docs && formatDocs(docs, collectionConfig, listOptions.listType);
+  const allDocs = cursorToArray(context, docsFormatted);
+ 
   return {
-    docs: docs && formatDocs(docs, collectionConfig, listOptions.listType),
+    docs: allDocs,
     count
   };
 };
