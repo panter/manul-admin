@@ -1,6 +1,11 @@
 // @flow
 type ObjOrFunc<T, A> = A => T | T;
 
+export type CursorT<T> = {
+  toArray: () => Array<T>,
+  size: () => number,
+  map: ((T) => *) => CursorT<*>
+};
 export type CollectionNameT = string;
 export type MeteorCollectionT = *;
 

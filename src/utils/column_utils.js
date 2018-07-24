@@ -2,7 +2,12 @@
 import isFunction from 'lodash/isFunction';
 import mapValues from 'lodash/mapValues';
 import isObject from 'lodash/isObject';
-import type { ListTypeT, ColumnDefT, CollectionConfigT } from '../types';
+import type {
+  CursorT,
+  ListTypeT,
+  ColumnDefT,
+  CollectionConfigT
+} from '../types';
 
 /* eslint import/prefer-default-export: 0*/
 export const filterColumns = (columns: Array<ColumnDefT>, type: ListTypeT) =>
@@ -27,10 +32,10 @@ export const getColumnTitleI18nKey = ({
       }`;
 
 export const formatDocs = (
-  docs: Array<*>,
+  docs: CursorT<*>,
   config: CollectionConfigT,
   listType: ListTypeT
-): Array<*> => {
+): CursorT<*> => {
   const formats = config.columns.reduce((acc, column) => {
     if (typeof column !== 'string' && column.format) {
       if (isFunction(column.format)) {

@@ -12,12 +12,16 @@ import type {
   CollectionConfigT,
   ListOptionsT
 } from '../../types';
-import mongoAggregation, { cursorToArray } from '../../utils/mongoAggregation';
+import mongoAggregation from '../../utils/mongoAggregation';
 import { createQuery, createQueryOptions } from '../../utils/query_utils';
 import { formatDocs } from '../../utils/column_utils';
 
 const DEBUG = false;
 
+const DEFAULT_AGGREGATE_OPTIONS = {
+  cursor: {}, // return a cursor.
+  readPreference: 'secondaryPreferred' // read from secondary in a replica set
+};
 const logObject = obj => {
   function replacer(key, value) {
     if (value instanceof RegExp) return `__REGEXP ${value.toString()}`;
@@ -141,8 +145,56 @@ const getPipeline = ({
   ];
 };
 
+const getDocumentsAsArray = async (context, collectionConfig, listOptions) => {
+  const pipeline = getPipeline({
+    context,
+    collectionConfig,
+    listOptions
+  });
+  if (DEBUG) logObject(pipeline);
+  const docsCursor = await mongoAggregation(
+    collectionConfig.collection,
+    pipeline,
+    DEFAULT_AGGREGATE_OPTIONS
+  );
+
+  if (DEBUG) {
+    console.log('EXPLAIN:');
+    logObject(
+      await (await mongoAggregation(collectionConfig.collection, pipeline, {
+        ...DEFAULT_AGGREGATE_OPTIONS,
+        explain: true
+      })).toArray()
+    );
+  }
+
+  const docsFormatted = formatDocs(
+    docsCursor,
+    collectionConfig,
+    listOptions.listType
+  );
+  return await docsFormatted.toArray();
+};
+
+const getTheCount = async (context, collectionConfig, listOptions) => {
+  const countCursor = await mongoAggregation(
+    collectionConfig.collection,
+    getPipeline({
+      context,
+      collectionConfig,
+      listOptions,
+
+      countOnly: true
+    }),
+    DEFAULT_AGGREGATE_OPTIONS
+  );
+
+  const result = await countCursor.toArray();
+  return result[0] ? result[0].count : 0;
+};
+
 /* eslint import/prefer-default-export: 0 */
-export default ({
+export default async ({
   context,
   collectionConfig,
   listOptions,
@@ -159,18 +211,11 @@ export default ({
 }) => {
   if (DEBUG) console.log('listOptions', listOptions);
   if (DEBUG) console.time('docs aggregation');
-  const pipeline = getPipeline({
-    context,
-    collectionConfig,
-    listOptions
-  });
-  if (DEBUG) logObject(pipeline);
 
   const docs = getDocuments
-    ? mongoAggregation(context, collectionConfig.collection, pipeline, {
-        cursor: {}
-      })
-    : undefined;
+    ? await getDocumentsAsArray(context, collectionConfig, listOptions)
+    : [];
+
   if (DEBUG) console.timeEnd('docs aggregation');
   if (DEBUG) console.log('num docs', docs && docs.length);
 
@@ -179,36 +224,20 @@ export default ({
 
   if (getCount) {
     const { pageProperties } = listOptions;
-
     if (docs && pageProperties && docs.length < pageProperties.pageSize) {
       count =
         docs.length +
         (pageProperties.currentPage - 1) * pageProperties.pageSize;
     } else {
-      const result = cursorToArray(context, mongoAggregation(
-        context,
-        collectionConfig.collection,
-        getPipeline({
-          context,
-          collectionConfig,
-          listOptions,
-
-          countOnly: true
-        }),
-        { cursor: {} }
-      ));
-      count = result[0] ? result[0].count : 0;
+      count = await getTheCount(context, collectionConfig, listOptions);
     }
   }
 
   if (DEBUG) console.timeEnd('countAggregation');
   if (DEBUG) console.log('countAggregation result: ', count);
-  const docsFormatted =
-    docs && formatDocs(docs, collectionConfig, listOptions.listType);
-  const allDocs = cursorToArray(context, docsFormatted);
- 
+
   return {
-    docs: allDocs,
+    docs,
     count
   };
 };

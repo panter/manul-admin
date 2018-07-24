@@ -12,6 +12,11 @@ import { ListSchema } from '../schemas';
 
 import getListResult from './getListResult';
 
+// use Promise from meteor package
+/* global Package */
+const { Promise } = Package.promise;
+// TODO: remove meteor from context and take it from Package
+
 export default (
   context: MethodsContextT,
   collectionName: CollectionNameT,
@@ -28,12 +33,15 @@ export default (
         return { docs: [], count: 0 };
       }
       this.unblock();
-      const { docs, count } = getListResult({
-        context,
-        collectionConfig,
-        collectionName,
-        listOptions
-      });
+
+      const { docs, count } = Promise.await(
+        getListResult({
+          context,
+          collectionConfig,
+          collectionName,
+          listOptions
+        })
+      );
 
       return {
         docs,

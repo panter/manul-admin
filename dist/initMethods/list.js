@@ -10,11 +10,16 @@ var _is_allowed2 = _interopRequireDefault(_is_allowed);
 
 var _schemas = require('../schemas');
 
-var _getListResult2 = require('./getListResult');
+var _getListResult = require('./getListResult');
 
-var _getListResult3 = _interopRequireDefault(_getListResult2);
+var _getListResult2 = _interopRequireDefault(_getListResult);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// use Promise from meteor package
+/* global Package */
+var Promise = Package.promise.Promise;
+// TODO: remove meteor from context and take it from Package
 
 exports.default = function (context, collectionName, collectionConfig) {
   return new context.ValidatedMethod({
@@ -29,14 +34,14 @@ exports.default = function (context, collectionName, collectionConfig) {
       }
       this.unblock();
 
-      var _getListResult = (0, _getListResult3.default)({
+      var _Promise$await = Promise.await((0, _getListResult2.default)({
         context: context,
         collectionConfig: collectionConfig,
         collectionName: collectionName,
         listOptions: listOptions
-      }),
-          docs = _getListResult.docs,
-          count = _getListResult.count;
+      })),
+          docs = _Promise$await.docs,
+          count = _Promise$await.count;
 
       return {
         docs: docs,
