@@ -2951,7 +2951,7 @@ signal-exit@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-simpl-schema@^1.5.3:
+simpl-schema@^1.0.0:
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/simpl-schema/-/simpl-schema-1.5.3.tgz#c1d12ebddd7ff6dd32ace5e6364824ae506d4a9a"
   dependencies:

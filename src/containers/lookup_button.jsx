@@ -20,6 +20,7 @@ export default composeAll(withLookupButtonProps(), withDeps())(
     <span className={className} style={style}>
       <Modal
         restoreLastFocus={false}
+        autoFocus={false}
         show={showLookupModal}
         onHide={() => setShowLookupModal(false)}
       >
