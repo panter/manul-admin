@@ -19,7 +19,7 @@ export default (
   new context.ValidatedMethod({
     name: `manulAdmin.${collectionName}.listCount`,
     validate: ListSchema.validator({ clean: false }),
-    run(listOptions) {
+    async run(listOptions) {
       if (!isAllowed(collectionName, this.userId)) {
         throw new context.Meteor.Error('not allowed', 'You are not allowed');
       }
@@ -27,7 +27,7 @@ export default (
         return { docs: [], count: 0 };
       }
       this.unblock();
-      const { count } = getListResult({
+      const { count } = await getListResult({
         context,
         collectionConfig,
         collectionName,

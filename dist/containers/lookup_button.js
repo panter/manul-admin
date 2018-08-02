@@ -47,17 +47,23 @@ exports.default = (0, _mantraCore.composeAll)((0, _with_lookup_button_props2.def
     { className: className, style: style },
     _react2.default.createElement(
       Modal,
-      { show: showLookupModal, onHide: function onHide() {
+      {
+        restoreLastFocus: false,
+        show: showLookupModal,
+        onHide: function onHide() {
           return setShowLookupModal(false);
-        } },
-      _react2.default.createElement(_list2.default, (0, _extends3.default)({}, props, { isLookup: true, onSelect: function onSelect() {
+        }
+      },
+      _react2.default.createElement(_list2.default, (0, _extends3.default)({}, props, {
+        isLookup: true,
+        onSelect: function onSelect() {
           onChange.apply(undefined, arguments);
           setShowLookupModal(false);
-        }, selected: value
+        },
+        selected: value
       }))
     ),
-    _react2.default.createElement(LookupButton, (0, _extends3.default)({
-      onClick: function onClick() {
+    _react2.default.createElement(LookupButton, (0, _extends3.default)({ onClick: function onClick() {
         return setShowLookupModal(true);
       } }, props))
   );

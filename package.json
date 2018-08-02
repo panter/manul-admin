@@ -1,7 +1,7 @@
 {
   "name": "@panter/manul-admin",
   "description": "",
-  "version": "0.14.1",
+  "version": "0.14.3-beta.0",
   "author": {
     "name": "Marco Wettstein",
     "email": "maw@panter.ch",
@@ -62,6 +62,6 @@
     "flat": "^2.0.1",
     "papaparse": "^4.1.2",
     "recompose": ">=0.21.2",
-    "simpl-schema": "^1.4.2"
+    "simpl-schema": "^1.5.3"
   }
 }
