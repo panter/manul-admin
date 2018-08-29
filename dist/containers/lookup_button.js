@@ -39,16 +39,15 @@ exports.default = (0, _mantraCore.composeAll)((0, _with_lookup_button_props2.def
       setShowLookupModal = _ref.setShowLookupModal,
       onChange = _ref.onChange,
       value = _ref.value,
-      className = _ref.className,
-      style = _ref.style,
-      props = (0, _objectWithoutProperties3.default)(_ref, ['LookupButton', 'Modal', 'showLookupModal', 'setShowLookupModal', 'onChange', 'value', 'className', 'style']);
+      props = (0, _objectWithoutProperties3.default)(_ref, ['LookupButton', 'Modal', 'showLookupModal', 'setShowLookupModal', 'onChange', 'value']);
   return _react2.default.createElement(
-    'span',
-    { className: className, style: style },
+    _react.Fragment,
+    null,
     _react2.default.createElement(
       Modal,
       {
         restoreLastFocus: false,
+        autoFocus: false,
         show: showLookupModal,
         onHide: function onHide() {
           return setShowLookupModal(false);

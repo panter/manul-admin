@@ -49,6 +49,7 @@ export type AggregationArgsT = {|
   searchTerm?: SearchTermT
 |};
 export type CollectionAggregationT = {|
+  stagesPreSort?: AggregationStagesT,
   stages: AggregationStagesT, // additional stages after base query
   postSort?: boolean // whether to sort after aggregation stages (is slower, but sorting is wrong when sorted by computed properties unless this flag is set)
   // filterToPostQuery ?: any => any, // create another match stage after the aggregation stages

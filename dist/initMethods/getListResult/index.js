@@ -160,7 +160,7 @@ var getPipeline = function getPipeline(_ref) {
 
   var basePipeline = [{ $match: baseQuery }];
   if (countOnly) {
-    return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && aggregationOptions.stages ? addCount(aggregationOptions.stages) : [{ $count: 'count' }]));
+    return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && aggregationOptions.stages ? addCount([].concat((0, _toConsumableArray3.default)(aggregationOptions.stagesPreSort || []), (0, _toConsumableArray3.default)(aggregationOptions.stages))) : [{ $count: 'count' }]));
   }
   var sortPipeline = [].concat((0, _toConsumableArray3.default)(!(0, _isEmpty2.default)(queryOptions.sort) ? [{ $sort: cleanArrayIndexInSort(queryOptions.sort) }] : []), (0, _toConsumableArray3.default)(queryOptions.limit ? [{ $limit: queryOptions.limit + (queryOptions.skip || 0) }] : []), [{ $skip: queryOptions.skip || 0 }]);
   var filterColumnsStage = {
@@ -168,7 +168,7 @@ var getPipeline = function getPipeline(_ref) {
       return true;
     })
   };
-  return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && !aggregationOptions.postSort ? sortPipeline : []), (0, _toConsumableArray3.default)(aggregationOptions ? aggregationOptions.stages : []), (0, _toConsumableArray3.default)(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : []), [filterColumnsStage]);
+  return [].concat(basePipeline, (0, _toConsumableArray3.default)(aggregationOptions && aggregationOptions.stagesPreSort ? aggregationOptions.stagesPreSort : []), (0, _toConsumableArray3.default)(aggregationOptions && !aggregationOptions.postSort ? sortPipeline : []), (0, _toConsumableArray3.default)(aggregationOptions ? aggregationOptions.stages : []), (0, _toConsumableArray3.default)(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : []), [filterColumnsStage]);
 };
 
 var getDocumentsAsArray = function () {

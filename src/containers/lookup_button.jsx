@@ -1,5 +1,5 @@
 import { composeAll } from '@storybook/mantra-core';
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import List from './list';
 import withDeps from '../hocs/with_deps';
@@ -13,11 +13,9 @@ export default composeAll(withLookupButtonProps(), withDeps())(
     setShowLookupModal,
     onChange,
     value,
-    className,
-    style,
     ...props
   }) => (
-    <span className={className} style={style}>
+    <Fragment>
       <Modal
         restoreLastFocus={false}
         autoFocus={false}
@@ -35,6 +33,6 @@ export default composeAll(withLookupButtonProps(), withDeps())(
         />
       </Modal>
       <LookupButton onClick={() => setShowLookupModal(true)} {...props} />
-    </span>
+    </Fragment>
   )
 );

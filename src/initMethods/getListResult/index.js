@@ -115,7 +115,10 @@ const getPipeline = ({
     return [
       ...basePipeline,
       ...(aggregationOptions && aggregationOptions.stages
-        ? addCount(aggregationOptions.stages)
+        ? addCount([
+            ...(aggregationOptions.stagesPreSort || []),
+            ...aggregationOptions.stages
+          ])
         : [{ $count: 'count' }])
     ];
   }
@@ -138,6 +141,9 @@ const getPipeline = ({
   };
   return [
     ...basePipeline,
+    ...(aggregationOptions && aggregationOptions.stagesPreSort
+      ? aggregationOptions.stagesPreSort
+      : []),
     ...(aggregationOptions && !aggregationOptions.postSort ? sortPipeline : []),
     ...(aggregationOptions ? aggregationOptions.stages : []),
     ...(!aggregationOptions || aggregationOptions.postSort ? sortPipeline : []),
