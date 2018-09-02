@@ -2,6 +2,7 @@
 import isFunction from 'lodash/isFunction';
 import mapValues from 'lodash/mapValues';
 import isObject from 'lodash/isObject';
+import isDate from 'lodash/isDate';
 import type {
   CursorT,
   ListTypeT,
@@ -57,6 +58,8 @@ export const formatDocs = (
       const fullKey = parentKey ? `${parentKey}.${key}` : key;
       if (formats[fullKey]) {
         return formats[fullKey]({ value, key: fullKey });
+      } else if (isDate(value)) {
+        return value;
       } else if (isObject(value)) {
         return formatObj(value, fullKey);
       }

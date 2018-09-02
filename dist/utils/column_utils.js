@@ -25,6 +25,10 @@ var _isObject = require('lodash/isObject');
 
 var _isObject2 = _interopRequireDefault(_isObject);
 
+var _isDate = require('lodash/isDate');
+
+var _isDate2 = _interopRequireDefault(_isDate);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint import/prefer-default-export: 0*/
@@ -33,6 +37,7 @@ var filterColumns = exports.filterColumns = function filterColumns(columns, type
     return typeof column === 'string' || !column.include || column.include[type];
   });
 };
+
 var getColumnTitleI18nKey = exports.getColumnTitleI18nKey = function getColumnTitleI18nKey(_ref) {
   var collectionName = _ref.collectionName,
       collectionConfig = _ref.collectionConfig,
@@ -57,6 +62,8 @@ var formatDocs = exports.formatDocs = function formatDocs(docs, config, listType
       var fullKey = parentKey ? parentKey + '.' + key : key;
       if (formats[fullKey]) {
         return formats[fullKey]({ value: value, key: fullKey });
+      } else if ((0, _isDate2.default)(value)) {
+        return value;
       } else if ((0, _isObject2.default)(value)) {
         return formatObj(value, fullKey);
       }
