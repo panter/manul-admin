@@ -77,17 +77,26 @@ export const createQuery = ({
   searchFields,
   filterToBaseQuery = f => f,
   useTextIndex
-}: CreateQueryArgsT) => ({
-  ...(!isEmpty(filter) ? removeEmptyObjects(filterToBaseQuery(filter)) : {}),
-  ...(!isEmpty(searchTerm) &&
-  (isFunction(searchFields) || !isEmpty(searchFields))
-    ? createFieldSearchQuery(
+}: CreateQueryArgsT) => {
+  const $and = [];
+  if (!isEmpty(filter)) {
+    $and.push(removeEmptyObjects(filterToBaseQuery(filter)));
+  }
+  if (
+    !isEmpty(searchTerm) &&
+    (isFunction(searchFields) || !isEmpty(searchFields))
+  ) {
+    $and.push(
+      createFieldSearchQuery(
         searchFields,
         termToTermList(searchTerm),
         useTextIndex
       )
-    : {})
-});
+    );
+  }
+
+  return !isEmpty($and) ? { $and } : {};
+};
 
 export const sortPropsToMongoSort = flow(
   keyBy('id'),

@@ -118,7 +118,16 @@ var createQuery = exports.createQuery = function createQuery(_ref2) {
     return f;
   } : _ref2$filterToBaseQue,
       useTextIndex = _ref2.useTextIndex;
-  return (0, _extends3.default)({}, !(0, _isEmpty3.default)(filter) ? removeEmptyObjects(filterToBaseQuery(filter)) : {}, !(0, _isEmpty3.default)(searchTerm) && ((0, _isFunction3.default)(searchFields) || !(0, _isEmpty3.default)(searchFields)) ? createFieldSearchQuery(searchFields, termToTermList(searchTerm), useTextIndex) : {});
+
+  var $and = [];
+  if (!(0, _isEmpty3.default)(filter)) {
+    $and.push(removeEmptyObjects(filterToBaseQuery(filter)));
+  }
+  if (!(0, _isEmpty3.default)(searchTerm) && ((0, _isFunction3.default)(searchFields) || !(0, _isEmpty3.default)(searchFields))) {
+    $and.push(createFieldSearchQuery(searchFields, termToTermList(searchTerm), useTextIndex));
+  }
+
+  return !(0, _isEmpty3.default)($and) ? { $and: $and } : {};
 };
 
 var sortPropsToMongoSort = exports.sortPropsToMongoSort = (0, _flow3.default)((0, _keyBy3.default)('id'), (0, _mapValues3.default)(function (_ref3) {
