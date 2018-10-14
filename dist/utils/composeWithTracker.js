@@ -7,10 +7,21 @@ exports.default = composeWithTracker;
 
 var _reactKomposer = require('@storybook/react-komposer');
 
-var myCompose = (0, _reactKomposer.setDefaults)({ withRef: false });
+var myCompose = (0, _reactKomposer.setDefaults)({
+  pure: true,
+  withRef: false
+});
 
-function composeWithTracker(reactiveFn, L, E, options) {
+/* global Tracker, Meteor */
+
+function composeWithTracker(reactiveFn, options) {
   var onPropsChange = function onPropsChange(props, onData, context) {
+    if (Meteor.isServer) {
+      reactiveFn(props, onData, context);
+      return function () {
+        return null;
+      };
+    }
     var trackerCleanup = void 0;
     var handler = Tracker.nonreactive(function () {
       return Tracker.autorun(function () {
@@ -26,6 +37,6 @@ function composeWithTracker(reactiveFn, L, E, options) {
     };
   };
 
-  return myCompose(onPropsChange, L, E, options);
+  return myCompose(onPropsChange, options);
 }
 //# sourceMappingURL=composeWithTracker.js.map

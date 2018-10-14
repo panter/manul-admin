@@ -40,13 +40,21 @@ var initMethodsForCollection = function initMethodsForCollection(context, collec
   };
 };
 
-exports.default = function (context) {
-  var methods = {};
-  (0, _keys2.default)(context.config.collections).forEach(function (collectionName) {
-    var collectionConfig = context.config.collections[collectionName];
+var METHODS = null;
 
-    methods[collectionName] = initMethodsForCollection(context, collectionName, collectionConfig);
-  });
-  return methods;
+exports.default = function (context) {
+  // on server, this might get called twice atm (if you use SSR)
+  // so if already initialzed, do not initialize again
+  if (!METHODS) {
+    var methods = {};
+    (0, _keys2.default)(context.config.collections).forEach(function (collectionName) {
+      var collectionConfig = context.config.collections[collectionName];
+
+      methods[collectionName] = initMethodsForCollection(context, collectionName, collectionConfig);
+    });
+    METHODS = methods;
+  }
+
+  return METHODS;
 };
 //# sourceMappingURL=index.js.map

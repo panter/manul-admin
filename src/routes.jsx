@@ -8,7 +8,7 @@ import * as containers from './containers';
 /* eslint react/display-name: 0*/
 export default (injectDeps, { adminContext }) => {
   const { adminRoutes, components, config } = adminContext;
-  const { mount } = require('react-mounter');
+
   const createRoute = (type, collectionName, aggregationName = null) => {
     const Container = containers[upperFirst(type)];
     const { path, name } = routeUtils.getRoute(
@@ -19,7 +19,10 @@ export default (injectDeps, { adminContext }) => {
     adminRoutes.route(path, {
       name,
       action(params) {
-        mount(injectDeps(components.layout), {
+        const mountFunc = config.useReactMounter // useReactMounter is deprecated
+          ? require('react-mounter').mount
+          : this.render;
+        mountFunc(injectDeps(components.layout), {
           content: () => (
             <Container
               collectionName={collectionName}

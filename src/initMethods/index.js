@@ -24,16 +24,23 @@ const initMethodsForCollection = (
   listCount: listCount(context, collectionName, collectionConfig)
 });
 
+let METHODS = null;
 export default (context: MethodsContextT) => {
-  const methods = {};
-  Object.keys(context.config.collections).forEach(collectionName => {
-    const collectionConfig = context.config.collections[collectionName];
+  // on server, this might get called twice atm (if you use SSR)
+  // so if already initialzed, do not initialize again
+  if (!METHODS) {
+    const methods = {};
+    Object.keys(context.config.collections).forEach(collectionName => {
+      const collectionConfig = context.config.collections[collectionName];
 
-    methods[collectionName] = initMethodsForCollection(
-      context,
-      collectionName,
-      collectionConfig
-    );
-  });
-  return methods;
+      methods[collectionName] = initMethodsForCollection(
+        context,
+        collectionName,
+        collectionConfig
+      );
+    });
+    METHODS = methods;
+  }
+
+  return METHODS;
 };

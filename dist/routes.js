@@ -35,8 +35,6 @@ exports.default = function (injectDeps, _ref) {
       components = adminContext.components,
       config = adminContext.config;
 
-  var _require = require('react-mounter'),
-      mount = _require.mount;
 
   var createRoute = function createRoute(type, collectionName) {
     var aggregationName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -50,7 +48,9 @@ exports.default = function (injectDeps, _ref) {
     adminRoutes.route(path, {
       name: name,
       action: function action(params) {
-        mount(injectDeps(components.layout), {
+        var mountFunc = config.useReactMounter // useReactMounter is deprecated
+        ? require('react-mounter').mount : this.render;
+        mountFunc(injectDeps(components.layout), {
           content: function content() {
             return _react2.default.createElement(Container, {
               collectionName: collectionName,
